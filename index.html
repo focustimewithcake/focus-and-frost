@@ -29,6 +29,54 @@
       background-color: #9bba74;
       border-radius: 3px;
     }
+    /* Statistics modal content: no grid, just images in a row wrapping naturally */
+    #cake-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 70vh;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: flex-start;
+      align-items: center;
+    }
+    #cake-list li {
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      outline: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 0.5rem;
+    }
+    #cake-list li:focus,
+    #cake-list li:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgb(0 0 0 / 0.2);
+      z-index: 10;
+    }
+    #cake-list li img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      border-radius: 0.5rem;
+      user-select: none;
+      pointer-events: none;
+      display: block;
+    }
+    #cake-list li span {
+      display: none;
+    }
+    @media (max-width: 480px) {
+      #cake-list li img {
+        width: 48px;
+        height: 48px;
+      }
+    }
   </style>
 </head>
 <body class="relative min-h-screen flex flex-col items-center bg-[#f0f3e8]">
@@ -109,7 +157,7 @@
     >
       <img
         id="cake-image"
-        src="https://i.ibb.co/4nK5Z7L0/1-C4-A3268-5-EA5-49-C2-83-E5-318-CC48-C1619.png"
+        src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png"
         alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng"
         class="w-40 h-40 object-contain"
         draggable="false"
@@ -142,16 +190,8 @@
       <!-- Left side buttons -->
       <div class="flex space-x-4">
         <button
-          id="btn-decoration"
-          aria-label="Trang trí bánh"
-          class="w-11 h-11 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
-          type="button"
-        >
-          <i class="fas fa-paint-brush text-lg"></i>
-        </button>
-        <button
           id="btn-statistics"
-          aria-label="Bảng thống kê dạng cột"
+          aria-label="Bảng thống kê dạng lưới"
           class="w-11 h-11 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
           type="button"
         >
@@ -182,7 +222,6 @@
         </button>
       </div>
     </div>
-      
 
     <!-- Hidden feedback form for submission -->
     <form
@@ -208,16 +247,16 @@
   >
     <i class="fas fa-comment-alt text-xl"></i>
   </button>
- <button
-  id="infoToggleBtn"
-  aria-label="Toggle information panel"
-  class="absolute top-4 left-4 
-         p-3 bg-green-600 text-white rounded-full shadow-md 
-         hover:bg-green-700 bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-green-400 
-         flex items-center justify-center w-12 h-12"
->
-  <i class="fas fa-question text-lg"></i>
-</button>
+  <button
+    id="infoToggleBtn"
+    aria-label="Toggle information panel"
+    class="absolute top-4 left-4 
+           p-3 bg-green-600 text-white rounded-full shadow-md 
+           hover:bg-green-700 bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-green-400 
+           flex items-center justify-center w-12 h-12"
+  >
+    <i class="fas fa-question text-lg"></i>
+  </button>
 
   <!-- Logout Confirmation Modal -->
   <div
@@ -257,15 +296,8 @@
     role="list"
     aria-label="Menu chọn món ăn"
   >
-    <div id="menu-cake-list" class="grid grid-cols-3 gap-4 p-4">
-      <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="Macaron" aria-label="Chọn món Macaron">
-        <img src="https://i.ibb.co/4nK5Z7L0/1-C4-A3268-5-EA5-49-C2-83-E5-318-CC48-C1619.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-20 h-20 object-contain" draggable="false" />
-        <span class="text-sm font-semibold text-gray-700">Macaron</span>
-      </button>
-      <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="Cà tím" aria-label="Chọn món Cà tím">
-        <img src="https://i.ibb.co/nN5GQxNr/IMG-7291.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-20 h-20 object-contain" draggable="false" />
-        <span class="text-sm font-semibold text-gray-700">Cà tím</span>
-      </button>
+    <div id="menu-cake-list" class="flex flex-wrap justify-center gap-4 p-4">
+      <!-- Các nút chọn bánh sẽ được JavaScript tạo động ở đây -->
     </div>
   </div>
 
@@ -311,7 +343,7 @@
     </div>
   </div>
 
-  <!-- Statistics modal -->
+  <!-- Statistics modal with scrollable images -->
   <div
     id="statistics-modal"
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden"
@@ -319,33 +351,20 @@
     aria-modal="true"
     aria-labelledby="statistics-title"
   >
-    <div
-      class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] p-6 flex flex-col space-y-4 shadow-lg overflow-hidden"
-    >
-      <h2
-        id="statistics-title"
-        class="text-2xl font-semibold text-gray-800 text-center"
-      >
-        Lịch sử 
+    <div class="bg-white rounded-lg max-w-md w-full p-6 flex flex-col space-y-4 shadow-lg max-h-[90vh] overflow-y-auto">
+      <h2 id="statistics-title" class="text-2xl font-bold text-center text-gray-800 mb-4">
+        Lịch sử
       </h2>
-      <div class="flex flex-col md:flex-row md:space-x-6 h-full">
-        <!-- Calendar -->
-        <div class="md:w-1/2 overflow-auto max-h-[60vh] border border-gray-300 rounded p-4 bg-gray-50">
-          <div id="calendar" class="grid grid-cols-7 gap-1 text-center select-none"></div>
-        </div>
-        <!-- Summary -->
-        <div class="md:w-1/2 overflow-auto max-h-[60vh] border border-gray-300 rounded p-4 bg-white flex flex-col">
-          <h3 id="summary-date" class="text-xl font-semibold mb-4 text-center">Chọn một ngày để xem chi tiết</h3>
-          <div id="summary-content" class="space-y-4 text-gray-700 flex-grow overflow-auto"></div>
-          <button
-            id="statistics-close"
-            class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
-            type="button"
-          >
-            Đóng
-          </button>
-        </div>
-      </div>
+      <ul id="cake-list" tabindex="0" aria-label="lịch sử tập trung">
+      </ul>
+      <div id="session-info" class="mt-4 p-4 bg-gray-100 rounded-lg text-center text-gray-700 min-h-[4rem] select-none" aria-live="polite" aria-atomic="true"></div>
+      <button
+        id="statistics-close"
+        class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
+        type="button"
+      >
+        Đóng
+      </button>
     </div>
   </div>
 
@@ -374,7 +393,7 @@
           draggable="false"
         />
         <p class="text-center text-gray-700 text-lg max-w-xs">
-          Hoàn thành nhiệm vụ tích lũy 7 ngày tập trung liên tục để nhận được bánh gấu!
+          Hoàn thành tích lũy 7 ngày tập trung liên tục để nhận được bánh gấu!
         </p>
         <div class="w-full max-w-xs bg-gray-200 rounded-full h-6 overflow-hidden">
           <div
@@ -385,7 +404,7 @@
             aria-valuemax="7"
             aria-valuenow="0"
             role="progressbar"
-            aria-label="Tiến độ nhiệm vụ 7 ngày tập trung liên tục"
+            aria-label="Tiến độ nhiệm vụ "
           ></div>
         </div>
         <p id="task-progress-text" class="text-center font-semibold text-gray-800 text-lg select-none">0 / 7 ngày</p>
@@ -400,86 +419,68 @@
     </div>
   </div>
   <!-- Overlay -->
-<div
-id="overlay"
-class="fixed inset-0 bg-black bg-opacity-40 hidden z-40"
-></div>
+  <div
+    id="overlay"
+    class="fixed inset-0 bg-black bg-opacity-40 hidden z-40"
+  ></div>
 
-<!-- Info Panel Centered -->
-<aside
-id="infoPanel"
-class="fixed top-1/2 left-1/2 w-80 max-w-full bg-white shadow-lg rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 scale-0 transition-transform duration-300 ease-in-out z-50 overflow-y-auto max-h-[80vh]"
-aria-hidden="true"
->
-<h2 class="text-2xl font-semibold mb-4 text-green-700">Thông tin</h2>
-<p class="mb-4 text-gray-700">
-  Thông tin
-</p>
-<ul class="list-disc list-inside space-y-2 text-gray-600">
-  <li>1.Sau khi bắt đầu tập trung, không thể thay đổi thời gian.</li>
-  <li>2.Thời gian tập trung 0–10 phút: chỉ nhận được bánh đã chọn.</li>
-  <li>3.Thời gian tập trung từ 10 phút trở lên: nhận được bánh, đồ trang trí và đĩa.</li>
-  <li>4.Hãy sử chrome, safari để có trải nghiệm tốt nhất</li>
-</ul>
-<button
-  id="closeInfoBtn"
-  class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
-  type="button"
->
-  Đóng
-</button>
-</aside>
+  <!-- Info Panel Centered -->
+  <aside
+    id="infoPanel"
+    class="fixed top-1/2 left-1/2 w-80 max-w-full bg-white shadow-lg rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 scale-0 transition-transform duration-300 ease-in-out z-50 overflow-y-auto max-h-[80vh]"
+    aria-hidden="true"
+  >
+    <h2 class="text-2xl font-semibold mb-4 text-green-700">Thông tin</h2>
+    <p class="mb-4 text-gray-700">
+      Thông tin
+    </p>
+    <ul class="list-disc list-inside space-y-2 text-gray-600">
+      <li>1.Sau khi bắt đầu tập trung, không thể thay đổi thời gian.</li>
+      <li>2.Cần tập trung từ 5 phút trở lên: nhận được bánh đã chọn.</li>
+      <li>3. nếu có góp ý hay thắc mắc nào hãy bấm vào nút bên góc trái </li>
+      <li>4.Hãy sử dụng Chrome hoặc Safari để có trải nghiệm tốt nhất </li>
+    </ul>
+    <button
+      id="closeInfoBtn"
+      class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
+      type="button"
+    >
+      Đóng
+    </button>
+  </aside>
 
   <audio id="background-music" loop preload="auto" src="https://github.com/thuyvannnnnn/Focus-and-frost/raw/refs/heads/main/45.audio.mp3"></audio>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <script>
+    // Remove cakeinventory, plateinventory, decorinventory from localStorage on load
+    localStorage.removeItem('cakeinventory');
+    localStorage.removeItem('plateinventory');
+    localStorage.removeItem('decorinventory');
+
     // Data
     const cakes = {
       Macaron: {
         name: "Macaron",
-        img: "https://i.ibb.co/4nK5Z7L0/1-C4-A3268-5-EA5-49-C2-83-E5-318-CC48-C1619.png",
+        img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png",
         alt: "Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng",
       },
-      "Cà tím": {
-        name: "Cà tím",
-        img: "https://i.ibb.co/nN5GQxNr/IMG-7291.png",
+      "bánh mâm xôi": {
+        name: "bánh mâm xôi",
+        img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png",
         alt: "Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng",
       },
-    };
-
-    const decorations = [
-      {
-        name: "Nến",
-        img: "https://i.ibb.co/Pv8CLqvH/Untitled-design-4.png",
-        alt: "Hình ảnh cây nến trang trí màu trắng với ngọn lửa vàng, nền trắng",
+      "bánh cherry": {
+        name: "bánh cherry",
+        img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png",
+        alt: "Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng",
       },
-      {
-        name: "Kem 1",
-        img: "https://i.ibb.co/yBct9mVm/Untitled-design-33.png",
-        alt: "Hình ảnh kem trang trí màu trắng kem, nền trắng",
-      },
-    ];
-
-    const plates = [
-      {
-        name: "Hồng",
-        img: "https://i.ibb.co/0jbhSHK7/IMG-7290.png",
-        alt: "Hình ảnh đĩa màu hồng pastel tròn, nền trắng",
-      },
-      {
-        name: "Xanh lá",
-        img: "https://i.ibb.co/39zdJxr9/IMG-7288.png",
-        alt: "Hình ảnh đĩa màu xanh lá pastel tròn, nền trắng",
-      },
-    ];
-
-    const bearCakeReward = {
-      type: "cake",
-      name: "Bánh gấu",
-      img: "https://i.ibb.co/JjHyk2vX/2316-CFE1-22-EA-4632-9307-73-B7-AE643-FB8.png",
-      alt: "Hình ảnh bánh gấu màu nâu vàng, bánh ngọt tròn với khuôn mặt gấu dễ thương, nền trắng",
+      "bánh nướng bóng đêm": {
+        name: "bánh nướng bóng đêm",
+        img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/037F53D1-AC5D-4165-BD08-FEFF3F39FD7D.png",
+        alt: "Hình ảnh bánh bị cháy đen, bánh tròn, nền trắng",
+      }
     };
 
     // State
@@ -517,9 +518,8 @@ aria-hidden="true"
     // Statistics modal elements
     const statisticsModal = document.getElementById("statistics-modal");
     const statisticsCloseBtn = document.getElementById("statistics-close");
-    const calendarEl = document.getElementById("calendar");
-    const summaryDateEl = document.getElementById("summary-date");
-    const summaryContentEl = document.getElementById("summary-content");
+    const cakeListEl = document.getElementById("cake-list");
+    const sessionInfoEl = document.getElementById("session-info");
     const btnStatistics = document.getElementById("btn-statistics");
 
     // Tasks modal elements
@@ -607,16 +607,6 @@ aria-hidden="true"
       alert("Bạn đã đăng nhập thành công: " + googleUser.name);
     }
 
-    // Parse JWT token
-    function parseJwt(token) {
-      let base64Url = token.split('.')[1];
-      let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      return JSON.parse(jsonPayload);
-    }
-
     // Show logout confirmation modal
     function showLogoutConfirm() {
       logoutConfirmModal.classList.remove("hidden");
@@ -632,17 +622,13 @@ aria-hidden="true"
     // Event listeners for login/logout button
     googleLoginBtn.addEventListener("click", () => {
       if (googleUser) {
-        // Show logout confirmation modal
         showLogoutConfirm();
       } else {
-        // Trigger Google Sign-In popup
         google.accounts.id.prompt();
       }
     });
 
-    // Logout confirmation buttons
     logoutYesBtn.addEventListener("click", () => {
-      // Logout user
       googleUser = null;
       localStorage.removeItem("googleuser");
       updateLoginButtonUI();
@@ -654,28 +640,17 @@ aria-hidden="true"
       hideLogoutConfirm();
     });
 
-    // Close modals on Escape key
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        if (!rewardModal.classList.contains("hidden")) {
-          rewardModal.classList.add("hidden");
-        }
-        if (!menuSelectCake.classList.contains("hidden")) {
-          menuSelectCake.classList.add("hidden");
-        }
-        if (!statisticsModal.classList.contains("hidden")) {
-          statisticsModal.classList.add("hidden");
-        }
-        if (!tasksModal.classList.contains("hidden")) {
-          tasksModal.classList.add("hidden");
-        }
-        if (!logoutConfirmModal.classList.contains("hidden")) {
-          hideLogoutConfirm();
-        }
+        if (!rewardModal.classList.contains("hidden")) rewardModal.classList.add("hidden");
+        if (!menuSelectCake.classList.contains("hidden")) menuSelectCake.classList.add("hidden");
+        if (!statisticsModal.classList.contains("hidden")) statisticsModal.classList.add("hidden");
+        if (!tasksModal.classList.contains("hidden")) tasksModal.classList.add("hidden");
+        if (!logoutConfirmModal.classList.contains("hidden")) hideLogoutConfirm();
+        if (!infoPanel.classList.contains("scale-0")) closePanel();
       }
     });
 
-    // Initialize
     function updateCakeDisplay() {
       const cake = cakes[selectedCake];
       cakeImageEl.src = cake.img;
@@ -778,8 +753,7 @@ aria-hidden="true"
 
     function stopTimer(finished = false) {
       if (!isRunning) return;
-      isRunning = false;
-      updateStartButtonState();
+      isRunning = false; // Đặt lại trạng thái chạy
       clearInterval(timerInterval);
       timerInterval = null;
       cookingGif.classList.add("hidden");
@@ -789,17 +763,21 @@ aria-hidden="true"
       disableInputs(false);
       if (finished) {
         saveSessionHistory(elapsedSeconds);
+        addSessionToList(elapsedSeconds);
         showReward(elapsedSeconds);
-        resetTimerState();
+        renderRewardInventory();
+        resetTimerState(); // reset và update nút ở đây
+      } else {
+        updateStartButtonState(); // nếu dừng giữa chừng thì update nút
       }
     }
 
     function resetTimerState() {
       elapsedSeconds = 0;
+      selectedTimeTotalSeconds = 0;
       inputHour.value = "";
       inputMinute.value = "";
       inputSecond.value = "";
-      selectedTimeTotalSeconds = 0;
       timeProgressBar.style.width = "100%";
       updateStartButtonState();
     }
@@ -809,76 +787,52 @@ aria-hidden="true"
       inputMinute.disabled = disable;
       inputSecond.disabled = disable;
       circleCakeBtn.disabled = disable;
-      document.getElementById("btn-decoration").disabled = disable;
       document.getElementById("btn-statistics").disabled = disable;
       document.getElementById("btn-tasks").disabled = disable;
     }
 
     function showReward(elapsed) {
-      // Calculate reward based on elapsed time in seconds
       const timeMinutes = elapsed / 60;
       let rewards = [];
-      // Always 1 imperfect cake (the selected cake) without "không hoàn hảo" text
-      rewards.push({
-        type: "cake",
-        name: selectedCake,
-        img: cakes[selectedCake].img,
-        alt: cakes[selectedCake].alt,
-      });
-      if (timeMinutes >= 10) {
-        // Add 1 random decoration and 1 random plate, avoiding duplicates in inventory
-        const existingDecorations = rewardInventory
-          .filter((r) => r.type === "decoration")
-          .map((r) => r.name);
-        const existingPlates = rewardInventory
-          .filter((r) => r.type === "plate")
-          .map((r) => r.name);
-
-        // Filter decorations not in inventory
-        const availableDecorations = decorations.filter(
-          (d) => !existingDecorations.includes(d.name)
-        );
-        // If none available, fallback to all
-        const decorationPool =
-          availableDecorations.length > 0 ? availableDecorations : decorations;
-        const decoration =
-          decorationPool[Math.floor(Math.random() * decorationPool.length)];
-
-        // Filter plates not in inventory
-        const availablePlates = plates.filter(
-          (p) => !existingPlates.includes(p.name)
-        );
-        const platePool = availablePlates.length > 0 ? availablePlates : plates;
-        const plate = platePool[Math.floor(Math.random() * platePool.length)];
-
-        rewards.push(
-          {
-            type: "decoration",
-            name: decoration.name,
-            img: decoration.img,
-            alt: decoration.alt,
-          },
-          {
-            type: "plate",
-            name: plate.name,
-            img: plate.img,
-            alt: plate.alt,
-          }
-        );
+      let rewardName = "";
+      if (timeMinutes < 3) {
+        // Under 3 minutes: reward "bánh nướng bóng đêm" cake
+        rewards = [{
+          type: "cake",
+          name: "bánh nướng bóng đêm",
+          img: cakes["bánh nướng bóng đêm"].img,
+          alt: cakes["bánh nướng bóng đêm"].alt,
+        }];
+        rewardName = "bánh nướng bóng đêm";
+      } else {
+        // 5 minutes or more: receive selected cake only
+        rewards = [{
+          type: "cake",
+          name: selectedCake,
+          img: cakes[selectedCake].img,
+          alt: cakes[selectedCake].alt,
+        }];
+        rewardName = selectedCake;
       }
 
-      // Save rewards to inventory (theo loại)
       let rewardInventoryLocal = JSON.parse(localStorage.getItem("rewardInventory")) || [];
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10);
+      const timeStr = now.toTimeString().slice(0, 5);
+
       rewards.forEach(r => {
-        // Avoid duplicates by name and type
-        if (!rewardInventoryLocal.some(item => item.type === r.type && item.name === r.name)) {
-          rewardInventoryLocal.push(r);
-        }
+        // Save reward with time and date
+        const rewardWithDate = {
+          ...r,
+          date: dateStr,
+          time: timeStr,
+          id: Date.now() + Math.random(), // unique id
+        };
+        rewardInventoryLocal.push(rewardWithDate);
       });
       localStorage.setItem("rewardInventory", JSON.stringify(rewardInventoryLocal));
       rewardInventory = rewardInventoryLocal;
 
-      // Show modal with rewards
       rewardContent.innerHTML = "";
       rewards.forEach((r) => {
         const div = document.createElement("div");
@@ -886,7 +840,7 @@ aria-hidden="true"
         const img = document.createElement("img");
         img.src = r.img;
         img.alt = r.alt;
-        img.className = "w-[56px] h-[56px] object-contain"; // 10% smaller than original 64px (w-14 = 56px)
+        img.className = "w-[56px] h-[56px] object-contain";
         img.draggable = false;
         const span = document.createElement("span");
         span.className = "text-gray-800 font-semibold text-center text-sm";
@@ -905,16 +859,100 @@ aria-hidden="true"
 
       rewardModal.classList.remove("hidden");
     }
-    
 
-    // Render cake menu without duplicates
+    function saveSessionHistory(elapsedSeconds) {
+      if (elapsedSeconds <= 0) return;
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10);
+      const timeStr = now.toTimeString().slice(0, 5);
+      const newSession = {
+        id: Date.now(),
+        name: selectedCake,
+        time: timeStr,
+        date: dateStr,
+        timeSeconds: elapsedSeconds,
+        durationMinutes: Math.floor(elapsedSeconds / 60),
+        image: cakes[selectedCake].img,
+      };
+      sessionHistory.push(newSession);
+      localStorage.setItem("sessionHistory", JSON.stringify(sessionHistory));
+    }
+
+    function addSessionToList(elapsedSeconds) {
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10);
+      const timeStr = now.toTimeString().slice(0, 5);
+      const session = {
+        id: Date.now(),
+        name: selectedCake,
+        time: timeStr,
+        date: dateStr,
+        timeSeconds: elapsedSeconds,
+        durationMinutes: Math.floor(elapsedSeconds / 60),
+        image: cakes[selectedCake].img,
+      };
+      sessionHistory.push(session);
+      localStorage.setItem("sessionHistory", JSON.stringify(sessionHistory));
+      renderSessionList();
+    }
+
+    function renderSessionList() {
+      cakeListEl.innerHTML = "";
+      if (!sessionHistory.length && rewardInventory.length === 0) {
+        const emptyMsg = document.createElement("p");
+        emptyMsg.className = "text-center text-gray-500 w-full";
+        emptyMsg.textContent = "Chưa có lịch sử tập trung hoặc phần thưởng nào.";
+        cakeListEl.appendChild(emptyMsg);
+        sessionInfoEl.textContent = "";
+        return;
+      }
+      // Show all rewardInventory items (with images, duplicates allowed)
+      rewardInventory.forEach(item => {
+        if (item.name === "Kem 1" || item.name === "Xanh lá") return;
+
+        const li = document.createElement("li");
+        li.className = "cursor-pointer rounded";
+        li.setAttribute("tabindex", "0");
+        li.setAttribute("role", "button");
+        li.setAttribute("aria-label", `Phần thưởng: ${item.name}, ngày nhận: ${item.date}, thời gian nhận: ${item.time}`);
+        li.dataset.name = item.name;
+        li.dataset.date = item.date;
+        li.dataset.time = item.time;
+
+        const img = document.createElement("img");
+        img.src = item.img;
+        img.alt = item.alt;
+        img.className = "w-16 h-16 object-contain rounded";
+        img.draggable = false;
+
+        li.appendChild(img);
+        cakeListEl.appendChild(li);
+
+        li.addEventListener("click", () => {
+          showSessionInfoByNameDateTime(item.name, item.date, item.time);
+        });
+        li.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            showSessionInfoByNameDateTime(item.name, item.date, item.time);
+          }
+        });
+      });
+      sessionInfoEl.textContent = "";
+    }
+
+    function showSessionInfoByNameDateTime(name, date, time) {
+      sessionInfoEl.textContent = `Phần thưởng: ${name} | Ngày nhận: ${date} | Thời gian nhận: ${time}`;
+    }
+
     function renderCakeMenu() {
+      const menuCakeList = document.getElementById("menu-cake-list");
       menuCakeList.innerHTML = "";
-      const uniqueCakes = Object.keys(cakes);
-      uniqueCakes.forEach((cakeName) => {
+      Object.keys(cakes).forEach(cakeName => {
+        if (cakeName.trim() === "bánh nướng bóng đêm") return; // Bỏ bánh nướng bóng đêm khỏi menu nếu muốn
         const cake = cakes[cakeName];
+
         const btn = document.createElement("button");
-        
         btn.type = "button";
         btn.className = "flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded";
         btn.setAttribute("data-cake", cakeName);
@@ -945,166 +983,6 @@ aria-hidden="true"
       });
     }
 
-    // Calendar rendering and interaction for statistics modal
-    function renderCalendar() {
-      calendarEl.innerHTML = "";
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth();
-
-      // Get first day of month and number of days
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-      const daysInMonth = lastDay.getDate();
-
-      // Weekday of first day (0=Sunday,...6=Saturday)
-      const startWeekday = firstDay.getDay();
-
-      // Days of week header
-      const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-      daysOfWeek.forEach(dow => {
-        const dowEl = document.createElement("div");
-        dowEl.textContent = dow;
-        dowEl.className = "font-semibold text-gray-600";
-        calendarEl.appendChild(dowEl);
-      });
-
-      // Fill empty cells before first day
-      for (let i = 0; i < startWeekday; i++) {
-        const emptyCell = document.createElement("div");
-        calendarEl.appendChild(emptyCell);
-      }
-
-      // Create day cells
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const dayCell = document.createElement("button");
-        dayCell.type = "button";
-        dayCell.textContent = day;
-        dayCell.className = "p-2 rounded hover:bg-[#9BBA74] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#9BBA74]";
-
-        // Check if there is any session on this date
-        const hasSession = sessionHistory.some(session => session.date.startsWith(dateStr));
-        if (hasSession) {
-          dayCell.classList.add("font-bold");
-        } else {
-          dayCell.classList.add("text-gray-400");
-        }
-
-        dayCell.addEventListener("click", () => {
-          showSummaryForDate(dateStr);
-        });
-
-        calendarEl.appendChild(dayCell);
-      }
-    }
-
-    // Show summary for selected date (only total time or "chưa có lịch sử")
-    function showSummaryForDate(dateStr) {
-      const sessions = sessionHistory.filter(session => session.date.startsWith(dateStr));
-      summaryDateEl.textContent = `${dateStr}`;
-      summaryContentEl.innerHTML = "";
-
-      if (sessions.length === 0) {
-        summaryContentEl.textContent = "Trống.";
-        return;
-      }
-
-      // Aggregate total time
-      let totalSeconds = 0;
-      sessions.forEach(session => {
-        totalSeconds += session.timeSeconds || 0;
-      });
-
-      // Total time display only
-      const totalTimeDiv = document.createElement("div");
-      totalTimeDiv.className = "text-center font-semibold text-lg";
-      totalTimeDiv.textContent = `Tổng thời gian : ${formatTime(totalSeconds)}`;
-      summaryContentEl.appendChild(totalTimeDiv);
-    }
-
-    // Calculate consecutive days of focus sessions with at least 1 minute duration
-    function calculateConsecutiveDays() {
-      if (!sessionHistory.length) return 0;
-      // Sort sessions by date ascending
-      const sortedSessions = [...sessionHistory].sort((a, b) => new Date(a.date) - new Date(b.date));
-      // Create a Set of dates (yyyy-mm-dd) with sessions >= 1 minute
-      const sessionDatesSet = new Set();
-      sortedSessions.forEach(s => {
-        if ((s.durationMinutes || 0) >= 1) {
-          sessionDatesSet.add(s.date.slice(0,10));
-        }
-      });
-      if (sessionDatesSet.size === 0) return 0;
-
-      // Get all dates in ascending order
-      const dates = Array.from(sessionDatesSet).sort();
-
-      // Calculate max consecutive days ending at today or before
-      // We'll check backwards from today or last session date
-      const today = new Date();
-      today.setHours(0,0,0,0);
-
-      // Find the latest date in sessionDatesSet
-      const lastDateStr = dates[dates.length -1];
-      const lastDate = new Date(lastDateStr);
-
-      // We want to count consecutive days backward from lastDate (or today if lastDate > today)
-      let count = 0;
-      let currentDate = lastDate > today ? today : lastDate;
-
-      while (true) {
-        const dateStr = currentDate.toISOString().slice(0,10);
-        if (sessionDatesSet.has(dateStr)) {
-          count++;
-          currentDate.setDate(currentDate.getDate() -1);
-        } else {
-          break;
-        }
-      }
-      return count;
-    }
-
-    // Update task progress bar and text
-    function updateTaskProgress() {
-      const consecutiveDays = calculateConsecutiveDays();
-      const maxDays = 7;
-      const percent = Math.min((consecutiveDays / maxDays) * 100, 100);
-      taskProgressBar.style.width = percent + "%";
-      taskProgressBar.setAttribute("aria-valuenow", consecutiveDays);
-      taskProgressText.textContent = `${consecutiveDays} / 7 ngày`;
-
-      // If completed, add reward if not already in inventory
-      if (consecutiveDays >= maxDays) {
-        const hasBearCake = rewardInventory.some(r => r.name === bearCakeReward.name);
-        if (!hasBearCake) {
-          rewardInventory.push(bearCakeReward);
-          localStorage.setItem("rewardInventory", JSON.stringify(rewardInventory));
-          // Show reward modal for bear cake
-          rewardContent.innerHTML = "";
-          const div = document.createElement("div");
-          div.className = "flex flex-col items-center space-y-1";
-          const img = document.createElement("img");
-          img.src = bearCakeReward.img;
-          img.alt = bearCakeReward.alt;
-          img.className = "w-24 h-24 object-contain";
-          img.draggable = false;
-          const span = document.createElement("span");
-          span.className = "text-gray-800 font-semibold text-center";
-          span.textContent = bearCakeReward.name;
-          div.appendChild(img);
-          div.appendChild(span);
-          rewardContent.appendChild(div);
-          const textLine = document.createElement("p");
-          textLine.className = "text-center font-semibold text-lg text-gray-900 mt-2";
-          textLine.textContent = `Chúc mừng! Bạn đã hoàn thành nhiệm vụ và nhận được ${bearCakeReward.name}.`;
-          rewardContent.appendChild(textLine);
-          rewardModal.classList.remove("hidden");
-        }
-      }
-    }
-
-    // Event Listeners
     inputHour.addEventListener("input", () => {
       if (inputHour.value.length > 2) inputHour.value = inputHour.value.slice(0, 2);
       updateStartButtonState();
@@ -1139,10 +1017,9 @@ aria-hidden="true"
       rewardModal.classList.add("hidden");
     });
 
-    // Feedback button opens the form with message prefilled and submits it
     feedbackBtn.addEventListener("click", () => {
       const message = prompt("Vui lòng nhập góp ý của bạn:");
-      if (message === null) return; // user cancelled
+      if (message === null) return;
       if (message.trim() === "") {
         alert("Vui lòng nhập nội dung góp ý.");
         return;
@@ -1151,16 +1028,9 @@ aria-hidden="true"
       feedbackForm.submit();
     });
 
-    // Nút chuyển trang
-    document.getElementById('btn-decoration').addEventListener('click', function() {
-      window.location.href = 'decorate.html';
-    });
-
     btnStatistics.addEventListener('click', () => {
-      if (isRunning) return; // disable while running
-      renderCalendar();
-      summaryDateEl.textContent = "Chọn một ngày để xem chi tiết";
-      summaryContentEl.innerHTML = "";
+      if (isRunning) return;
+      renderSessionList();
       statisticsModal.classList.remove("hidden");
     });
 
@@ -1169,7 +1039,7 @@ aria-hidden="true"
     });
 
     btnTasks.addEventListener('click', () => {
-      if (isRunning) return; // disable while running
+      if (isRunning) return;
       updateTaskProgress();
       tasksModal.classList.remove("hidden");
     });
@@ -1178,21 +1048,50 @@ aria-hidden="true"
       tasksModal.classList.add("hidden");
     });
 
-    // On load
-    // Khởi tạo sessionHistory nếu chưa có
+    function updateTaskProgress() {
+      const now = new Date();
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const count = sessionHistory.filter(s => {
+        const sessionDate = new Date(s.date);
+        return sessionDate >= sevenDaysAgo && s.durationMinutes >= 10;
+      }).length;
+      const progress = Math.min(count, 7);
+      taskProgressBar.style.width = (progress / 7) * 100 + "%";
+      taskProgressBar.setAttribute("aria-valuenow", progress);
+      taskProgressText.textContent = `${progress} / 7 ngày`;
+    }
+
     if (!localStorage.getItem('sessionHistory')) {
       localStorage.setItem('sessionHistory', JSON.stringify([]));
     }
 
-    // Khi load trang
     window.addEventListener("load", () => {
       updateCakeDisplay();
       updateStartButtonState();
       renderCakeMenu();
       updateLoginButtonUI();
-      initializeGoogleSignIn();
+      renderRewardInventory();
       timeProgressBar.style.width = "100%";
+      initializeGoogleSignIn();
     });
+
+    function renderRewardInventory() {
+      renderSessionList();
+    } 
+
+    // JWT parse helper
+    function parseJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch {
+        return {};
+      }
+    }
   </script>
 </body>
 </html>
