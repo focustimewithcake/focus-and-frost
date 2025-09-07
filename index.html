@@ -983,7 +983,7 @@
         li.className = "cursor-pointer rounded";
         li.setAttribute("tabindex", "0");
         li.setAttribute("role", "button");
-        li.setAttribute("aria-label", `${item.name}, ngày: ${item.date}, thời gian nhận: ${item.time}, thời lượng: ${item.duration} phút`);
+        li.setAttribute("aria-label", `${item.name}, ngày: ${item.date}, thời gian nhận: ${item.time}, thời lượng: ${item.durationMinutes} phút`);
         li.dataset.name = item.name;
         li.dataset.date = item.date;
         li.dataset.time = item.time;
@@ -1012,7 +1012,7 @@
     }
 
     function showSessionInfoByNameDateTime(name, date, time, duration) {
-      sessionInfoEl.textContent = `Phần thưởng: ${name} | Ngày: ${date} | ${time} | thời lượng: ${duration}phút` ;
+      sessionInfoEl.textContent = `Phần thưởng: ${name} | Ngày: ${date} | ${time} | thời lượng: ${durationMinutes}phút` ;
     }
 
     function renderCakeMenu() {
