@@ -983,10 +983,11 @@
         li.className = "cursor-pointer rounded";
         li.setAttribute("tabindex", "0");
         li.setAttribute("role", "button");
-        li.setAttribute("aria-label", `Phần thưởng: ${item.name}, ngày nhận: ${item.date}, thời gian nhận: ${item.time}`);
+        li.setAttribute("aria-label", `${item.name}, ngày: ${item.date}, thời gian nhận: ${item.time}, thời lượng: ${item.duration} phút`);
         li.dataset.name = item.name;
         li.dataset.date = item.date;
         li.dataset.time = item.time;
+        li.dataset.time = item.duration;
 
         const img = document.createElement("img");
         img.src = item.img;
@@ -998,20 +999,20 @@
         cakeListEl.appendChild(li);
 
         li.addEventListener("click", () => {
-          showSessionInfoByNameDateTime(item.name, item.date, item.time);
+          showSessionInfoByNameDateTime(item.name, item.date, item.time, item.durationMinutes);
         });
         li.addEventListener("keydown", (e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            showSessionInfoByNameDateTime(item.name, item.date, item.time);
+            showSessionInfoByNameDateTime(item.name, item.date, item.time, item.durationMinutes);
           }
         });
       });
       sessionInfoEl.textContent = "";
     }
 
-    function showSessionInfoByNameDateTime(name, date, time) {
-      sessionInfoEl.textContent = `Phần thưởng: ${name} | Ngày nhận: ${date} | Thời gian nhận: ${time}`;
+    function showSessionInfoByNameDateTime(name, date, time, duration) {
+      sessionInfoEl.textContent = `Phần thưởng: ${name} | Ngày: ${date} | ${time} | thời lượng: ${duration}phút` ;
     }
 
     function renderCakeMenu() {
