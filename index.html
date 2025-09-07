@@ -297,7 +297,18 @@
     aria-label="Menu chọn món ăn"
   >
     <div id="menu-cake-list" class="flex flex-wrap justify-center gap-4 p-4">
-      <!-- Các nút chọn bánh sẽ được JavaScript tạo động ở đây -->
+      <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="Macaron" aria-label="Chọn món Macaron">
+        <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-14 h-14 object-contain" draggable="false" />
+        <span class="text-sm font-semibold text-gray-700">Macaron</span>
+      </button>
+      <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="bánh mâm xôi" aria-label="Chọn món bánh mâm xôi">
+        <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-14 h-14 object-contain" draggable="false" />
+        <span class="text-sm font-semibold text-gray-700">bánh mâm xôi</span>
+      </button>
+      <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="bánh cherry" aria-label="Chọn món bánh cherry">
+        <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png" alt="Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng" class="w-14 h-14 object-contain" draggable="false" />
+        <span class="text-sm font-semibold text-gray-700">bánh cherry</span>
+      </button>
     </div>
   </div>
 
@@ -356,6 +367,51 @@
         Lịch sử
       </h2>
       <ul id="cake-list" tabindex="0" aria-label="lịch sử tập trung">
+        <li tabindex="0" role="button" aria-label="Phần thưởng: Macaron, ngày nhận: 2024-06-01, thời gian nhận: 08:30" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh mâm xôi, ngày nhận: 2024-06-02, thời gian nhận: 09:15" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh cherry, ngày nhận: 2024-06-03, thời gian nhận: 10:45" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png" alt="Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh nướng bóng đêm, ngày nhận: 2024-06-04, thời gian nhận: 11:20" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/037F53D1-AC5D-4165-BD08-FEFF3F39FD7D.png" alt="Hình ảnh bánh bị cháy đen, bánh tròn, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: Macaron, ngày nhận: 2024-06-05, thời gian nhận: 12:00" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh mâm xôi, ngày nhận: 2024-06-06, thời gian nhận: 13:30" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh cherry, ngày nhận: 2024-06-07, thời gian nhận: 14:45" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png" alt="Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh nướng bóng đêm, ngày nhận: 2024-06-08, thời gian nhận: 15:20" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/037F53D1-AC5D-4165-BD08-FEFF3F39FD7D.png" alt="Hình ảnh bánh bị cháy đen, bánh tròn, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: Macaron, ngày nhận: 2024-06-09, thời gian nhận: 16:00" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh mâm xôi, ngày nhận: 2024-06-10, thời gian nhận: 17:30" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh cherry, ngày nhận: 2024-06-11, thời gian nhận: 18:45" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png" alt="Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh nướng bóng đêm, ngày nhận: 2024-06-12, thời gian nhận: 19:20" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/037F53D1-AC5D-4165-BD08-FEFF3F39FD7D.png" alt="Hình ảnh bánh bị cháy đen, bánh tròn, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: Macaron, ngày nhận: 2024-06-13, thời gian nhận: 20:00" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh mâm xôi, ngày nhận: 2024-06-14, thời gian nhận: 21:30" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
+        <li tabindex="0" role="button" aria-label="Phần thưởng: bánh cherry, ngày nhận: 2024-06-15, thời gian nhận: 22:45" class="cursor-pointer rounded">
+          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png" alt="Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
+        </li>
       </ul>
       <div id="session-info" class="mt-4 p-4 bg-gray-100 rounded-lg text-center text-gray-700 min-h-[4rem] select-none" aria-live="polite" aria-atomic="true"></div>
       <button
@@ -436,13 +492,25 @@
     </p>
     <ul class="list-disc list-inside space-y-2 text-gray-600">
       <li>1.Sau khi bắt đầu tập trung, không thể thay đổi thời gian.</li>
-      <li>2.Cần tập trung từ 5 phút trở lên: nhận được bánh đã chọn.</li>
+      <li>2.Cần tập trung từ 3 phút trở lên: nhận được bánh phần thưởng.</li>
       <li>3. nếu có góp ý hay thắc mắc nào hãy bấm vào nút bên góc trái </li>
-      <li>4.Hãy sử dụng Chrome hoặc Safari để có trải nghiệm tốt nhất </li>
-    </ul>
+      </ul>
+    <button
+      id="infoImageBtn"
+      type="button"
+      aria-label="Nút dẫn tới https/123"
+      class="mt-6 mx-auto block focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded"
+      onclick="window.location.href= “https://s.shopee.vn/3qDWJAWA4X”  >
+      <img
+        src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/4fb2c5e6beca14572e1804fba69eed7455380768/01483ACC-E2E7-46D0-B15C-35BB9D41E3C4.png"
+        alt="Nút bấm hình ảnh bánh ngọt màu pastel, hình tròn, nền trắng"
+        class="w-40 h-40 object-contain"
+        draggable="false"
+      />
+    </button>
     <button
       id="closeInfoBtn"
-      class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
+      class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto block focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
       type="button"
     >
       Đóng
