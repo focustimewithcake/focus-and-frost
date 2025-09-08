@@ -89,15 +89,15 @@
 
   <!-- Header with Google Login / Logout Button -->
   <header class="w-full flex justify-end p-4 max-w-screen-md">
+    <div id="googleSignInButton" class="w-10 h-10"></div>
     <button
-      id="googleLoginBtn"
-      aria-label="Đăng nhập hoặc đăng xuất tài khoản Google"
-      class="flex items-center justify-center w-10 h-10 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] text-white font-semibold shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
+      id="googleLogoutBtn"
+      aria-label="Đăng xuất tài khoản Google"
+      class="hidden flex items-center justify-center w-10 h-10 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] text-white font-semibold shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
       type="button"
-      title="Đăng nhập hoặc đăng xuất"
+      title="Đăng xuất tài khoản Google"
     >
-      <span id="loginIcon" class="text-lg font-bold select-none">G</span>
-      <i id="logoutIcon" class="fas fa-arrow-right hidden"></i>
+      <i class="fas fa-arrow-right"></i>
     </button>
   </header>
 
@@ -418,7 +418,80 @@
 
   <audio id="background-music" loop preload="auto" src="https://github.com/thuyvannnnnn/Focus-and-frost/raw/refs/heads/main/45.audio.mp3"></audio>
 
+  <!-- Script Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client"></script>
 
+  <script>
+    let googleUser  = JSON.parse(localStorage.getItem("googleuser")) || null;
+
+    const googleSignInButton = document.getElementById("googleSignInButton");
+    const googleLogoutBtn = document.getElementById("googleLogoutBtn");
+
+    function updateLoginButtonUI() {
+      if (googleUser ) {
+        googleSignInButton.style.display = "none";
+        googleLogoutBtn.style.display = "flex";
+        googleLogoutBtn.title = "Đăng xuất tài khoản Google";
+      } else {
+        googleSignInButton.style.display = "block";
+        googleLogoutBtn.style.display = "none";
+      }
+    }
+
+    function initializeGoogleSignIn() {
+      google.accounts.id.initialize({
+        client_id: "854945467513-gvec4958ef17nqjsoauvk9dcqinceeel.apps.googleusercontent.com",
+        callback: handleCredentialResponse,
+        auto_select: false,
+        cancel_on_tap_outside: false
+      });
+      google.accounts.id.renderButton(
+        googleSignInButton,
+        { theme: "filled_green", size: "small", width: 40, height: 40 }
+      );
+    }
+
+    function handleCredentialResponse(response) {
+      const data = parseJwt(response.credential);
+      googleUser  = {
+        id: data.sub,
+        name: data.name,
+        email: data.email,
+        picture: data.picture
+      };
+      localStorage.setItem("googleuser", JSON.stringify(googleUser ));
+      updateLoginButtonUI();
+      alert("Bạn đã đăng nhập thành công: " + googleUser .name);
+    }
+
+    googleLogoutBtn.addEventListener("click", () => {
+      if (confirm("Bạn có muốn đăng xuất không?")) {
+        googleUser  = null;
+        localStorage.removeItem("googleuser");
+        updateLoginButtonUI();
+        alert("Bạn đã đăng xuất.");
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      updateLoginButtonUI();
+      initializeGoogleSignIn();
+    });
+
+    // Hàm parse JWT giữ nguyên
+    function parseJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch {
+        return {};
+      }
+    }
+  </script>
 
   <script>
     // Remove cakeinventory, plateinventory, decorinventory from localStorage on load
@@ -459,7 +532,6 @@
     let elapsedSeconds = 0; // time already counted before pause
     let rewardInventory = JSON.parse(localStorage.getItem("rewardInventory")) || [];
     let sessionHistory = JSON.parse(localStorage.getItem("sessionHistory")) || [];
-    let googleUser = JSON.parse(localStorage.getItem("googleuser")) || null;
 
     // Elements
     const cakeImageEl = document.getElementById("cake-image");
@@ -488,17 +560,6 @@
     const cakeListEl = document.getElementById("cake-list");
     const sessionInfoEl = document.getElementById("session-info");
     const btnStatistics = document.getElementById("btn-statistics");
-
-  
-    // Login/logout button elements
-    const googleLoginBtn = document.getElementById("googleLoginBtn");
-    const loginIcon = document.getElementById("loginIcon");
-    const logoutIcon = document.getElementById("logoutIcon");
-
-    // Logout confirmation modal elements
-    const logoutConfirmModal = document.getElementById("logout-confirm-modal");
-    const logoutYesBtn = document.getElementById("logout-yes-btn");
-    const logoutNoBtn = document.getElementById("logout-no-btn");
 
     // Info panel elements
     const infoToggleBtn = document.getElementById("infoToggleBtn");
@@ -530,86 +591,6 @@
     closeInfoBtn.addEventListener("click", closePanel);
 
     overlay.addEventListener("click", closePanel);
-
-    // Update login/logout button UI based on login state
-    function updateLoginButtonUI() {
-      if (googleUser) {
-        loginIcon.classList.add("hidden");
-        logoutIcon.classList.remove("hidden");
-        googleLoginBtn.title = "Đăng xuất tài khoản Google";
-      } else {
-        loginIcon.classList.remove("hidden");
-        logoutIcon.classList.add("hidden");
-        googleLoginBtn.title = "Đăng nhập bằng tài khoản Google";
-      }
-    }
-
-    // Initialize Google Sign-In
-    function initializeGoogleSignIn() {
-      google.accounts.id.initialize({
-        client_id: "854945467513-gvec4958ef17nqjsoauvk9dcqinceeel.apps.googleusercontent.com",
-        callback: handleCredentialResponse,
-        auto_select: false,
-        cancel_on_tap_outside: false
-      });
-    }
-
-    // Handle Google Sign-In response
-    function handleCredentialResponse(response) {
-      const data = parseJwt(response.credential);
-      googleUser = {
-        id: data.sub,
-        name: data.name,
-        email: data.email,
-        picture: data.picture
-      };
-      localStorage.setItem("googleuser", JSON.stringify(googleUser));
-      updateLoginButtonUI();
-      alert("Bạn đã đăng nhập thành công: " + googleUser.name);
-    }
-
-    // Show logout confirmation modal
-    function showLogoutConfirm() {
-      logoutConfirmModal.classList.remove("hidden");
-      overlay.classList.remove("hidden");
-    }
-
-    // Hide logout confirmation modal
-    function hideLogoutConfirm() {
-      logoutConfirmModal.classList.add("hidden");
-      overlay.classList.add("hidden");
-    }
-
-    // Event listeners for login/logout button
-    googleLoginBtn.addEventListener("click", () => {
-      if (googleUser) {
-        showLogoutConfirm();
-      } else {
-        google.accounts.id.prompt();
-      }
-    });
-
-    logoutYesBtn.addEventListener("click", () => {
-      googleUser = null;
-      localStorage.removeItem("googleuser");
-      updateLoginButtonUI();
-      hideLogoutConfirm();
-      alert("Bạn đã đăng xuất.");
-    });
-
-    logoutNoBtn.addEventListener("click", () => {
-      hideLogoutConfirm();
-    });
-
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        if (!rewardModal.classList.contains("hidden")) rewardModal.classList.add("hidden");
-        if (!menuSelectCake.classList.contains("hidden")) menuSelectCake.classList.add("hidden");
-        if (!statisticsModal.classList.contains("hidden")) statisticsModal.classList.add("hidden");
-              if (!logoutConfirmModal.classList.contains("hidden")) hideLogoutConfirm();
-        if (!infoPanel.classList.contains("scale-0")) closePanel();
-      }
-    });
 
     function updateCakeDisplay() {
       const cake = cakes[selectedCake];
@@ -998,7 +979,6 @@
       statisticsModal.classList.add("hidden");
     });
 
-      
     if (!localStorage.getItem('sessionHistory')) {
       localStorage.setItem('sessionHistory', JSON.stringify([]));
     }
@@ -1007,29 +987,9 @@
       updateCakeDisplay();
       updateStartButtonState();
       renderCakeMenu();
-      updateLoginButtonUI();
-      renderRewardInventory();
       timeProgressBar.style.width = "100%";
-      initializeGoogleSignIn();
     });
-
-    function renderRewardInventory() {
-      renderSessionList();
-    } 
-
-    // JWT parse helper
-    function parseJwt(token) {
-      try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-      } catch {
-        return {};
-      }
-    }
   </script>
 </body>
 </html>
+
