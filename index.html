@@ -210,20 +210,7 @@
         Bắt đầu
       </button>
 
-      <!-- Right side buttons -->
-      <div class="flex space-x-4">
-        <button
-          id="btn-tasks"
-          aria-label="Nhiệm vụ"
-          class="w-11 h-11 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
-          type="button"
-        >
-          <i class="fas fa-tasks text-lg"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Hidden feedback form for submission -->
+       <!-- Hidden feedback form for submission -->
     <form
       id="feedback-form"
       action="https://formspree.io/f/mzzvylbg"
@@ -424,57 +411,7 @@
     </div>
   </div>
 
-  <!-- Tasks modal -->
-  <div
-    id="tasks-modal"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="tasks-title"
-  >
-    <div
-      class="bg-white rounded-lg max-w-md w-full p-6 flex flex-col space-y-6 shadow-lg"
-    >
-      <h2
-        id="tasks-title"
-        class="text-2xl font-semibold text-gray-800 text-center"
-      >
-        Nhiệm vụ tích lũy 7 ngày tập trung liên tục
-      </h2>
-      <div class="flex flex-col items-center space-y-4">
-        <img
-          src="https://i.ibb.co/JjHyk2vX/2316-CFE1-22-EA-4632-9307-73-B7-AE643-FB8.png"
-          alt="Hình ảnh bánh gấu màu nâu vàng, bánh ngọt tròn với khuôn mặt gấu dễ thương, nền trắng"
-          class="w-40 h-40 object-contain"
-          draggable="false"
-        />
-        <p class="text-center text-gray-700 text-lg max-w-xs">
-          Hoàn thành tích lũy 7 ngày tập trung liên tục để nhận được bánh gấu!
-        </p>
-        <div class="w-full max-w-xs bg-gray-200 rounded-full h-6 overflow-hidden">
-          <div
-            id="task-progress-bar"
-            class="h-6 bg-[#9BBA74] transition-all duration-500"
-            style="width: 0%;"
-            aria-valuemin="0"
-            aria-valuemax="7"
-            aria-valuenow="0"
-            role="progressbar"
-            aria-label="Tiến độ nhiệm vụ "
-          ></div>
-        </div>
-        <p id="task-progress-text" class="text-center font-semibold text-gray-800 text-lg select-none">0 / 7 ngày</p>
-      </div>
-      <button
-        id="tasks-close"
-        class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
-        type="button"
-      >
-        Đóng
-      </button>
-    </div>
-  </div>
-  <!-- Overlay -->
+               <!-- Overlay -->
   <div
     id="overlay"
     class="fixed inset-0 bg-black bg-opacity-40 hidden z-40"
@@ -591,13 +528,7 @@
     const sessionInfoEl = document.getElementById("session-info");
     const btnStatistics = document.getElementById("btn-statistics");
 
-    // Tasks modal elements
-    const tasksModal = document.getElementById("tasks-modal");
-    const tasksCloseBtn = document.getElementById("tasks-close");
-    const btnTasks = document.getElementById("btn-tasks");
-    const taskProgressBar = document.getElementById("task-progress-bar");
-    const taskProgressText = document.getElementById("task-progress-text");
-
+  
     // Login/logout button elements
     const googleLoginBtn = document.getElementById("googleLoginBtn");
     const loginIcon = document.getElementById("loginIcon");
@@ -714,8 +645,7 @@
         if (!rewardModal.classList.contains("hidden")) rewardModal.classList.add("hidden");
         if (!menuSelectCake.classList.contains("hidden")) menuSelectCake.classList.add("hidden");
         if (!statisticsModal.classList.contains("hidden")) statisticsModal.classList.add("hidden");
-        if (!tasksModal.classList.contains("hidden")) tasksModal.classList.add("hidden");
-        if (!logoutConfirmModal.classList.contains("hidden")) hideLogoutConfirm();
+              if (!logoutConfirmModal.classList.contains("hidden")) hideLogoutConfirm();
         if (!infoPanel.classList.contains("scale-0")) closePanel();
       }
     });
@@ -857,9 +787,7 @@
       inputSecond.disabled = disable;
       circleCakeBtn.disabled = disable;
       document.getElementById("btn-statistics").disabled = disable;
-      document.getElementById("btn-tasks").disabled = disable;
-    }
-
+      
     function showReward(elapsed) {
       const timeMinutes = elapsed / 60;
       let rewards = [];
@@ -1109,29 +1037,7 @@
       statisticsModal.classList.add("hidden");
     });
 
-    btnTasks.addEventListener('click', () => {
-      if (isRunning) return;
-      updateTaskProgress();
-      tasksModal.classList.remove("hidden");
-    });
-
-    tasksCloseBtn.addEventListener('click', () => {
-      tasksModal.classList.add("hidden");
-    });
-
-    function updateTaskProgress() {
-      const now = new Date();
-      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const count = sessionHistory.filter(s => {
-        const sessionDate = new Date(s.date);
-        return sessionDate >= sevenDaysAgo && s.durationMinutes >= 10;
-      }).length;
-      const progress = Math.min(count, 7);
-      taskProgressBar.style.width = (progress / 7) * 100 + "%";
-      taskProgressBar.setAttribute("aria-valuenow", progress);
-      taskProgressText.textContent = `${progress} / 7 ngày`;
-    }
-
+      
     if (!localStorage.getItem('sessionHistory')) {
       localStorage.setItem('sessionHistory', JSON.stringify([]));
     }
