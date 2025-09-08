@@ -418,10 +418,12 @@
 
   <audio id="background-music" loop preload="auto" src="https://github.com/thuyvannnnnn/Focus-and-frost/raw/refs/heads/main/45.audio.mp3"></audio>
 
+ <script>
   window.addEventListener("load", () => {
-  initializeGoogleSignIn();
-  google.accounts.id.prompt(); // gọi sớm để Google chuẩn bị
-});
+    initializeGoogleSignIn();
+    google.accounts.id.prompt(); // gọi sớm để Google chuẩn bị
+  });
+</script>
 
   <script>
     // Remove cakeinventory, plateinventory, decorinventory from localStorage on load
