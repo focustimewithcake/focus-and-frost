@@ -544,31 +544,25 @@
     }
 
     // Event listeners for login/logout button
-    if(googleLoginBtn){
-      googleLoginBtn.addEventListener("click", () => {
-        if (googleUser) {
-          showLogoutConfirm();
-        } else {
-          google.accounts.id.prompt();
-        }
-      });
-    }
+    googleLoginBtn.addEventListener("click", () => {
+      if (googleUser) {
+        showLogoutConfirm();
+      } else {
+        google.accounts.id.prompt();
+      }
+    });
 
-    if(logoutYesBtn){
-      logoutYesBtn.addEventListener("click", () => {
-        googleUser = null;
-        localStorage.removeItem("googleuser");
-        updateLoginButtonUI();
-        hideLogoutConfirm();
-        alert("Bạn đã đăng xuất.");
-      });
-    }
+    logoutYesBtn.addEventListener("click", () => {
+      googleUser = null;
+      localStorage.removeItem("googleuser");
+      updateLoginButtonUI();
+      hideLogoutConfirm();
+      alert("Bạn đã đăng xuất.");
+    });
 
-    if(logoutNoBtn){
-      logoutNoBtn.addEventListener("click", () => {
-        hideLogoutConfirm();
-      });
-    }
+    logoutNoBtn.addEventListener("click", () => {
+      hideLogoutConfirm();
+    });
 
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
@@ -1002,3 +996,4 @@
   </script>
 </body>
 </html>
+
