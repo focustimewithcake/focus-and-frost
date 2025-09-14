@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Trang-chủ - Ứng dụng tập trung</title>
   <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 
   <link
@@ -32,7 +32,7 @@
       background-color: #9bba74;
       border-radius: 3px;
     }
-  /* Statistics modal content: no grid, just images in a row wrapping naturally */
+    /* Statistics modal content: no grid, just images in a row wrapping naturally */
 #cake-list {
   list-style: none;
   padding: 0;
@@ -154,9 +154,11 @@
     <button
       id="googleLogoutBtn"
       aria-label="Đăng xuất tài khoản Google"
-      class="hidden flex items-center justify-center w-10 h-10 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] text-white font-semibold shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
+      class="fixed top-4 right-4 z-50 flex items-center justify-center w-10 h-10 
+         rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] text-white font-semibold shadow 
+         focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
       type="button"
-      title="Đăng xuất tài khoản Google"
+      title="Đăng xuất"
     >
       <i class="fas fa-arrow-right"></i>
     </button>
@@ -308,12 +310,11 @@
   <button
     id="infoToggleBtn"
     aria-label="Toggle information panel"
-    class="absolute top-4 left-4 
-           p-3 bg-green-600 text-white rounded-full shadow-md 
-           hover:bg-green-700 bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-green-400 
-           flex items-center justify-center w-12 h-12"
+    class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-10 h-10 flex items-center justify-center 
+         rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] text-white shadow"
   >
     <i class="fas fa-question text-lg"></i>
+?
   </button>
 
   <!-- Logout Confirmation Modal -->
@@ -412,7 +413,6 @@
     </div>
   </div>
 
-
   <!-- Statistics modal with scrollable images -->
 <div
   id="statistics-modal"
@@ -436,8 +436,7 @@
     <div id="reward-view" class="visible">
       <ul id="cake-list" tabindex="0" aria-label="lịch sử tập trung">
         <li tabindex="0" role="button" aria-label="Phần thưởng: bánh mâm xôi, ngày nhận: 2024-06-14, thời gian nhận: 21:30, thời lượng: 18 phút" class="cursor-pointer rounded">
-          <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
-        </li>
+               </li>
         <li tabindex="0" role="button" aria-label="Phần thưởng: bánh cherry, ngày nhận: 2024-06-15, thời gian nhận: 22:45, thời lượng: 22 phút" class="cursor-pointer rounded">
           <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png" alt="Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
         </li>
@@ -449,77 +448,70 @@
       <canvas id="stats-chart" width="300" height="200"></canvas>
     </div>
       <script>
-  // Ví dụ dữ liệu giả lập: danh sách các phiên tập trung
-  const sessions = [
-    { date: "2024-06-14", durationMinutes: 18 },
-    { date: "2024-06-15", durationMinutes: 22 },
-    { date: "2024-06-20", durationMinutes: 40 },
-    { date: "2024-07-01", durationMinutes: 30 },
-    { date: "2024-07-05", durationMinutes: 15 },
-    { date: "2024-07-10", durationMinutes: 45 },
-    { date: "2024-07-15", durationMinutes: 25 }
-  ];
+// Lấy dữ liệu từ localStorage
+const sessionHistory = JSON.parse(localStorage.getItem("sessionHistory")) || [];
 
-  // Gom tổng thời gian theo tháng
-  const monthlyData = {};
-  sessions.forEach(s => {
-    const month = s.date.slice(0, 7); // YYYY-MM
-    monthlyData[month] = (monthlyData[month] || 0) + s.durationMinutes;
-  });
+// Gom tổng thời gian theo tháng
+const monthlyData = {};
+sessionHistory.forEach(s => {
+  const month = s.date.slice(0, 7); // YYYY-MM
+  // Nếu bạn lưu score thì cộng score, nếu lưu durationMinutes thì cộng durationMinutes
+  const value = s.durationMinutes ?? s.score ?? 0;
+  monthlyData[month] = (monthlyData[month] || 0) + value;
+});
 
-  const labels = Object.keys(monthlyData);
-  const data = Object.values(monthlyData);
+const labels = Object.keys(monthlyData);
+const data = Object.values(monthlyData);
 
-  // Tạo biểu đồ
-  const ctx = document.getElementById("stats-chart").getContext("2d");
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: "Tổng thời gian tập trung (phút)",
-          data: data,
-          backgroundColor: "rgba(255, 105, 180, 0.7)", // hồng pastel
-          borderColor: "rgba(255, 105, 180, 1)",
-          borderWidth: 1,
-          borderRadius: 6
+// Tạo biểu đồ
+const ctx = document.getElementById("stats-chart").getContext("2d");
+new Chart(ctx, {
+  type: "bar",
+  data: {
+    labels: labels,
+    datasets: [
+      {
+        label: "Tổng thời gian tập trung (phút)",
+        data: data,
+        backgroundColor: "rgba(255, 105, 180, 0.7)", // hồng pastel
+        borderColor: "rgba(255, 105, 180, 1)",
+        borderWidth: 1,
+        borderRadius: 6
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => context.raw + " phút"
         }
-      ]
+      }
     },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          callbacks: {
-            label: (context) => context.raw + " phút"
-          }
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Phút"
         }
       },
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: "Phút"
-          }
-        },
-        x: {
-          title: {
-            display: true,
-            text: "Tháng"
-          }
+      x: {
+        title: {
+          display: true,
+          text: "Tháng"
         }
       }
     }
-  });
+  }
+});
 </script>
 
-    
-    <!-- Thông tin phiên -->
+ <!-- Thông tin phiên -->
     <div id="session-info" class="mt-4 p-4 bg-gray-100 rounded-lg text-center text-gray-700 min-h-[4rem] select-none" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Nút đóng -->
@@ -532,10 +524,7 @@
     </button>
   </div>
 </div>
-   
 
-
-    
 
                <!-- Overlay -->
   <div
@@ -587,6 +576,31 @@
   <script src="https://accounts.google.com/gsi/client"></script>
 
   <script>
+
+ const btnReward = document.getElementById("btn-reward");
+const btnChart = document.getElementById("btn-chart");
+const rewardView = document.getElementById("reward-view");
+const chartView = document.getElementById("chart-view");
+
+function switchTab(tab) {
+  if (tab === "reward") {
+    rewardView.classList.remove("hidden");
+    chartView.classList.add("hidden");
+    btnReward.classList.add("active");
+    btnChart.classList.remove("active");
+  } else {
+    chartView.classList.remove("hidden");
+    rewardView.classList.add("hidden");
+    btnChart.classList.add("active");
+    btnReward.classList.remove("active");
+  }
+}
+
+btnReward.addEventListener("click", () => switchTab("reward"));
+btnChart.addEventListener("click", () => switchTab("chart"));
+
+
+
     let googleUser  = JSON.parse(localStorage.getItem("googleuser")) || null;
 
     const googleSignInButton = document.getElementById("googleSignInButton");
@@ -905,8 +919,6 @@
       circleCakeBtn.disabled = disable;
       document.getElementById("btn-statistics").disabled = disable;
     } 
-
-
     function showReward(elapsed) {
       const timeMinutes = elapsed / 60;
       let rewards = [];
@@ -1024,11 +1036,9 @@
         sessionInfoEl.textContent = "";
         return;
       }
-
-
       // Show all rewardInventory items (with images, duplicates allowed)
       rewardInventory.forEach(item => {
-        if (item.name === "banh" || item.name === "Xanh lá") return;
+        if (item.name === "Kem 1" || item.name === "Xanh lá") return;
 
         const li = document.createElement("li");
         li.className = "cursor-pointer rounded";
@@ -1063,7 +1073,7 @@
     }
 
     function showSessionInfoByNameDateTime(name, date, time, duration) {
-      sessionInfoEl.textContent = `Phần thưởng: ${name} | Ngày: ${date} | ${time} | Thời lượng: ${duration} phút` ;
+      sessionInfoEl.textContent = ` ${name} | Ngày: ${date} | ${time} | Thời lượng: ${duration} phút` ;
     }
 
       function renderCakeMenu() {
@@ -1180,29 +1190,6 @@
       renderSessionList();
     } 
 
-const btnReward = document.getElementById("btn-reward");
-const btnChart = document.getElementById("btn-chart");
-const rewardView = document.getElementById("reward-view");
-const chartView = document.getElementById("chart-view");
-
-function switchTab(tab) {
-  if (tab === "reward") {
-    rewardView.classList.remove("hidden");
-    chartView.classList.add("hidden");
-    btnReward.classList.add("active");
-    btnChart.classList.remove("active");
-  } else {
-    chartView.classList.remove("hidden");
-    rewardView.classList.add("hidden");
-    btnChart.classList.add("active");
-    btnReward.classList.remove("active");
-  }
-}
-
-btnReward.addEventListener("click", () => switchTab("reward"));
-btnChart.addEventListener("click", () => switchTab("chart"));
-
-
     // JWT parse helper
     function parseJwt(token) {
       try {
@@ -1220,4 +1207,3 @@ btnChart.addEventListener("click", () => switchTab("chart"));
   </script>
 </body>
 </html>
-
