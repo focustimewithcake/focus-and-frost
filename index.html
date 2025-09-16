@@ -1,36 +1,30 @@
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Trang-chủ - Ứng dụng tập trung</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus and Frost - Ứng dụng tập trung</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f3e8;
+        }
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: #9bba74;
+            border-radius: 3px;
+        }
 
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
-    rel="stylesheet"
-  />
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f0f3e8;
-    }
-    /* Scrollbar for menu */
-    .scrollbar-thin::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    .scrollbar-thin::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .scrollbar-thin::-webkit-scrollbar-thumb {
-      background-color: #9bba74;
-      border-radius: 3px;
-    }
-    /* Statistics modal content: no grid, just images in a row wrapping naturally */
+  /* statistics-reward modal content: no grid, just images in a row wrapping naturally */
     #cake-list {
       list-style: none;
       padding: 0;
@@ -78,315 +72,250 @@
         height: 48px;
       }
     }
-    /* Custom styles for Google SignIn button container */
-    #googleSignInButton {
-      position: relative;
-      left: -15%;
-      width: 10rem !important; /* override width to accommodate bigger button */
-      height: 2.5rem !important; /* override height */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    /* Avatar style */
-    #userAvatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 9999px;
-      object-fit: cover;
-      cursor: pointer;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
-      transition: transform 0.2s ease;
-    }
-    #userAvatar:hover, #userAvatar:focus {
-      transform: scale(1.1);
-      outline: none;
-      box-shadow: 0 0 8px rgba(0,0,0,0.4);
-    }
-  </style>
+
+        #googleSignInButton {
+            position: relative;
+            left: -15%;
+            width: 10rem !important;
+            height: 2.5rem !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #userAvatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            object-fit: cover;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+        #userAvatar:hover, #userAvatar:focus {
+            transform: scale(1.1);
+            outline: none;
+            box-shadow: 0 0 8px rgba(0,0,0,0.4);
+        }
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+        .chart-wrapper {
+            position: relative;
+            height: 100%;
+            min-width: 600px; /* Đảm bảo biểu đồ đủ rộng để scroll */
+        }
+        .chart-bar {
+            position: absolute;
+            bottom: 30px; /* Dành chỗ cho trục x */
+            background-color: #9BBA74;
+            width: 30px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            transition: height 0.5s ease;
+            cursor: pointer;
+        }
+        .chart-bar:hover {
+            background-color: #8aa85a;
+        }
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            text-align: center;
+            width: 30px;
+            font-size: 12px;
+        }
+        .chart-value {
+            position: absolute;
+            top: -20px;
+            text-align: center;
+            width: 30px;
+            font-size: 11px;
+        }
+        .y-axis {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+        .y-tick {
+            font-size: 10px;
+            color: #666;
+            text-align: right;
+            padding-right: 5px;
+        }
+        .x-axis {
+            position: absolute;
+            bottom: 0;
+            left: 30px;
+            width: calc(100% - 30px);
+            height: 20px;
+            border-top: 1px solid #ccc;
+        }
+        .stat-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #9BBA74;
+        }
+        .stat-tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-weight: bold;
+            color: #666;
+        }
+        .stat-tab.active {
+            color: #9BBA74;
+            border-bottom: 3px solid #9BBA74;
+        }
+        .monthly-stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .monthly-stats h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #4a5568;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background-color: #edf2f7;
+            border-radius: 6px;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        .stat-label {
+            font-size: 0.875rem;
+            color: #718096;
+        }
+        #btn-start-stop {
+            transition: all 0.3s ease;
+        }
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 100;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body class="relative min-h-screen flex flex-col items-center bg-[#f0f3e8]">
-  <!-- Background Image -->
-  <img
-    src="https://i.ibb.co/JRr5YSFS/66-F84-D93-7422-4-D12-AD64-8-B3103-E20-BD3.png"
-    alt="Background with soft green and beige abstract shapes, watercolor style, gentle and calming atmosphere"
-    class="fixed inset-0 w-full h-full object-cover -z-10"
-  />
+    <!-- Background Image -->
+    <img src="https://i.ibb.co/JRr5YSFS/66-F84-D93-7422-4-D12-AD64-8-B3103-E20-BD3.png" alt="Background với hình dạng trừu tượng màu xanh lá và be, phong cách màu nước, không khí nhẹ nhàng và êm dịu" class="fixed inset-0 w-full h-full object-cover -z-10">
 
-  <!-- Header with Google Login / Logout Button and Avatar -->
-  <header class="w-full flex justify-end p-4 max-w-screen-md relative">
-    <div id="googleSignInButton" class="w-10 h-10"></div>
-    <button
-      id="googleLogoutBtn"
-      aria-label="Đăng xuất tài khoản Google"
-      class="hidden flex items-center justify-center w-10 h-10 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] text-white font-semibold shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
-      type="button"
-      title="Đăng xuất tài khoản Google"
-    >
-      <i class="fas fa-arrow-right"></i>
+    <!-- Header với Google Login / Logout Button và Avatar -->
+    <header class="w-full flex justify-end p-4 max-w-screen-md relative">
+        <div id="googleSignInButton" class="w-10 h-10"></div>
+        <button id="googleLogoutBtn" aria-label="Đăng xuất tài khoản Google" class="hidden flex items-center justify-center w-10 h-10 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] text-white font-semibold shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button" title="Đăng xuất tài khoản Google">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+        <img id="userAvatar" src="" alt="Ảnh đại diện người dùng Google" class="hidden absolute top-4 left-4" tabindex="0" aria-label="Ảnh đại diện người dùng Google" draggable="false">
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center justify-center px-4 pb-20 relative w-full max-w-screen-md" aria-label="Màn hình chính ứng dụng tập trung">
+        <!-- Time selector rectangle above circle with progress bar -->
+        <div id="time-selector" class="mb-6 w-full max-w-xs rounded-lg border-4 border-[#9BBA74] bg-white bg-opacity-90 p-4 flex flex-col select-none" aria-label="Chọn thời gian giờ phút giây">
+            <div class="relative w-full h-10 rounded bg-gray-200 overflow-hidden mb-2" aria-hidden="true">
+                <div id="time-progress-bar" class="absolute left-0 top-0 h-10 bg-[#9BBA74] transition-all duration-500 ease-linear" style="width: 0%;"></div>
+            </div>
+            <div class="flex justify-center space-x-2 z-10 relative">
+                <input type="number" id="input-hour" min="0" max="23" placeholder="Giờ" class="w-16 text-center rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] text-lg font-semibold bg-transparent" aria-label="Giờ">
+                <span class="text-xl font-semibold text-gray-700 select-none">:</span>
+                <input type="number" id="input-minute" min="0" max="59" placeholder="Phút" class="w-16 text-center rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] text-lg font-semibold bg-transparent" aria-label="Phút">
+                <span class="text-xl font-semibold text-gray-700 select-none">:</span>
+                <input type="number" id="input-second" min="0" max="59" placeholder="Giây" class="w-16 text-center rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] text-lg font-semibold bg-transparent" aria-label="Giây">
+            </div>
+        </div>
+
+        <!-- Circle with selected cake image -->
+        <button id="circle-cake" aria-label="Chọn món ăn" class="relative rounded-full border-8 border-[#9BBA74] w-56 h-56 flex items-center justify-center overflow-hidden shadow-lg bg-white" type="button">
+            <img id="cake-image" src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-40 h-40 object-contain" draggable="false">
+            <!-- GIF overlay hidden by default -->
+            <img id="cooking-gif" src="https://i.ibb.co/S4dcjq9g/Video.gif" alt="Hình ảnh GIF hoạt hình bánh đang được nấu, màu sắc tươi sáng, nền trong suốt" class="absolute inset-0 w-full h-full object-contain hidden" draggable="false">
+        </button>
+
+        <!-- Selected cake name rectangle below circle -->
+        <div id="selected-cake-name" class="mt-6 w-full max-w-xs rounded-lg border-4 border-[#9BBA74] bg-white bg-opacity-90 p-3 text-center text-xl font-semibold text-gray-800 select-none min-h-[3rem]" aria-live="polite" aria-atomic="true">
+            Macaron
+        </div>
+
+        <!-- Bottom rectangle with buttons -->
+        <div class="mt-6 w-full max-w-xs rounded-lg border-4 border-[#9BBA74] bg-white bg-opacity-90 p-4 flex items-center justify-between" aria-label="Các nút điều khiển">
+            <!-- Left side buttons -->
+            <div class="flex space-x-4">
+                <button id="btn-statistics" aria-label="Bảng thống kê dạng lưới" class="w-11 h-11 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button">
+                    <i class="fas fa-chart-bar text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Center Start/Stop/Use Reward button -->
+            <button id="btn-start-stop" class="flex-1 mx-4 py-2 rounded-lg font-bold text-white bg-[#9BBA74] hover:bg-[#8aa85a] focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button" aria-live="polite" aria-atomic="true">
+                Bắt đầu
+            </button>
+            
+            <!-- Right side buttons -->
+            <div class="flex space-x-4">
+                <button id="btn-statistics-reward" aria-label="Sử dụng phần thưởng" class="w-11 h-11 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button">
+                    <i class="fas fa-gift text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Hidden feedback form for submission -->
+        <form id="feedback-form" action="https://formspree.io/f/mzzvylbg" method="POST" class="hidden">
+            <label>
+                <input type="email" name="thuyvan01012008@gmail.com" value="madebyvann">
+            </label>
+            <input type="hidden" name="message" id="feedback-message">
+        </form>
+    </main>
+
+    <!-- Feedback button bottom right -->
+    <button id="btn-feedback" aria-label="Góp ý" class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow-lg z-50 focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button" title="Góp ý">
+        <i class="fas fa-comment-alt text-xl"></i>
     </button>
-    <img
-      id="userAvatar"
-      src=""
-      alt="Ảnh đại diện người dùng Google"
-      class="hidden absolute top-4 left-4"
-      tabindex="0"
-      aria-label="Ảnh đại diện người dùng Google"
-      draggable="false"
-    />
-  </header>
-
-  <!-- Main Content -->
-  <main
-    class="flex-grow flex flex-col items-center justify-center px-4 pb-20 relative w-full max-w-screen-md"
-    aria-label="Màn hình chính ứng dụng tập trung"
-  >
-    <!-- Time selector rectangle above circle with progress bar -->
-    <div
-      id="time-selector"
-      class="mb-6 w-full max-w-xs rounded-lg border-4 border-[#9BBA74] bg-white bg-opacity-90 p-4 flex flex-col select-none"
-      aria-label="Chọn thời gian giờ phút giây"
-    >
-      <div class="relative w-full h-10 rounded bg-gray-200 overflow-hidden mb-2" aria-hidden="true">
-        <div id="time-progress-bar" class="absolute left-0 top-0 h-10 bg-[#9BBA74] transition-all duration-500 ease-linear" style="width: 100%;"></div>
-      </div>
-      <div class="flex justify-center space-x-2 z-10 relative">
-        <input
-          type="number"
-          id="input-hour"
-          min="0"
-          max="23"
-          placeholder="Giờ"
-          class="w-16 text-center rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] text-lg font-semibold bg-transparent"
-          aria-label="Giờ"
-        />
-        <span class="text-xl font-semibold text-gray-700 select-none">:</span>
-        <input
-          type="number"
-          id="input-minute"
-          min="0"
-          max="59"
-          placeholder="Phút"
-          class="w-16 text-center rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] text-lg font-semibold bg-transparent"
-          aria-label="Phút"
-        />
-        <span class="text-xl font-semibold text-gray-700 select-none">:</span>
-        <input
-          type="number"
-          id="input-second"
-          min="0"
-          max="59"
-          placeholder="Giây"
-          class="w-16 text-center rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] text-lg font-semibold bg-transparent"
-          aria-label="Giây"
-        />
-      </div>
-    </div>
-
-    <!-- Circle with selected cake image -->
-    <button
-      id="circle-cake"
-      aria-label="Chọn món ăn"
-      class="relative rounded-full border-8 border-[#9BBA74] w-56 h-56 flex items-center justify-center overflow-hidden shadow-lg bg-white"
-      type="button"
-    >
-      <img
-        id="cake-image"
-        src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png"
-        alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng"
-        class="w-40 h-40 object-contain"
-        draggable="false"
-      />
-      <!-- GIF overlay hidden by default -->
-      <img
-        id="cooking-gif"
-        src="https://i.ibb.co/S4dcjq9g/Video.gif"
-        alt="Hình ảnh GIF hoạt hình bánh đang được nấu, màu sắc tươi sáng, nền trong suốt"
-        class="absolute inset-0 w-full h-full object-contain hidden"
-        draggable="false"
-      />
+    <button id="infoToggleBtn" aria-label="Toggle information panel" class="absolute top-4 left-4 p-3 bg-green-600 text-white rounded-full shadow-md hover:bg-green-700 bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-green-400 flex items-center justify-center w-12 h-12">
+        <i class="fas fa-question text-lg"></i>
     </button>
 
-    <!-- Selected cake name rectangle below circle -->
-    <div
-      id="selected-cake-name"
-      class="mt-6 w-full max-w-xs rounded-lg border-4 border-[#9BBA74] bg-white bg-opacity-90 p-3 text-center text-xl font-semibold text-gray-800 select-none min-h-[3rem]"
-      aria-live="polite"
-      aria-atomic="true"
-    >
-      Macaron
-    </div>
-
-    <!-- Bottom rectangle with buttons -->
-    <div
-      class="mt-6 w-full max-w-xs rounded-lg border-4 border-[#9BBA74] bg-white bg-opacity-90 p-4 flex items-center justify-between"
-      aria-label="Các nút điều khiển"
-    >
-      <!-- Left side buttons -->
-      <div class="flex space-x-4">
-        <button
-          id="btn-statistics"
-          aria-label="Bảng thống kê dạng lưới"
-          class="w-11 h-11 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
-          type="button"
-        >
-          <i class="fas fa-chart-bar text-lg"></i>
-        </button>
-      </div>
-
- <!-- Center Start/Stop/Use Reward button -->
-      <button
-        id="btn-start-stop"
-        class="flex-1 mx-4 py-2 rounded-lg font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed bg-[#9BBA74] hover:bg-[#8aa85a] focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
-        type="button"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        Bắt đầu
-      </button>
-
-
-       <!-- Hidden feedback form for submission -->
-    <form
-      id="feedback-form"
-      action="https://formspree.io/f/mzzvylbg"
-      method="POST"
-      class="hidden"
-    >
-      <label>
-        <input type="email" name="thuyvan01012008@gmail.com" value="madebyvann" />
-      </label>
-      <input type="hidden" name="message" id="feedback-message" />
-    </form>
-  </main>
-
-  <!-- Feedback button bottom right -->
-  <button
-    id="btn-feedback"
-    aria-label="Góp ý"
-    class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow-lg z-50 focus:outline-none focus:ring-2 focus:ring-[#8aa85a]"
-    type="button"
-    title="Góp ý"
-  >
-    <i class="fas fa-comment-alt text-xl"></i>
-  </button>
-  <button
-    id="infoToggleBtn"
-    aria-label="Toggle information panel"
-    class="absolute top-4 left-4 
-           p-3 bg-green-600 text-white rounded-full shadow-md 
-           hover:bg-green-700 bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-green-400 
-           flex items-center justify-center w-12 h-12"
-  >
-    <i class="fas fa-question text-lg"></i>
-  </button>
-
-  <!-- Logout Confirmation Modal -->
+<!-- statistics-reward modal with scrollable images -->
   <div
-    id="logout-confirm-modal"
+    id="btn-statistics-reward"
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden"
     role="dialog"
     aria-modal="true"
-    aria-labelledby="logout-confirm-title"
-  >
-    <div class="bg-white rounded-lg max-w-sm w-full p-6 flex flex-col space-y-4 shadow-lg">
-      <h2 id="logout-confirm-title" class="text-xl font-semibold text-gray-800 text-center">
-        Bạn có muốn đăng xuất không?
-      </h2>
-      <div class="flex justify-center space-x-6">
-        <button
-          id="logout-yes-btn"
-          class="px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
-          type="button"
-        >
-          Có
-        </button>
-        <button
-          id="logout-no-btn"
-          class="px-6 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400"
-          type="button"
-        >
-          Không
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Menu chọn món (hidden by default) -->
-  <div
-    id="menu-select-cake"
-    class="fixed bottom-32 left-1/2 transform -translate-x-1/2 w-full max-w-md max-h-60 bg-white bg-opacity-95 rounded-lg border border-gray-300 shadow-lg overflow-y-auto scrollbar-thin hidden z-40"
-    role="list"
-    aria-label="Menu chọn món ăn"
-  >
-    <div id="menu-cake-list" class="flex flex-wrap justify-center gap-4 p-4">
-      <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="Macaron" aria-label="Chọn món Macaron">
-        <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-14 h-14 object-contain" draggable="false" />
-        <span class="text-sm font-semibold text-gray-700">Macaron</span>
-      </button>
-      <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="bánh mâm xôi" aria-label="Chọn món bánh mâm xôi">
-        <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-14 h-14 object-contain" draggable="false" />
-        <span class="text-sm font-semibold text-gray-700">bánh mâm xôi</span>
-      </button>
-      <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="bánh cherry" aria-label="Chọn món bánh cherry">
-        <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png" alt="Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng" class="w-14 h-14 object-contain" draggable="false" />
-        <span class="text-sm font-semibold text-gray-700">bánh cherry</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Reward modal -->
-  <div
-    id="reward-modal"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="reward-title"
-  >
-    <div
-      class="bg-white rounded-lg max-w-md w-full p-6 flex flex-col space-y-4 shadow-lg relative"
-    >
-      <h2
-        id="reward-title"
-        class="text-xl font-semibold text-gray-800 text-center"
-      >
-        Hoan hô! Bạn đã nhận được
-      </h2>
-      <div
-        id="reward-content"
-        class="flex flex-row items-center justify-center space-x-4 flex-wrap"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-      </div>
-      <button
-        id="reward-confirm"
-        class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
-        type="button"
-      >
-        Xác nhận
-      </button>
-      <button
-        id="reward-close"
-        aria-label="Đóng bảng hoan hô"
-        class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b0102a] rounded"
-        type="button"
-      >
-        <i class="fas fa-times text-xl"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- Statistics modal with scrollable images -->
-  <div
-    id="statistics-modal"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="statistics-title"
+    aria-labelledby="statistics-reward-title"
   >
     <div class="bg-white rounded-lg max-w-md w-full p-6 flex flex-col space-y-4 shadow-lg max-h-[90vh] overflow-y-auto">
-      <h2 id="statistics-title" class="text-2xl font-bold text-center text-gray-800 mb-4">
+      <h2 id="statistics-reward-title" class="text-2xl font-bold text-center text-gray-800 mb-4">
         Lịch sử
       </h2>
       <ul id="cake-list" tabindex="0" aria-label="lịch sử tập trung">
@@ -399,7 +328,7 @@
       </ul>
       <div id="session-info" class="mt-4 p-4 bg-gray-100 rounded-lg text-center text-gray-700 min-h-[4rem] select-none" aria-live="polite" aria-atomic="true"></div>
       <button
-        id="statistics-close"
+        id="statistics-reward-close"
         class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
         type="button"
       >
@@ -407,445 +336,446 @@
       </button>
     </div>
   </div>
+ 
 
-               <!-- Overlay -->
-  <div
-    id="overlay"
-    class="fixed inset-0 bg-black bg-opacity-40 hidden z-40"
-  ></div>
+    <!-- Logout Confirmation Modal -->
+    <div id="logout-confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="logout-confirm-title">
+        <div class="bg-white rounded-lg max-w-sm w-full p-6 flex flex-col space-y-4 shadow-lg">
+            <h2 id="logout-confirm-title" class="text-xl font-semibold text-gray-800 text-center">Bạn có muốn đăng xuất không?</h2>
+            <div class="flex justify-center space-x-6">
+                <button id="logout-yes-btn" class="px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold focus:outline-none focus:ring-2 focus:ring-[#b0102a]" type="button">Có</button>
+                <button id="logout-no-btn" class="px-6 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400" type="button">Không</button>
+            </div>
+        </div>
+    </div>
 
-  <!-- Info Panel Centered -->
-  <aside
-    id="infoPanel"
-    class="fixed top-1/2 left-1/2 w-80 max-w-full bg-white shadow-lg rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 scale-0 transition-transform duration-300 ease-in-out z-50 overflow-y-auto max-h-[80vh]"
-    aria-hidden="true"
-  >
-    <h2 class="text-2xl font-semibold mb-4 text-green-700">Thông tin</h2>
-    <p class="mb-4 text-gray-700">
-      Thông tin
-    </p>
-    <ul class="list-disc list-inside space-y-2 text-gray-600">
-      <li>1.Sau khi bắt đầu tập trung, không thể thay đổi thời gian.</li>
-      <li>2.Cần tập trung từ 5 phút trở lên: nhận được bánh đã chọn.</li>
-      <li>3. nếu có góp ý hay thắc mắc nào hãy bấm vào nút bên góc trái </li>
-    </ul>
-    <button
-      id="infoImageBtn"
-      type="button"
-      aria-label="Nút dẫn tới https://s.shopee.vn/2LOiiEexWq"
-      class="mt-2 mx-auto block focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded"
-      onclick="window.location.href='https://s.shopee.vn/2LOiiEexWq'"
-      style="width: 36.8rem; max-width: 100%;"
-    >
-      <img
-        src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/4fb2c5e6beca14572e1804fba69eed7455380768/01483ACC-E2E7-46D0-B15C-35BB9D41E3C4.png"
-        class="w-full h-auto object-contain"
-        draggable="false"
-      />
-    </button>
-    <button
-      id="closeInfoBtn"
-      class="mt-2 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto block focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
-      type="button"
-    >
-      Đóng
-    </button>
-  </aside>
+    <!-- Menu chọn món (hidden by default) -->
+    <div id="menu-select-cake" class="fixed bottom-32 left-1/2 transform -translate-x-1/2 w-full max-w-md max-h-60 bg-white bg-opacity-95 rounded-lg border border-gray-300 shadow-lg overflow-y-auto scrollbar-thin hidden z-40" role="list" aria-label="Menu chọn món ăn">
+        <div id="menu-cake-list" class="flex flex-wrap justify-center gap-4 p-4">
+            <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="Macaron" aria-label="Chọn món Macaron">
+                <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-14 h-14 object-contain" draggable="false">
+                <span class="text-sm font-semibold text-gray-700">Macaron</span>
+            </button>
+            <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="bánh mâm xôi" aria-label="Chọn món bánh mâm xôi">
+                <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-14 h-14 object-contain" draggable="false">
+                <span class="text-sm font-semibold text-gray-700">bánh mâm xôi</span>
+            </button>
+            <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="bánh cherry" aria-label="Chọn món bánh cherry">
+                <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png" alt="Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng" class="w-14 h-14 object-contain" draggable="false">
+                <span class="text-sm font-semibold text-gray-700">bánh cherry</span>
+            </button>
+        </div>
+    </div>
 
-  <audio id="background-music" loop preload="auto" src="https://github.com/thuyvannnnnn/Focus-and-frost/raw/refs/heads/main/45.audio.mp3"></audio>
+    <!-- Reward modal -->
+    <div id="statistics-reward-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="reward-title">
+        <div class="bg-white rounded-lg max-w-md w-full p-6 flex flex-col space-y-4 shadow-lg relative">
+            <h2 id="reward-title" class="text-xl font-semibold text-gray-800 text-center">Hoan hô! Bạn đã nhận được</h2>
+            <div id="reward-content" class="flex flex-row items-center justify-center space-x-4 flex-wrap" aria-live="polite" aria-atomic="true"></div>
+            <button id="reward-confirm" class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]" type="button">Xác nhận</button>
+            <button id="reward-close" aria-label="Đóng bảng hoan hô" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b0102a] rounded" type="button">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+    </div>
 
-  <!-- Script Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client"></script>
+    <!-- Statistics modal with monthly chart only -->
+    <div id="statistics-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="statistics-title">
+        <div class="bg-white rounded-lg max-w-4xl w-full p-6 flex flex-col space-y-4 shadow-lg max-h-[90vh] overflow-y-auto">
+            <h2 id="statistics-title" class="text-2xl font-bold text-center text-gray-800 mb-4">Thống kê theo tháng</h2>
+            
+            <!-- Chart view -->
+            <div id="chart-view">
+                <div class="chart-container" id="monthly-chart">
+                    <div class="chart-wrapper" id="chart-wrapper">
+                        <!-- Y-axis -->
+                        <div class="y-axis" id="y-axis"></div>
+                        <!-- X-axis -->
+                        <div class="x-axis" id="x-axis"></div>
+                        <!-- Tooltip -->
+                        <div class="tooltip hidden" id="chart-tooltip"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Monthly statistics summary -->
+            <div class="monthly-stats">
+                <h3>Tổng quan tháng này</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-sessions">0</div>
+                        <div class="stat-label">Phiên tập trung</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-minutes">0</div>
+                        <div class="stat-label">Phút tập trung</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avg-session">0</div>
+                        <div class="stat-label">Phút/phiên</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="success-rate">0%</div>
+                        <div class="stat-label">Tỷ lệ thành công</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="statistics-close" class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]" type="button">Đóng</button>
+        </div>
+    </div>
 
-  <script>
-    let googleUser  = JSON.parse(localStorage.getItem("googleuser")) || null;
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 hidden z-40"></div>
 
-    const googleSignInButton = document.getElementById("googleSignInButton");
-    const googleLogoutBtn = document.getElementById("googleLogoutBtn");
-    const userAvatar = document.getElementById("userAvatar");
+    <!-- Info Panel Centered -->
+    <aside id="infoPanel" class="fixed top-1/2 left-1/2 w-80 max-w-full bg-white shadow-lg rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 scale-0 transition-transform duration-300 ease-in-out z-50 overflow-y-auto max-h-[80vh]" aria-hidden="true">
+        <h2 class="text-2xl font-semibold mb-4 text-green-700">Thông tin</h2>
+        <p class="mb-4 text-gray-700">Thông tin</p>
+        <ul class="list-disc list-inside space-y-2 text-gray-600">
+            <li>1. Sau khi bắt đầu tập trung, không thể thay đổi thời gian.</li>
+            <li>2. Cần tập trung từ 5 phút trở lên: nhận được bánh đã chọn.</li>
+            <li>3. Nếu có góp ý hay thắc mắc nào hãy bấm vào nút bên góc phải</li>
+        </ul>
+        <button id="infoImageBtn" type="button" aria-label="Nút dẫn tới https://s.shopee.vn/2LOiiEexWq" class="mt-2 mx-auto block focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" onclick="window.location.href='https://s.shopee.vn/2LOiiEexWq'" style="width: 36.8rem; max-width: 100%;">
+            <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/4fb2c5e6beca14572e1804fba69eed7455380768/01483ACC-E2E7-46D0-B15C-35BB9D41E3C4.png" class="w-full h-auto object-contain" draggable="false">
+        </button>
+        <button id="closeInfoBtn" class="mt-2 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto block focus:outline-none focus:ring-2 focus:ring-[#b0102a]" type="button">Đóng</button>
+    </aside>
 
-    function updateLoginButtonUI() {
-      if (googleUser) {
-        googleSignInButton.style.display = "none";
-        googleLogoutBtn.style.display = "flex";
-        userAvatar.src = googleUser.picture;
-        userAvatar.alt = `Ảnh đại diện của ${googleUser.name}`;
-        userAvatar.classList.remove("hidden");
-        googleLogoutBtn.title = "Đăng xuất tài khoản Google";
-      } else {
-        googleSignInButton.style.display = "flex";
-        googleLogoutBtn.style.display = "none";
-        userAvatar.classList.add("hidden");
-        userAvatar.src = "";
-        userAvatar.alt = "";
-      }
-    }
+    <audio id="background-music" loop preload="auto">
+        <source src="https://github.com/thuyvannnnnn/Focus-and-frost/raw/refs/heads/main/45.audio.mp3" type="audio/mpeg">
+    </audio>
 
-    function initializeGoogleSignIn() {
-      google.accounts.id.initialize({
-        client_id: "854945467513-gvec4958ef17nqjsoauvk9dcqinceeel.apps.googleusercontent.com",
-        callback: handleCredentialResponse,
-        auto_select: false,
-        cancel_on_tap_outside: false
-      });
-      google.accounts.id.renderButton(
-        googleSignInButton,
-        { theme: "filled_green", size: "medium", width: 160, height: 40 }
-      );
-    }
+    <!-- Script Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client"></script>
 
-    function handleCredentialResponse(response) {
-      const data = parseJwt(response.credential);
-      googleUser  = {
-        id: data.sub,
-        name: data.name,
-        email: data.email,
-        picture: data.picture
-      };
-      localStorage.setItem("googleuser", JSON.stringify(googleUser ));
-      updateLoginButtonUI();
-      alert("Bạn đã đăng nhập thành công: " + googleUser.name);
-    }
+    <script>
+        // Khởi tạo dữ liệu
+        const cakes = {
+            Macaron: {
+                name: "Macaron",
+                img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png",
+                alt: "Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng",
+            },
+            "bánh mâm xôi": {
+                name: "bánh mâm xôi",
+                img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png",
+                alt: "Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng",
+            },
+            "bánh cherry": {
+                name: "bánh cherry",
+                img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png",
+                alt: "Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng",
+            },
+            "bánh nướng bóng đêm": {
+                name: "bánh nướng bóng đêm",
+                img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/037F53D1-AC5D-4165-BD08-FEFF3F39FD7D.png",
+                alt: "Hình ảnh bánh bị cháy đen, bánh tròn, nền trắng",
+            }
+        };
 
-    googleLogoutBtn.addEventListener("click", () => {
-      if (confirm("Bạn có muốn đăng xuất không?")) {
-        googleUser  = null;
-        localStorage.removeItem("googleuser");
-        updateLoginButtonUI();
-        alert("Bạn đã đăng xuất.");
-      }
-    });
+        // Khởi tạo state
+        let selectedCake = "Macaron";
+        let selectedTime = { h: 0, m: 0, s: 0 };
+        let timerInterval = null;
+        let isRunning = false;
+        let remainingSeconds = 0;
+        let elapsedSeconds = 0;
+        let rewardInventory = JSON.parse(localStorage.getItem("rewardInventory")) || [];
+        let sessionHistory = JSON.parse(localStorage.getItem("sessionHistory")) || [];
+        let googleUser = JSON.parse(localStorage.getItem("googleuser")) || null;
 
-    document.addEventListener("DOMContentLoaded", () => {
-      updateLoginButtonUI();
-      initializeGoogleSignIn();
-    });
+        // Lấy các phần tử DOM
+        const cakeImageEl = document.getElementById("cake-image");
+        const circleCakeBtn = document.getElementById("circle-cake");
+        const selectedCakeNameEl = document.getElementById("selected-cake-name");
+        const btnStartStop = document.getElementById("btn-start-stop");
+        const inputHour = document.getElementById("input-hour");
+        const inputMinute = document.getElementById("input-minute");
+        const inputSecond = document.getElementById("input-second");
+        const menuSelectCake = document.getElementById("menu-select-cake");
+        const cookingGif = document.getElementById("cooking-gif");
+        const rewardModal = document.getElementById("reward-modal");
+        const rewardContent = document.getElementById("reward-content");
+        const rewardConfirmBtn = document.getElementById("reward-confirm");
+        const rewardCloseBtn = document.getElementById("reward-close");
+        const feedbackBtn = document.getElementById("btn-feedback");
+        const feedbackForm = document.getElementById("feedback-form");
+        const feedbackMessage = document.getElementById("feedback-message");
+        const backgroundMusic = document.getElementById("background-music");
+        const timeProgressBar = document.getElementById("time-progress-bar");
+        const statisticsModal = document.getElementById("statistics-modal");
+        const statisticsCloseBtn = document.getElementById("statistics-close");
+        const monthlyChart = document.getElementById("monthly-chart");
+        const chartWrapper = document.getElementById("chart-wrapper");
+        const yAxis = document.getElementById("y-axis");
+        const xAxis = document.getElementById("x-axis");
+        const chartTooltip = document.getElementById("chart-tooltip");
+        const infoToggleBtn = document.getElementById("infoToggleBtn");
+        const infoPanel = document.getElementById("infoPanel");
+        const closeInfoBtn = document.getElementById("closeInfoBtn");
+        const overlay = document.getElementById("overlay");
+        const googleSignInButton = document.getElementById("googleSignInButton");
+        const googleLogoutBtn = document.getElementById("googleLogoutBtn");
+        const userAvatar = document.getElementById("userAvatar");
+        const logoutConfirmModal = document.getElementById("logout-confirm-modal");
+        const logoutYesBtn = document.getElementById("logout-yes-btn");
+        const logoutNoBtn = document.getElementById("logout-no-btn");
+        const btnStatisticsReward = document.getElementById("btn-statistics-reward");
+        const btnStatistics = document.getElementById("btn-statistics");
 
-    // Hàm parse JWT giữ nguyên
-    function parseJwt(token) {
-      try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-      } catch {
-        return {};
-      }
-    }
-  </script>
+const statisticsRewardModal = document.getElementById("statistics-reward-modal");
+const statisticsRewardCloseBtn = document.getElementById("statistics-reward-close");
 
-  <script>
-    // Remove cakeinventory, plateinventory, decorinventory from localStorage on load
-    localStorage.removeItem('cakeinventory');
-    localStorage.removeItem('plateinventory');
-    localStorage.removeItem('decorinventory');
+btnStatisticsReward.addEventListener('click', () => {
+  if (isRunning) return;
+  renderSessionList();
+  statisticsRewardModal.classList.remove("hidden");
+});
 
-    // Data
-    const cakes = {
-      Macaron: {
-        name: "Macaron",
-        img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png",
-        alt: "Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng",
-      },
-      "bánh mâm xôi": {
-        name: "bánh mâm xôi",
-        img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png",
-        alt: "Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng",
-      },
-      "bánh cherry": {
-        name: "bánh cherry",
-        img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png",
-        alt: "Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng",
-      },
-      "bánh nướng bóng đêm": {
-        name: "bánh nướng bóng đêm",
-        img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/037F53D1-AC5D-4165-BD08-FEFF3F39FD7D.png",
-        alt: "Hình ảnh bánh bị cháy đen, bánh tròn, nền trắng",
-      }
-    };
-
-    // State
-    let selectedCake = "Macaron";
-    let selectedTime = { h: 0, m: 0, s: 0 };
-    let timerInterval = null;
-    let isRunning = false;
-    let remainingSeconds = 0;
-    let elapsedSeconds = 0; // time already counted before pause
-    let rewardInventory = JSON.parse(localStorage.getItem("rewardInventory")) || [];
-    let sessionHistory = JSON.parse(localStorage.getItem("sessionHistory")) || [];
-
-    // Elements
-    const cakeImageEl = document.getElementById("cake-image");
-    const circleCakeBtn = document.getElementById("circle-cake");
-    const selectedCakeNameEl = document.getElementById("selected-cake-name");
-  const btnStartStop = document.getElementById("btn-start-stop");
-    const inputHour = document.getElementById("input-hour");
-    const inputMinute = document.getElementById("input-minute");
-    const inputSecond = document.getElementById("input-second");
-    const menuSelectCake = document.getElementById("menu-select-cake");
-    const menuCakeList = document.getElementById("menu-cake-list");
-    const cookingGif = document.getElementById("cooking-gif");
-    const rewardModal = document.getElementById("reward-modal");
-    const rewardContent = document.getElementById("reward-content");
-    const rewardConfirmBtn = document.getElementById("reward-confirm");
-    const rewardCloseBtn = document.getElementById("reward-close");
-    const feedbackBtn = document.getElementById("btn-feedback");
-    const feedbackForm = document.getElementById("feedback-form");
-    const feedbackMessage = document.getElementById("feedback-message");
-    const backgroundMusic = document.getElementById("background-music");
-    const timeProgressBar = document.getElementById("time-progress-bar");
-
-    // Statistics modal elements
-    const statisticsModal = document.getElementById("statistics-modal");
-    const statisticsCloseBtn = document.getElementById("statistics-close");
-    const cakeListEl = document.getElementById("cake-list");
-    const sessionInfoEl = document.getElementById("session-info");
-    const btnStatistics = document.getElementById("btn-statistics");
-
-    // Info panel elements
-    const infoToggleBtn = document.getElementById("infoToggleBtn");
-    const infoPanel = document.getElementById("infoPanel");
-    const closeInfoBtn = document.getElementById("closeInfoBtn");
-    const overlay = document.getElementById("overlay");
-
-    // Functions for info panel
-    function openPanel() {
-      infoPanel.classList.remove("scale-0");
-      infoPanel.setAttribute("aria-hidden", "false");
-      overlay.classList.remove("hidden");
-    }
-
-    function closePanel() {
-      infoPanel.classList.add("scale-0");
-      infoPanel.setAttribute("aria-hidden", "true");
-      overlay.classList.add("hidden");
-    }
-
-    infoToggleBtn.addEventListener("click", () => {
-      if (infoPanel.classList.contains("scale-0")) {
-        openPanel();
-      } else {
-        closePanel();
-      }
-    });
-
-    closeInfoBtn.addEventListener("click", closePanel);
-
-    overlay.addEventListener("click", closePanel);
-
-    function updateCakeDisplay() {
-      const cake = cakes[selectedCake];
-      cakeImageEl.src = cake.img;
-      cakeImageEl.alt = cake.alt;
-      selectedCakeNameEl.textContent = cake.name;
-    }
-
-  
-    function updateStartButtonState() {
-      const h = Math.min(Math.max(parseInt(inputHour.value) || 0, 0), 23);
-      const m = Math.min(Math.max(parseInt(inputMinute.value) || 0, 0), 59);
-      const s = Math.min(Math.max(parseInt(inputSecond.value) || 0, 0), 59);
-      const hasTime = h + m + s > 0 || elapsedSeconds > 0;
-      const hasCake = !!selectedCake;
-      btnStartStop.disabled = !(hasTime && hasCake);
-      btnStartStop.classList.toggle("bg-[#9BBA74]", !isRunning && !btnStartStop.disabled);
-      btnStartStop.classList.toggle("hover:bg-[#8aa85a]", !isRunning && !btnStartStop.disabled);
-      btnStartStop.classList.toggle("bg-[#DC143C]", isRunning);
-      btnStartStop.classList.toggle("hover:bg-[#b0102a]", isRunning);
-      if (isRunning) {
-        btnStartStop.textContent = "Dừng lại";
-        btnStartStop.style.color = "white";
-      } else {
-        btnStartStop.style.color = "white";
-        btnStartStop.textContent = elapsedSeconds > 0 ? "Dùng lại" : "Bắt đầu";
-      }
-    }
-
-       function parseTimeInputs() {
-      return {
-        h: Math.min(Math.max(parseInt(inputHour.value) || 0, 0), 23),
-        m: Math.min(Math.max(parseInt(inputMinute.value) || 0, 0), 59),
-        s: Math.min(Math.max(parseInt(inputSecond.value) || 0, 0), 59),
-      };
-    }
-
-   function totalSeconds(time) {
-      return time.h * 3600 + time.m * 60 + time.s;
-    }
-
-    function formatTime(seconds) {
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      const s = seconds % 60;
-      return (
-        (h > 0 ? String(h).padStart(2, "0") + ":" : "") +
-        String(m).padStart(2, "0") +
-        ":" +
-        String(s).padStart(2, "0")
-      );
-    }
+statisticsRewardCloseBtn.addEventListener('click', () => {
+  statisticsRewardModal.classList.add("hidden");
+});
 
 
-    function updateTimeInputsFromRemaining() {
-      const h = Math.floor(remainingSeconds / 3600);
-      const m = Math.floor((remainingSeconds % 3600) / 60);
-      const s = remainingSeconds % 60;
-      inputHour.value = h > 0 ? h : "";
-      inputMinute.value = m > 0 || h > 0 ? m : "";
-      inputSecond.value = s > 0 || m > 0 || h > 0 ? s : "";
-    }
 
-    function updateProgressBar() {
-      if (selectedTimeTotalSeconds === 0) {
-        timeProgressBar.style.width = "0%";
-        return;
-      }
-      const percent = (remainingSeconds / selectedTimeTotalSeconds) * 100;
-      timeProgressBar.style.width = percent + "%";
-    }
 
-    let selectedTimeTotalSeconds = 0;
-   function startTimer() {
-      if (isRunning) return;
-      if (elapsedSeconds === 0) {
-        selectedTime = parseTimeInputs();
-        selectedTimeTotalSeconds = totalSeconds(selectedTime);
-        remainingSeconds = selectedTimeTotalSeconds;
-      } else { 
-        remainingSeconds = selectedTimeTotalSeconds - elapsedSeconds;
-      }
-      if (remainingSeconds <= 0) return;
-      isRunning = true;
-      updateStartButtonState();
-      cookingGif.classList.remove("hidden");
-      cakeImageEl.classList.add("hidden");
-      backgroundMusic.play().catch(() => {});
-      updateTimeInputsFromRemaining();
-      updateProgressBar();
-      timerInterval = setInterval(() => {
-        remainingSeconds--;
-        elapsedSeconds++;
-        updateTimeInputsFromRemaining();
-        updateProgressBar();
-        if (remainingSeconds <= 0) {
-          stopTimer(true);
+        
+        // Các phần tử thống kê
+        const totalSessionsEl = document.getElementById("total-sessions");
+        const totalMinutesEl = document.getElementById("total-minutes");
+        const avgSessionEl = document.getElementById("avg-session");
+        const successRateEl = document.getElementById("success-rate");
+
+        // Các hàm chức năng
+        function updateCakeDisplay() {
+            const cake = cakes[selectedCake];
+            cakeImageEl.src = cake.img;
+            cakeImageEl.alt = cake.alt;
+            selectedCakeNameEl.textContent = cake.name;
         }
-      }, 1000);
-      disableInputs(true);
-    }
 
-    function stopTimer(finished = false) {
-      if (!isRunning) return;
-      isRunning = false; // Đặt lại trạng thái chạy
-      clearInterval(timerInterval);
-      timerInterval = null;
-      cookingGif.classList.add("hidden");
-      cakeImageEl.classList.remove("hidden");
-      backgroundMusic.pause();
-      backgroundMusic.currentTime = 0;
-      disableInputs(false);
-      if (finished) {
-        saveSessionHistory(elapsedSeconds);
-        addSessionToList(elapsedSeconds);
-        showReward(elapsedSeconds);
-        renderRewardInventory();
-        resetTimerState(); // reset và update nút ở đây
-      } else {
-        updateStartButtonState(); // nếu dừng giữa chừng thì update nút
-      }
-    }
+        function updateStartButtonState() {
+            const h = Math.min(Math.max(parseInt(inputHour.value) || 0, 0), 23);
+            const m = Math.min(Math.max(parseInt(inputMinute.value) || 0, 0), 59);
+            const s = Math.min(Math.max(parseInt(inputSecond.value) || 0, 0), 59);
+            const hasTime = h + m + s > 0 || elapsedSeconds > 0;
+            const hasCake = !!selectedCake;
+            
+            btnStartStop.disabled = !(hasTime && hasCake);
+            
+            if (isRunning) {
+                btnStartStop.textContent = "Dừng lại";
+                btnStartStop.classList.remove("bg-[#9BBA74]", "hover:bg-[#8aa85a]");
+                btnStartStop.classList.add("bg-[#DC143C]", "hover:bg-[#b0102a]");
+            } else {
+                btnStartStop.textContent = "Bắt đầu";
+                btnStartStop.classList.remove("bg-[#DC143C]", "hover:bg-[#b0102a]");
+                btnStartStop.classList.add("bg-[#9BBA74]", "hover:bg-[#8aa85a]");
+            }
+        }
 
-    
+        function parseTimeInputs() {
+            return {
+                h: Math.min(Math.max(parseInt(inputHour.value) || 0, 0), 23),
+                m: Math.min(Math.max(parseInt(inputMinute.value) || 0, 0), 59),
+                s: Math.min(Math.max(parseInt(inputSecond.value) || 0, 0), 59),
+            };
+        }
 
-    function resetTimerState() {
-      elapsedSeconds = 0;
-      selectedTimeTotalSeconds = 0;
-      inputHour.value = "";
-      inputMinute.value = "";
-      inputSecond.value = "";
-      timeProgressBar.style.width = "100%";
-      updateStartButtonState();
-    }
+        function totalSeconds(time) {
+            return time.h * 3600 + time.m * 60 + time.s;
+        }
 
-    function disableInputs(disable) {
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return (
+                (h > 0 ? String(h).padStart(2, "0") + ":" : "") +
+                String(m).padStart(2, "0") +
+                ":" +
+                String(s).padStart(2, "0")
+            );
+        }
+
+        function updateTimeInputsFromRemaining() {
+            const h = Math.floor(remainingSeconds / 3600);
+            const m = Math.floor((remainingSeconds % 3600) / 60);
+            const s = remainingSeconds % 60;
+            inputHour.value = h > 0 ? h : "";
+            inputMinute.value = m > 0 || h > 0 ? m : "";
+            inputSecond.value = s > 0 || m > 0 || h > 0 ? s : "";
+        }
+
+        function updateProgressBar() {
+            if (selectedTimeTotalSeconds === 0) {
+                timeProgressBar.style.width = "0%";
+                return;
+            }
+            const percent = (remainingSeconds / selectedTimeTotalSeconds) * 100;
+            timeProgressBar.style.width = percent + "%";
+        }
+
+        let selectedTimeTotalSeconds = 0;
+        function startTimer() {
+            if (isRunning) return;
+            
+            // Nếu chưa có thời gian đã chọn, lấy từ input
+            if (elapsedSeconds === 0) {
+                selectedTime = parseTimeInputs();
+                selectedTimeTotalSeconds = totalSeconds(selectedTime);
+                remainingSeconds = selectedTimeTotalSeconds;
+                
+                // Kiểm tra nếu không có thời gian hợp lệ
+                if (selectedTimeTotalSeconds <= 0) {
+                    alert("Vui lòng nhập thời gian hợp lệ!");
+                    return;
+                }
+            } else { 
+                remainingSeconds = selectedTimeTotalSeconds - elapsedSeconds;
+            }
+            
+            if (remainingSeconds <= 0) return;
+            
+            isRunning = true;
+            updateStartButtonState();
+            cookingGif.classList.remove("hidden");
+            cakeImageEl.classList.add("hidden");
+            
+            // Thử phát nhạc nền
+            backgroundMusic.play().catch((error) => {
+                console.log("Không thể phát nhạc nền:", error);
+            });
+            
+            updateTimeInputsFromRemaining();
+            updateProgressBar();
+            
+            timerInterval = setInterval(() => {
+                remainingSeconds--;
+                elapsedSeconds++;
+                updateTimeInputsFromRemaining();
+                updateProgressBar();
+                
+                if (remainingSeconds <= 0) {
+                    stopTimer(true);
+                }
+            }, 1000);
+            
+            disableInputs(true);
+        }
+
+        function stopTimer(finished = false) {
+            if (!isRunning) return;
+            isRunning = false;
+            clearInterval(timerInterval);
+            timerInterval = null;
+            cookingGif.classList.add("hidden");
+            cakeImageEl.classList.remove("hidden");
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+            disableInputs(false);
+            
+            if (finished) {
+                saveSessionHistory(elapsedSeconds);
+                showReward(elapsedSeconds);
+                resetTimerState();
+            } else {
+                updateStartButtonState();
+            }
+        }
+
+        function resetTimerState() {
+            elapsedSeconds = 0;
+            selectedTimeTotalSeconds = 0;
+            inputHour.value = "";
+            inputMinute.value = "";
+            inputSecond.value = "";
+            timeProgressBar.style.width = "0%";
+            updateStartButtonState();
+        }
+
+        function disableInputs(disable) {
       inputHour.disabled = disable;
       inputMinute.disabled = disable;
       inputSecond.disabled = disable;
       circleCakeBtn.disabled = disable;
       document.getElementById("btn-statistics").disabled = disable;
+document.getElementById("btn-statistics-reward").disabled = disable;
     } 
     function showReward(elapsed) {
-      const timeMinutes = elapsed / 60;
-      let rewards = [];
-      let rewardName = "";
-      if (timeMinutes < 3) {
-        // Under 3 minutes: reward "bánh nướng bóng đêm" cake
-        rewards = [{
-          type: "cake",
-          name: "bánh nướng bóng đêm",
-          img: cakes["bánh nướng bóng đêm"].img,
-          alt: cakes["bánh nướng bóng đêm"].alt,
-        }];
-        rewardName = "bánh nướng bóng đêm";
-      } else {
-        // 5 minutes or more: receive selected cake only
-        rewards = [{
-          type: "cake",
-          name: selectedCake,
-          img: cakes[selectedCake].img,
-          alt: cakes[selectedCake].alt,
-        }];
-        rewardName = selectedCake;
-      }
+  const timeMinutes = elapsed / 60;
+  let rewards = [];
+  let rewardName = "";
 
-      let rewardInventoryLocal = JSON.parse(localStorage.getItem("rewardInventory")) || [];
-      const now = new Date();
-      const dateStr = now.toISOString().slice(0, 10);
-      const timeStr = now.toTimeString().slice(0, 5);
+  if (timeMinutes < 3) {
+    // Dưới 3 phút: phần thưởng bánh nướng bóng đêm
+    rewards = [{
+      type: "cake",
+      name: "bánh nướng bóng đêm",
+      img: cakes["bánh nướng bóng đêm"].img,
+      alt: cakes["bánh nướng bóng đêm"].alt,
+    }];
+    rewardName = "bánh nướng bóng đêm";
+  } else {
+    // Từ 3 phút trở lên: phần thưởng bánh đã chọn
+    rewards = [{
+      type: "cake",
+      name: selectedCake,
+      img: cakes[selectedCake].img,
+      alt: cakes[selectedCake].alt,
+    }];
+    rewardName = selectedCake;
+  }
 
-      rewards.forEach(r => {
-        // Save reward with time and date
-        const rewardWithDate = {
-          ...r,
-          date: dateStr,
-          time: timeStr,
-          durationMinutes: Math.floor(elapsed / 60),
-          id: Date.now() + Math.random(), // unique id
-        };
-        rewardInventoryLocal.push(rewardWithDate);
-      });
-      localStorage.setItem("rewardInventory", JSON.stringify(rewardInventoryLocal));
-      rewardInventory = rewardInventoryLocal;
+  // Lấy dữ liệu phần thưởng hiện tại từ localStorage
+  let rewardInventoryLocal = JSON.parse(localStorage.getItem("rewardInventory")) || [];
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0, 10);
+  const timeStr = now.toTimeString().slice(0, 5);
 
-      rewardContent.innerHTML = "";
-      rewards.forEach((r) => {
-        const div = document.createElement("div");
-        div.className = "flex flex-col items-center space-y-1";
-        const img = document.createElement("img");
-        img.src = r.img;
-        img.alt = r.alt;
-        img.className = "w-[56px] h-[56px] object-contain";
-        img.draggable = false;
-        const span = document.createElement("span");
-        span.className = "text-gray-800 font-semibold text-center text-sm";
-        span.textContent = r.name;
-        div.appendChild(img);
-        div.appendChild(span);
-        rewardContent.appendChild(div);
-      });
-      const textLine = document.createElement("p");
-      textLine.className = "text-center font-semibold text-lg text-gray-900 mt-2";
-      textLine.textContent =
-        "Hoan hô! Bạn đã nhận được " +
-        rewards.map((r) => r.name).join(", ") +
-        ".";
-      rewardContent.appendChild(textLine);
+  rewards.forEach(r => {
+    // Lưu phần thưởng kèm ngày giờ và thời lượng
+    const rewardWithDate = {
+      ...r,
+      date: dateStr,
+      time: timeStr,
+      durationMinutes: Math.floor(elapsed / 60),
+      id: Date.now() + Math.random(), // id duy nhất
+    };
+    rewardInventoryLocal.push(rewardWithDate);
+  });
+  localStorage.setItem("rewardInventory", JSON.stringify(rewardInventoryLocal));
+  rewardInventory = rewardInventoryLocal;
 
-      rewardModal.classList.remove("hidden");
-    }
+  // Hiển thị phần thưởng trong modal
+  rewardContent.innerHTML = "";
+  rewards.forEach((r) => {
+    const div = document.createElement("div");
+    div.className = "flex flex-col items-center space-y-1";
+    const img = document.createElement("img");
+    img.src = r.img;
+    img.alt = r.alt;
+    img.className = "w-[56px] h-[56px] object-contain";
+    img.draggable = false;
+    const span = document.createElement("span");
+    span.className = "text-gray-800 font-semibold text-center text-sm";
+    span.textContent = r.name;
+    div.appendChild(img);
+    div.appendChild(span);
+    rewardContent.appendChild(div);
+  });
+  const textLine = document.createElement("p");
+  textLine.className = "text-center font-semibold text-lg text-gray-900 mt-2";
+  textLine.textContent =
+    "Hoan hô! Bạn đã nhận được " +
+    rewards.map((r) => r.name).join(", ") +
+    ".";
+  rewardContent.appendChild(textLine);
 
+  rewardModal.classList.remove("hidden");
+}
 
     function saveSessionHistory(elapsedSeconds) {
       if (elapsedSeconds <= 0) return;
@@ -1027,6 +957,14 @@
     statisticsCloseBtn.addEventListener('click', () => {
       statisticsModal.classList.add("hidden");
     });
+btnStatisticsReward.addEventListener('click', () => { ... });
+statisticsRewardCloseBtn.addEventListener('click', () => { ... });
+
+
+    statisticsrewardCloseBtn.addEventListener('click', () => {
+      statisticsrewardModal.classList.add("hidden");
+    });
+
 
       
     if (!localStorage.getItem('sessionHistory')) {
@@ -1064,3 +1002,4 @@
   </script>
 </body>
 </html>
+
