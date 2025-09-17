@@ -544,6 +544,33 @@
         const avgSessionEl = document.getElementById("avg-session");
         const successRateEl = document.getElementById("success-rate");
 
+function updateMonthlyStats() {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    // Lọc phiên trong tháng hiện tại
+    const sessionsThisMonth = sessionHistory.filter(session => {
+        const d = new Date(session.date);
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    });
+
+    const totalSessions = sessionsThisMonth.length;
+    const totalMinutes = sessionsThisMonth.reduce((sum, s) => sum + (s.durationMinutes || 0), 0);
+    const avgSession = totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0;
+
+    // Giả sử tỷ lệ thành công là phiên có thời lượng >= 5 phút
+    const successCount = sessionsThisMonth.filter(s => s.durationMinutes >= 5).length;
+    const successRate = totalSessions > 0 ? Math.round((successCount / totalSessions) * 100) : 0;
+
+    totalSessionsEl.textContent = totalSessions;
+    totalMinutesEl.textContent = totalMinutes;
+    avgSessionEl.textContent = avgSession;
+    successRateEl.textContent = successRate + "%";
+}
+
+
+
         // Các hàm chức năng
         function updateCakeDisplay() {
             const cake = cakes[selectedCake];
@@ -928,6 +955,12 @@ function getSessionsLast3Months() {
                 startTimer();
             }
         });
+btnStatistics.addEventListener('click', () => {
+    if (isRunning) return;
+    renderSessionList(); // nếu cần
+    updateMonthlyStats(); // cập nhật số liệu
+    statisticsModal.classList.remove("hidden");
+});
 
         circleCakeBtn.addEventListener("click", () => {
             if (isRunning) return;
@@ -937,6 +970,8 @@ function getSessionsLast3Months() {
         rewardConfirmBtn.addEventListener("click", () => {
             rewardModal.classList.add("hidden");
         });
+
+
 
         rewardCloseBtn.addEventListener("click", () => {
             rewardModal.classList.add("hidden");
@@ -1123,4 +1158,4 @@ function parseJwt(token) {
     </script>
 </body>
 </html>
-nut thông tin không mở được thì bạn hãy tìm ra lỗi ở chỗ nào và chỉ tôi cách sửa xem co loi gi ko
+
