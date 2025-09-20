@@ -3,1159 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Focus and Frost - Ứng dụng tập trung</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <title>AI Mind Map Generator</title>
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f3e8;
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --accent-color: #ff6b6b;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
         }
-        .scrollbar-thin::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .scrollbar-thin::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background-color: #9bba74;
-            border-radius: 3px;
-        }
-
-        /* statistics-reward modal content: no grid, just images in a row wrapping naturally */
-        #cake-list {
-            list-style: none;
-            padding: 0;
+        
+        * {
+            box-sizing: border-box;
             margin: 0;
-            max-height: 70vh;
-            overflow-y: auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: flex-start;
-            align-items: center;
-        }
-        #cake-list li {
-            background: transparent;
             padding: 0;
-            cursor: pointer;
-            outline: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 0.5rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        #cake-list li:focus,
-        #cake-list li:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 8px rgb(0 0 0 / 0.2);
-            z-index: 10;
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
         }
-        #cake-list li img {
-            width: 64px;
-            height: 64px;
-            object-fit: contain;
-            border-radius: 0.5rem;
-            user-select: none;
-            pointer-events: none;
-            display: block;
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        #cake-list li span {
-            display: none;
-        }
-        @media (max-width: 480px) {
-            #cake-list li img {
-                width: 48px;
-                height: 48px;
-            }
-        }
-
-        #googleSignInButton {
-            position: relative;
-            left: -15%;
-            width: 10rem !important;
-            height: 2.5rem !important;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #userAvatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 9999px;
-            object-fit: cover;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
-            transition: transform 0.2s ease;
-        }
-        #userAvatar:hover, #userAvatar:focus {
-            transform: scale(1.1);
-            outline: none;
-            box-shadow: 0 0 8px rgba(0,0,0,0.4);
-        }
-        .chart-container {
-            width: 100%;
-            height: 300px;
-            margin-top: 20px;
-            position: relative;
-            overflow-x: auto;
-            overflow-y: hidden;
-        }
-        .chart-wrapper {
-            position: relative;
-            height: 100%;
-            min-width: 600px; /* Đảm bảo biểu đồ đủ rộng để scroll */
-        }
-        .chart-bar {
-            position: absolute;
-            bottom: 30px; /* Dành chỗ cho trục x */
-            background-color: #9BBA74;
-            width: 30px;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            transition: height 0.5s ease;
-            cursor: pointer;
-        }
-        .chart-bar:hover {
-            background-color: #8aa85a;
-        }
-        .chart-label {
-            position: absolute;
-            bottom: -25px;
+        
+        header {
             text-align: center;
-            width: 30px;
-            font-size: 12px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .chart-value {
-            position: absolute;
-            top: -20px;
-            text-align: center;
-            width: 30px;
-            font-size: 11px;
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
-        .y-axis {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 30px;
+        
+        .app-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            padding: 10px 0;
+            gap: 30px;
         }
-        .y-tick {
-            font-size: 10px;
-            color: #666;
-            text-align: right;
-            padding-right: 5px;
+        
+        .upload-section, .customize-section, .preview-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
-        .x-axis {
-            position: absolute;
-            bottom: 0;
-            left: 30px;
-            width: calc(100% - 30px);
-            height: 20px;
-            border-top: 1px solid #ccc;
-        }
-        .stat-tabs {
-            display: flex;
-            justify-content: center;
+        
+        .section-title {
+            font-size: 1.5rem;
             margin-bottom: 20px;
-            border-bottom: 2px solid #9BBA74;
-        }
-        .stat-tab {
-            padding: 8px 16px;
-            cursor: pointer;
-            background: transparent;
-            border: none;
-            font-weight: bold;
-            color: #666;
-        }
-        .stat-tab.active {
-            color: #9BBA74;
-            border-bottom: 3px solid #9BBA74;
-        }
-        .monthly-stats {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .monthly-stats h3 {
-            text-align: center;
-            margin-bottom: 15px;
-            color: #4a5568;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
             gap: 10px;
         }
-        .stat-item {
+        
+        .section-title i {
+            font-size: 1.8rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--secondary-color);
+            border-radius: 8px;
+            padding: 40px 20px;
             text-align: center;
-            padding: 10px;
-            background-color: #edf2f7;
-            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: rgba(107, 140, 188, 0.05);
         }
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2d3748;
+        
+        .upload-area:hover {
+            background-color: rgba(107, 140, 188, 0.1);
         }
-        .stat-label {
-            font-size: 0.875rem;
-            color: #718096;
+        
+        .upload-area i {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
         }
-        #btn-start-stop {
-            transition: all 0.3s ease;
+        
+        .upload-text {
+            margin-bottom: 20px;
         }
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
+        
+        .btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
             color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            z-index: 100;
-            pointer-events: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
         }
-        .g_id_signin iframe {
-            width: 160px !important;
-            height: 40px !important;
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
         }
-.scale-0 {
-    transform: scale(0);
-    opacity: 0;
-    pointer-events: none;
-}
-
+        
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
+        
+        .btn-accent:hover {
+            background-color: #ff5252;
+        }
+        
+        .customization-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .option-group label {
+            font-weight: 600;
+        }
+        
+        .option-group select, .option-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .template-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .template-item {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .template-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .template-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+        
+        .template-name {
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .mindmap-preview {
+            min-height: 400px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mindmap-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .node {
+            position: absolute;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 150px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .node:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .node-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        
+        .node-content {
+            font-size: 0.9rem;
+        }
+        
+        .node-image {
+            margin-top: 10px;
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        
+        .central-node {
+            background-color: var(--primary-color);
+            color: white;
+            z-index: 10;
+        }
+        
+        .central-node .node-title {
+            color: white;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-top: 15px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--success-color);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 768px) {
+            .customization-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="relative min-h-screen flex flex-col items-center bg-[#f0f3e8]">
-    <!-- Background Image -->
-    <img src="https://i.ibb.co/JRr5YSFS/66-F84-D93-7422-4-D12-AD64-8-B3103-E20-BD3.png" alt="Background với hình dạng trừu tượng màu xanh lá và be, phong cách màu nước, không khí nhẹ nhàng và êm dịu" class="fixed inset-0 w-full h-full object-cover -z-10">
-
-    <!-- Header với Google Login / Logout Button và Avatar -->
-    <header class="w-full flex justify-end p-4 max-w-screen-md relative">
-        <div id="googleSignInButton" class="w-10 h-10"></div>
-        <button id="googleLogoutBtn" aria-label="Đăng xuất tài khoản Google" class="hidden flex items-center justify-center w-10 h-10 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] text-white font-semibold shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button" title="Đăng xuất tài khoản Google">
-            <i class="fas fa-arrow-right"></i>
-        </button>
-        <img id="userAvatar" src="" alt="Ảnh đại diện người dùng Google" class="hidden absolute top-4 left-4" tabindex="0" aria-label="Ảnh đại diện người dùng Google" draggable="false">
-    </header>
-
-    <!-- Main Content -->
-    <main class="flex-grow flex flex-col items-center justify-center px-4 pb-20 relative w-full max-w-screen-md" aria-label="Màn hình chính ứng dụng tập trung">
-        <!-- Time selector rectangle above circle with progress bar -->
-        <div id="time-selector" class="mb-6 w-full max-w-xs rounded-lg border-4 border-[#9BBA74] bg-white bg-opacity-90 p-4 flex flex-col select-none" aria-label="Chọn thời gian giờ phút giây">
-            <div class="relative w-full h-10 rounded bg-gray-200 overflow-hidden mb-2" aria-hidden="true">
-                <div id="time-progress-bar" class="absolute left-0 top-0 h-10 bg-[#9BBA74] transition-all duration-500 ease-linear" style="width: 0%;"></div>
-            </div>
-            <div class="flex justify-center space-x-2 z-10 relative">
-                <input type="number" id="input-hour" min="0" max="23" placeholder="Giờ" class="w-16 text-center rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] text-lg font-semibold bg-transparent" aria-label="Giờ">
-                <span class="text-xl font-semibold text-gray-700 select-none">:</span>
-                <input type="number" id="input-minute" min="0" max="59" placeholder="Phút" class="w-16 text-center rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] text-lg font-semibold bg-transparent" aria-label="Phút">
-                <span class="text-xl font-semibold text-gray-700 select-none">:</span>
-                <input type="number" id="input-second" min="0" max="59" placeholder="Giây" class="w-16 text-center rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] text-lg font-semibold bg-transparent" aria-label="Giây">
-            </div>
-        </div>
-
-        <!-- Circle with selected cake image -->
-        <button id="circle-cake" aria-label="Chọn món ăn" class="relative rounded-full border-8 border-[#9BBA74] w-56 h-56 flex items-center justify-center overflow-hidden shadow-lg bg-white" type="button">
-            <img id="cake-image" src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-40 h-40 object-contain" draggable="false">
-            <!-- GIF overlay hidden by default -->
-            <img id="cooking-gif" src="https://i.ibb.co/S4dcjq9g/Video.gif" alt="Hình ảnh GIF hoạt hình bánh đang được nấu, màu sắc tươi sáng, nền trong suốt" class="absolute inset-0 w-full h-full object-contain hidden" draggable="false">
-        </button>
-
-        <!-- Selected cake name rectangle below circle -->
-        <div id="selected-cake-name" class="mt-6 w-full max-w-xs rounded-lg border-4 border-[#9BBA74] bg-white bg-opacity-90 p-3 text-center text-xl font-semibold text-gray-800 select-none min-h-[3rem]" aria-live="polite" aria-atomic="true">
-            Macaron
-        </div>
-
-        <!-- Bottom rectangle with buttons -->
-        <div class="mt-6 w-full max-w-xs rounded-lg border-4 border-[#9BBA74] bg-white bg-opacity-90 p-4 flex items-center justify-between" aria-label="Các nút điều khiển">
-            <!-- Left side buttons -->
-            <div class="flex space-x-4">
-                <button id="btn-statistics" aria-label="Bảng thống kê dạng lưới" class="w-11 h-11 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button">
-                    <i class="fas fa-chart-bar text-lg"></i>
-                </button>
-            </div>
-
-            <!-- Center Start/Stop/Use Reward button -->
-            <button id="btn-start-stop" class="flex-1 mx-4 py-2 rounded-lg font-bold text-white bg-[#9BBA74] hover:bg-[#8aa85a] focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button" aria-live="polite" aria-atomic="true">
-                Bắt đầu
-            </button>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Mind Map Generator</h1>
+            <p class="app-description">Tạo sơ đồ tư duy từ hình ảnh chứa văn bản một cách thông minh</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="upload-section">
+                <h2 class="section-title"><i class="fas fa-upload"></i> Tải ảnh lên</h2>
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p class="upload-text">Kéo thả ảnh vào đây hoặc click để chọn từ thiết bị</p>
+                    <button class="btn" id="browseButton">Duyệt tệp</button>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </section>
             
-            <!-- Right side buttons -->
-            <div class="flex space-x-4">
-                <button id="btn-statistics-reward" aria-label="Sử dụng phần thưởng" class="w-11 h-11 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button">
-                    <i class="fas fa-gift text-lg"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Hidden feedback form for submission -->
-        <form id="feedback-form" action="https://formspree.io/f/mzzvylbg" method="POST" class="hidden">
-            <label>
-                <input type="email" name="thuyvan01012008@gmail.com" value="madebyvann">
-            </label>
-            <input type="hidden" name="message" id="feedback-message">
-        </form>
-    </main>
-
-    <!-- Feedback button bottom right -->
-    <button id="btn-feedback" aria-label="Góp ý" class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#9BBA74] hover:bg-[#8aa85a] flex items-center justify-center text-white shadow-lg z-50 focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button" title="Góp ý">
-        <i class="fas fa-comment-alt text-xl"></i>
-    </button>
-    <button id="infoToggleBtn" aria-label="Toggle information panel" class="absolute top-4 left-4 p-3 bg-green-600 text-white rounded-full shadow-md hover:bg-green-700 bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-green-400 flex items-center justify-center w-12 h-12">
-        <i class="fas fa-question text-lg"></i>
-    </button>
-
-    <!-- statistics-reward modal with scrollable images -->
-    <div
-        id="statistics-reward-modal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="statistics-reward-title"
-    >
-        <div class="bg-white rounded-lg max-w-md w-full p-6 flex flex-col space-y-4 shadow-lg max-h-[90vh] overflow-y-auto">
-            <h2 id="statistics-reward-title" class="text-2xl font-bold text-center text-gray-800 mb-4">
-                Lịch sử
-            </h2>
-            <ul id="cake-list" tabindex="0" aria-label="lịch sử tập trung">
-                <li tabindex="0" role="button" aria-label="Phần thưởng: bánh mâm xôi, ngày nhận: 2024-06-14, thời gian nhận: 21:30, thời lượng: 18 phút" class="cursor-pointer rounded">
-                    <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
-                </li>
-                <li tabindex="0" role="button" aria-label="Phần thưởng: bánh cherry, ngày nhận: 2024-06-15, thời gian nhận: 22:45, thời lượng: 22 phút" class="cursor-pointer rounded">
-                    <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png" alt="Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng" class="w-16 h-16 object-contain rounded" draggable="false" />
-                </li>
-            </ul>
-            <div id="session-info" class="mt-4 p-4 bg-gray-100 rounded-lg text-center text-gray-700 min-h-[4rem] select-none" aria-live="polite" aria-atomic="true"></div>
-            <button
-                id="statistics-reward-close"
-                class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]"
-                type="button"
-            >
-                Đóng
-            </button>
-        </div>
-    </div>
-
-    <!-- Reward modal -->
-    <div id="reward-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="reward-title">
-        <div class="bg-white rounded-lg max-w-sm w-full p-6 flex flex-col space-y-4 shadow-lg">
-            <h2 id="reward-title" class="text-xl font-semibold text-gray-800 text-center">Phần thưởng</h2>
-            <div id="reward-content" class="flex flex-col items-center space-y-2"></div>
-            <div class="flex justify-center space-x-4">
-                <button id="reward-confirm" class="px-6 py-2 rounded bg-[#9BBA74] hover:bg-[#8aa85a] text-white font-semibold focus:outline-none focus:ring-2 focus:ring-[#8aa85a]" type="button">OK</button>
-                <button id="reward-close" class="px-6 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400" type="button">Đóng</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Logout Confirmation Modal -->
-    <div id="logout-confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="logout-confirm-title">
-        <div class="bg-white rounded-lg max-w-sm w-full p-6 flex flex-col space-y-4 shadow-lg">
-            <h2 id="logout-confirm-title" class="text-xl font-semibold text-gray-800 text-center">Bạn có muốn đăng xuất không?</h2>
-            <div class="flex justify-center space-x-6">
-                <button id="logout-yes-btn" class="px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold focus:outline-none focus:ring-2 focus:ring-[#b0102a]" type="button">Có</button>
-                <button id="logout-no-btn" class="px-6 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400" type="button">Không</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Menu chọn món (hidden by default) -->
-    <div id="menu-select-cake" class="fixed bottom-32 left-1/2 transform -translate-x-1/2 w-full max-w-md max-h-60 bg-white bg-opacity-95 rounded-lg border border-gray-300 shadow-lg overflow-y-auto scrollbar-thin hidden z-40" role="list" aria-label="Menu chọn món ăn">
-        <div id="menu-cake-list" class="flex flex-wrap justify-center gap-4 p-4">
-            <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="Macaron" aria-label="Chọn món Macaron">
-                <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png" alt="Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng" class="w-14 h-14 object-contain" draggable="false">
-                <span class="text-sm font-semibold text-gray-700">Macaron</span>
-            </button>
-            <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="bánh mâm xôi" aria-label="Chọn món bánh mâm xôi">
-                <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png" alt="Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng" class="w-14 h-14 object-contain" draggable="false">
-                <span class="text-sm font-semibold text-gray-700">bánh mâm xôi</span>
-            </button>
-            <button type="button" class="flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" data-cake="bánh cherry" aria-label="Chọn món bánh cherry">
-                <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png" alt="Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng" class="w-14 h-14 object-contain" draggable="false">
-                <span class="text-sm font-semibold text-gray-700">bánh cherry</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Statistics modal with monthly chart only -->
-    <div id="statistics-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="statistics-title">
-        <div class="bg-white rounded-lg max-w-4xl w-full p-6 flex flex-col space-y-4 shadow-lg max-h-[90vh] overflow-y-auto">
-            <h2 id="statistics-title" class="text-2xl font-bold text-center text-gray-800 mb-4">Thống kê theo tháng</h2>
-            
-            <!-- Chart view -->
-            <div id="chart-view">
-                <div class="chart-container" id="monthly-chart">
-                    <div class="chart-wrapper" id="chart-wrapper">
-                        <!-- Y-axis -->
-                        <div class="y-axis" id="y-axis"></div>
-                        <!-- X-axis -->
-                        <div class="x-axis" id="x-axis"></div>
-                        <!-- Tooltip -->
-                        <div class="tooltip hidden" id="chart-tooltip"></div>
+            <section class="customize-section">
+                <h2 class="section-title"><i class="fas fa-sliders-h"></i> Tuỳ chỉnh sơ đồ</h2>
+                <div class="customization-options">
+                    <div class="option-group">
+                        <label for="layoutStyle">Kiểu bố cục</label>
+                        <select id="layoutStyle">
+                            <option value="radial">Dạng tỏa tròn</option>
+                            <option value="tree">Dạng cây</option>
+                            <option value="organizational">Dạng tổ chức</option>
+                            <option value="timeline">Dạng thời gian</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label for="colorScheme">Màu sắc</label>
+                        <select id="colorScheme">
+                            <option value="blue">Xanh dương</option>
+                            <option value="green">Xanh lá</option>
+                            <option value="red">Đỏ</option>
+                            <option value="purple">Tím</option>
+                            <option value="custom">Tuỳ chỉnh</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label for="fontStyle">Kiểu chữ</label>
+                        <select id="fontStyle">
+                            <option value="normal">Bình thường</option>
+                            <option value="bold">Đậm</option>
+                            <option value="italic">Nghiêng</option>
+                        </select>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Monthly statistics summary -->
-            <div class="monthly-stats">
-                <h3>Tổng quan tháng này</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-value" id="total-sessions">0</div>
-                        <div class="stat-label">Phiên tập trung</div>
+                
+                <h3 style="margin-top: 20px;">Mẫu sơ đồ</h3>
+                <div class="template-gallery">
+                    <div class="template-item">
+                        <img src="https://via.placeholder.com/150x100/4a6fa5/ffffff?text=Tròn" alt="Dạng tỏa tròn">
+                        <div class="template-name">Tỏa tròn</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="total-minutes">0</div>
-                        <div class="stat-label">Phút tập trung</div>
+                    <div class="template-item">
+                        <img src="https://via.placeholder.com/150x100/28a745/ffffff?text=Cây" alt="Dạng cây">
+                        <div class="template-name">Dạng cây</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="avg-session">0</div>
-                        <div class="stat-label">Phút/phiên</div>
+                    <div class="template-item">
+                        <img src="https://via.placeholder.com/150x100/dc3545/ffffff?text=Tổ+chức" alt="Dạng tổ chức">
+                        <div class="template-name">Tổ chức</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="success-rate">0%</div>
-                        <div class="stat-label">Tỷ lệ thành công</div>
+                    <div class="template-item">
+                        <img src="https://via.placeholder.com/150x100/6f42c1/ffffff?text=Thời+gian" alt="Dạng thời gian">
+                        <div class="template-name">Thời gian</div>
                     </div>
                 </div>
-            </div>
+            </section>
             
-            <button id="statistics-close" class="mt-4 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto focus:outline-none focus:ring-2 focus:ring-[#b0102a]" type="button">Đóng</button>
+            <section class="preview-section">
+                <h2 class="section-title"><i class="fas fa-eye"></i> Xem trước sơ đồ</h2>
+                <div class="mindmap-preview">
+                    <div class="mindmap-container" id="mindmapContainer">
+                        <!-- Sơ đồ tư duy sẽ được hiển thị ở đây -->
+                        <div class="node central-node" style="top: 200px; left: 50%; transform: translateX(-50%);">
+                            <div class="node-title">Chủ đề chính</div>
+                            <div class="node-content">Nội dung sẽ được hiển thị ở đây</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn" id="addImageBtn"><i class="fas fa-image"></i> Thêm ảnh vào ô</button>
+                    <button class="btn btn-accent" id="downloadBtn"><i class="fas fa-download"></i> Tải xuống</button>
+                    <button class="btn" id="shareBtn"><i class="fas fa-share-alt"></i> Chia sẻ</button>
+                </div>
+            </section>
         </div>
+        
+        <footer>
+            <p>© 2023 AI Mind Map Generator | Ứng dụng được phát triển bằng HTML, CSS và JavaScript</p>
+        </footer>
     </div>
-
-    <!-- Overlay -->
-    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 hidden z-40"></div>
-
-    <!-- Info Panel Centered -->
-    <aside id="infoPanel" class="fixed top-1/2 left-1/2 w-80 max-w-full bg-white shadow-lg rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 scale-0 transition-transform duration-300 ease-in-out z-50 overflow-y-auto max-h-[80vh]" aria-hidden="true">
-        <h2 class="text-2xl font-semibold mb-4 text-green-700">Thông tin</h2>
-        <p class="mb-4 text-gray-700">Thông tin</p>
-        <ul class="list-disc list-inside space-y-2 text-gray-600">
-            <li>1. Sau khi bắt đầu tập trung, không thể thay đổi thời gian.</li>
-            <li>2. Cần tập trung từ 5 phút trở lên: nhận được bánh đã chọn.</li>
-            <li>3. Nếu có góp ý hay thắc mắc nào hãy bấm vào nút bên góc phải</li>
-        </ul>
-        <button id="infoImageBtn" type="button" aria-label="Nút dẫn tới https://s.shopee.vn/2LOiiEexWq" class="mt-2 mx-auto block focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded" onclick="window.location.href='https://s.shopee.vn/2LOiiEexWq'" style="width: 36.8rem; max-width: 100%;">
-            <img src="https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/4fb2c5e6beca14572e1804fba69eed7455380768/01483ACC-E2E7-46D0-B15C-35BB9D41E3C4.png" class="w-full h-auto object-contain" draggable="false">
-        </button>
-        <button id="closeInfoBtn" class="mt-2 px-6 py-2 rounded bg-[#DC143C] hover:bg-[#b0102a] text-white font-semibold mx-auto block focus:outline-none focus:ring-2 focus:ring-[#b0102a]" type="button">Đóng</button>
-    </aside>
-
-    <audio id="background-music" loop preload="auto">
-        <source src="https://github.com/thuyvannnnnn/Focus-and-frost/raw/refs/heads/main/45.audio.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- Script Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client"></script>
 
     <script>
-        // Khởi tạo dữ liệu
-        const cakes = {
-            Macaron: {
-                name: "Macaron",
-                img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/00CC2FB6-9ED5-4466-9DDB-C7B89C391BB1.png",
-                alt: "Hình ảnh Macaron màu hồng pastel, bánh ngọt tròn nhỏ xinh xắn, nền trắng",
-            },
-            "bánh mâm xôi": {
-                name: "bánh mâm xôi",
-                img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/IMG_7293.png",
-                alt: "Hình ảnh quả cà tím tím tươi, bóng mượt, nền trắng",
-            },
-            "bánh cherry": {
-                name: "bánh cherry",
-                img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/B89384A0-0587-48F6-BBCB-4EC98C592F1C.png",
-                alt: "Hình ảnh bánh cherry màu đỏ tươi, bánh tròn nhỏ, nền trắng",
-            },
-            "bánh nướng bóng đêm": {
-                name: "bánh nướng bóng đêm",
-                img: "https://raw.githubusercontent.com/thuyvannnnnn/Focus-and-frost/main/037F53D1-AC5D-4165-BD08-FEFF3F39FD7D.png",
-                alt: "Hình ảnh bánh bị cháy đen, bánh tròn, nền trắng",
-            }
-        };
-
-        // Khởi tạo state
-        let selectedCake = "Macaron";
-        let selectedTime = { h: 0, m: 0, s: 0 };
-        let timerInterval = null;
-        let isRunning = false;
-        let remainingSeconds = 0;
-        let elapsedSeconds = 0;
-        let rewardInventory = JSON.parse(localStorage.getItem("rewardInventory")) || [];
-        let sessionHistory = JSON.parse(localStorage.getItem("sessionHistory")) || [];
-        let googleUser = JSON.parse(localStorage.getItem("googleuser")) || null;
-
-        // Lấy các phần tử DOM
-        const cakeImageEl = document.getElementById("cake-image");
-        const circleCakeBtn = document.getElementById("circle-cake");
-        const selectedCakeNameEl = document.getElementById("selected-cake-name");
-        const btnStartStop = document.getElementById("btn-start-stop");
-        const inputHour = document.getElementById("input-hour");
-        const inputMinute = document.getElementById("input-minute");
-        const inputSecond = document.getElementById("input-second");
-        const menuSelectCake = document.getElementById("menu-select-cake");
-        const cookingGif = document.getElementById("cooking-gif");
-        const rewardModal = document.getElementById("reward-modal");
-        const rewardContent = document.getElementById("reward-content");
-        const rewardConfirmBtn = document.getElementById("reward-confirm");
-        const rewardCloseBtn = document.getElementById("reward-close");
-        const feedbackBtn = document.getElementById("btn-feedback");
-        const feedbackForm = document.getElementById("feedback-form");
-        const feedbackMessage = document.getElementById("feedback-message");
-        const backgroundMusic = document.getElementById("background-music");
-        const timeProgressBar = document.getElementById("time-progress-bar");
-        const statisticsModal = document.getElementById("statistics-modal");
-        const statisticsCloseBtn = document.getElementById("statistics-close");
-        const monthlyChart = document.getElementById("monthly-chart");
-        const chartWrapper = document.getElementById("chart-wrapper");
-        const yAxis = document.getElementById("y-axis");
-        const xAxis = document.getElementById("x-axis");
-        const chartTooltip = document.getElementById("chart-tooltip");
-        const infoToggleBtn = document.getElementById("infoToggleBtn");
-        const infoPanel = document.getElementById("infoPanel");
-        const closeInfoBtn = document.getElementById("closeInfoBtn");
-        const overlay = document.getElementById("overlay");
-        const googleSignInButton = document.getElementById("googleSignInButton");
-        const googleLogoutBtn = document.getElementById("googleLogoutBtn");
-        const userAvatar = document.getElementById("userAvatar");
-        const logoutConfirmModal = document.getElementById("logout-confirm-modal");
-        const logoutYesBtn = document.getElementById("logout-yes-btn");
-        const logoutNoBtn = document.getElementById("logout-no-btn");
-        const btnStatisticsReward = document.getElementById("btn-statistics-reward");
-        const btnStatistics = document.getElementById("btn-statistics");
-        const cakeListEl = document.getElementById("cake-list");
-        const sessionInfoEl = document.getElementById("session-info");
-        const statisticsRewardModal = document.getElementById("statistics-reward-modal");
-        const statisticsRewardCloseBtn = document.getElementById("statistics-reward-close");
-
-        // Các phần tử thống kê
-        const totalSessionsEl = document.getElementById("total-sessions");
-        const totalMinutesEl = document.getElementById("total-minutes");
-        const avgSessionEl = document.getElementById("avg-session");
-        const successRateEl = document.getElementById("success-rate");
-
-function updateMonthlyStats() {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
-    // Lọc phiên trong tháng hiện tại
-    const sessionsThisMonth = sessionHistory.filter(session => {
-        const d = new Date(session.date);
-        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-    });
-
-    const totalSessions = sessionsThisMonth.length;
-    const totalMinutes = sessionsThisMonth.reduce((sum, s) => sum + (s.durationMinutes || 0), 0);
-    const avgSession = totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0;
-
-    // Giả sử tỷ lệ thành công là phiên có thời lượng >= 5 phút
-    const successCount = sessionsThisMonth.filter(s => s.durationMinutes >= 5).length;
-    const successRate = totalSessions > 0 ? Math.round((successCount / totalSessions) * 100) : 0;
-
-    totalSessionsEl.textContent = totalSessions;
-    totalMinutesEl.textContent = totalMinutes;
-    avgSessionEl.textContent = avgSession;
-    successRateEl.textContent = successRate + "%";
-}
-
-
-
-        // Các hàm chức năng
-        function updateCakeDisplay() {
-            const cake = cakes[selectedCake];
-            cakeImageEl.src = cake.img;
-            cakeImageEl.alt = cake.alt;
-            selectedCakeNameEl.textContent = cake.name;
-        }
-
-        function updateStartButtonState() {
-            const h = Math.min(Math.max(parseInt(inputHour.value) || 0, 0), 23);
-            const m = Math.min(Math.max(parseInt(inputMinute.value) || 0, 0), 59);
-            const s = Math.min(Math.max(parseInt(inputSecond.value) || 0, 0), 59);
-            const hasTime = h + m + s > 0 || elapsedSeconds > 0;
-            const hasCake = !!selectedCake;
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            const browseButton = document.getElementById('browseButton');
+            const progressBar = document.getElementById('progressBar');
+            const progress = document.getElementById('progress');
+            const mindmapContainer = document.getElementById('mindmapContainer');
+            const addImageBtn = document.getElementById('addImageBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const shareBtn = document.getElementById('shareBtn');
             
-            btnStartStop.disabled = !(hasTime && hasCake);
-            
-            if (isRunning) {
-                btnStartStop.textContent = "Dừng lại";
-                btnStartStop.classList.remove("bg-[#9BBA74]", "hover:bg-[#8aa85a]");
-                btnStartStop.classList.add("bg-[#DC143C]", "hover:bg-[#b0102a]");
-            } else {
-                btnStartStop.textContent = "Bắt đầu";
-                btnStartStop.classList.remove("bg-[#DC143C]", "hover:bg-[#b0102a]");
-                btnStartStop.classList.add("bg-[#9BBA74]", "hover:bg-[#8aa85a]");
-            }
-        }
-
-        function parseTimeInputs() {
-            return {
-                h: Math.min(Math.max(parseInt(inputHour.value) || 0, 0), 23),
-                m: Math.min(Math.max(parseInt(inputMinute.value) || 0, 0), 59),
-                s: Math.min(Math.max(parseInt(inputSecond.value) || 0, 0), 59),
-            };
-        }
-
-        function totalSeconds(time) {
-            return time.h * 3600 + time.m * 60 + time.s;
-        }
-
-        function formatTime(seconds) {
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = seconds % 60;
-            return (
-                (h > 0 ? String(h).padStart(2, "0") + ":" : "") +
-                String(m).padStart(2, "0") +
-                ":" +
-                String(s).padStart(2, "0")
-            );
-        }
-
-        function updateTimeInputsFromRemaining() {
-            const h = Math.floor(remainingSeconds / 3600);
-            const m = Math.floor((remainingSeconds % 3600) / 60);
-            const s = remainingSeconds % 60;
-            inputHour.value = h > 0 ? h : "";
-            inputMinute.value = m > 0 || h > 0 ? m : "";
-            inputSecond.value = s > 0 || m > 0 || h > 0 ? s : "";
-        }
-
-        function updateProgressBar() {
-            if (selectedTimeTotalSeconds === 0) {
-                timeProgressBar.style.width = "0%";
-                return;
-            }
-            const percent = (remainingSeconds / selectedTimeTotalSeconds) * 100;
-            timeProgressBar.style.width = percent + "%";
-        }
-
-        let selectedTimeTotalSeconds = 0;
-        function startTimer() {
-            if (isRunning) return;
-            
-            // Nếu chưa có thời gian đã chọn, lấy từ input
-            if (elapsedSeconds === 0) {
-                selectedTime = parseTimeInputs();
-                selectedTimeTotalSeconds = totalSeconds(selectedTime);
-                remainingSeconds = selectedTimeTotalSeconds;
-                
-                // Kiểm tra nếu không có thời gian hợp lệ
-                if (selectedTimeTotalSeconds <= 0) {
-                    alert("Vui lòng nhập thời gian hợp lệ!");
-                    return;
-                }
-            } else { 
-                remainingSeconds = selectedTimeTotalSeconds - elapsedSeconds;
-            }
-            
-            if (remainingSeconds <= 0) return;
-            
-            isRunning = true;
-            updateStartButtonState();
-            cookingGif.classList.remove("hidden");
-            cakeImageEl.classList.add("hidden");
-            
-            // Thử phát nhạc nền
-            backgroundMusic.play().catch((error) => {
-                console.log("Không thể phát nhạc nền:", error);
+            // Xử lý sự kiện tải lên ảnh
+            browseButton.addEventListener('click', function() {
+                fileInput.click();
             });
             
-            updateTimeInputsFromRemaining();
-            updateProgressBar();
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
             
-            timerInterval = setInterval(() => {
-                remainingSeconds--;
-                elapsedSeconds++;
-                updateTimeInputsFromRemaining();
-                updateProgressBar();
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#4a6fa5';
+                uploadArea.style.backgroundColor = 'rgba(107, 140, 188, 0.2)';
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.style.borderColor = '#6b8cbc';
+                uploadArea.style.backgroundColor = 'rgba(107, 140, 188, 0.05)';
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#6b8cbc';
+                uploadArea.style.backgroundColor = 'rgba(107, 140, 188, 0.05)';
                 
-                if (remainingSeconds <= 0) {
-                    stopTimer(true);
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    processImage();
                 }
-            }, 1000);
+            });
             
-            disableInputs(true);
-        }
-function getSessionsLast3Months() {
-    const now = new Date();
-    const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 1); // 3 tháng gần nhất, tính từ đầu tháng 3 tháng trước
-
-    return sessionHistory.filter(session => {
-        const sessionDate = new Date(session.date);
-        return sessionDate >= threeMonthsAgo && sessionDate <= now;
-    });
-}
-
-        function stopTimer(finished = false) {
-            if (!isRunning) return;
-            isRunning = false;
-            clearInterval(timerInterval);
-            timerInterval = null;
-            cookingGif.classList.add("hidden");
-            cakeImageEl.classList.remove("hidden");
-            backgroundMusic.pause();
-            backgroundMusic.currentTime = 0;
-            disableInputs(false);
+            fileInput.addEventListener('change', processImage);
             
-            if (finished) {
-                saveSessionHistory(elapsedSeconds);
-                showReward(elapsedSeconds);
-                resetTimerState();
-            } else {
-                updateStartButtonState();
-            }
-        }
-
-        function resetTimerState() {
-            elapsedSeconds = 0;
-            selectedTimeTotalSeconds = 0;
-            inputHour.value = "";
-            inputMinute.value = "";
-            inputSecond.value = "";
-            timeProgressBar.style.width = "0%";
-            updateStartButtonState();
-        }
-
-        function disableInputs(disable) {
-            inputHour.disabled = disable;
-            inputMinute.disabled = disable;
-            inputSecond.disabled = disable;
-            circleCakeBtn.disabled = disable;
-            document.getElementById("btn-statistics").disabled = disable;
-            document.getElementById("btn-statistics-reward").disabled = disable;
-        }
-
-        function showReward(elapsed) {
-            const timeMinutes = elapsed / 60;
-            let rewards = [];
-            let rewardName = "";
-
-            if (timeMinutes < 3) {
-                // Dưới 3 phút: phần thưởng bánh nướng bóng đêm
-                rewards = [{
-                    type: "cake",
-                    name: "bánh nướng bóng đêm",
-                    img: cakes["bánh nướng bóng đêm"].img,
-                    alt: cakes["bánh nướng bóng đêm"].alt,
-                }];
-                rewardName = "bánh nướng bóng đêm";
-            } else {
-                // Từ 3 phút trở lên: phần thưởng bánh đã chọn
-                rewards = [{
-                    type: "cake",
-                    name: selectedCake,
-                    img: cakes[selectedCake].img,
-                    alt: cakes[selectedCake].alt,
-                }];
-                rewardName = selectedCake;
-            }
-
-            // Lấy dữ liệu phần thưởng hiện tại từ localStorage
-            let rewardInventoryLocal = JSON.parse(localStorage.getItem("rewardInventory")) || [];
-            const now = new Date();
-            const dateStr = now.toISOString().slice(0, 10);
-            const timeStr = now.toTimeString().slice(0, 5);
-
-            rewards.forEach(r => {
-                // Lưu phần thưởng kèm ngày giờ và thời lượng
-                const rewardWithDate = {
-                    ...r,
-                    date: dateStr,
-                    time: timeStr,
-                    durationMinutes: Math.floor(elapsed / 60),
-                    id: Date.now() + Math.random(), // id duy nhất
+            // Xử lý ảnh và tạo sơ đồ tư duy
+            function processImage() {
+                if (!fileInput.files.length) return;
+                
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                progressBar.style.display = 'block';
+                
+                reader.onloadstart = function() {
+                    progress.style.width = '30%';
                 };
-                rewardInventoryLocal.push(rewardWithDate);
-            });
-            localStorage.setItem("rewardInventory", JSON.stringify(rewardInventoryLocal));
-            rewardInventory = rewardInventoryLocal;
-
-            // Hiển thị phần thưởng trong modal
-            rewardContent.innerHTML = "";
-            rewards.forEach((r) => {
-                const div = document.createElement("div");
-                div.className = "flex flex-col items-center space-y-1";
-                const img = document.createElement("img");
-                img.src = r.img;
-                img.alt = r.alt;
-                img.className = "w-[56px] h-[56px] object-contain";
-                img.draggable = false;
-                const span = document.createElement("span");
-                span.className = "text-gray-800 font-semibold text-center text-sm";
-                span.textContent = r.name;
-                div.appendChild(img);
-                div.appendChild(span);
-                rewardContent.appendChild(div);
-            });
-            const textLine = document.createElement("p");
-            textLine.className = "text-center font-semibold text-lg text-gray-900 mt-2";
-            textLine.textContent =
-                "Hoan hô! Bạn đã nhận được " +
-                rewards.map((r) => r.name).join(", ") +
-                ".";
-            rewardContent.appendChild(textLine);
-
-            rewardModal.classList.remove("hidden");
-        }
-
-        function saveSessionHistory(elapsedSeconds) {
-            if (elapsedSeconds <= 0) return;
-            const now = new Date();
-            const dateStr = now.toISOString().slice(0, 10);
-            const timeStr = now.toTimeString().slice(0, 5);
-            const newSession = {
-                id: Date.now(),
-                name: selectedCake,
-                time: timeStr,
-                date: dateStr,
-                timeSeconds: elapsedSeconds,
-                durationMinutes: Math.floor(elapsedSeconds / 60),
-                image: cakes[selectedCake].img,
-            };
-            sessionHistory.push(newSession);
-            localStorage.setItem("sessionHistory", JSON.stringify(sessionHistory));
-        }
-
-        function addSessionToList(elapsedSeconds) {
-            const now = new Date();
-            const dateStr = now.toISOString().slice(0, 10);
-            const timeStr = now.toTimeString().slice(0, 5);
-            const session = {
-                id: Date.now(),
-                name: selectedCake,
-                time: timeStr,
-                date: dateStr,
-                timeSeconds: elapsedSeconds,
-                durationMinutes: Math.floor(elapsedSeconds / 60),
-                image: cakes[selectedCake].img,
-            };
-            sessionHistory.push(session);
-            localStorage.setItem("sessionHistory", JSON.stringify(sessionHistory));
-            renderSessionList();
-        }
-
-        function renderSessionList() {
-            cakeListEl.innerHTML = "";
-            if (!sessionHistory.length && rewardInventory.length === 0) {
-                const emptyMsg = document.createElement("p");
-                emptyMsg.className = "text-center text-gray-500 w-full";
-                emptyMsg.textContent = "Chưa có lịch sử tập trung hoặc phần thưởng nào.";
-                cakeListEl.appendChild(emptyMsg);
-                sessionInfoEl.textContent = "";
-                return;
+                
+                reader.onload = function(e) {
+                    progress.style.width = '60%';
+                    
+                    // Giả lập quá trình xử lý AI và OCR
+                    setTimeout(function() {
+                        progress.style.width = '100%';
+                        
+                        // Giả lập kết quả trích xuất văn bản từ ảnh
+                        const extractedText = "Đây là văn bản mẫu được trích xuất từ hình ảnh. Ứng dụng thực tế sẽ sử dụng API OCR như Tesseract.js hoặc Google Vision API để nhận dạng văn bản thật.";
+                        
+                        // Tạo sơ đồ tư duy từ văn bản
+                        createMindMap(extractedText);
+                        
+                        // Ẩn thanh tiến trình sau khi hoàn thành
+                        setTimeout(function() {
+                            progressBar.style.display = 'none';
+                        }, 500);
+                    }, 1500);
+                };
+                
+                reader.readAsDataURL(file);
             }
-            // Show all rewardInventory items (with images, duplicates allowed)
-            rewardInventory.forEach(item => {
-                if (item.name === "Kem 1" || item.name === "Xanh lá") return;
-
-                const li = document.createElement("li");
-                li.className = "cursor-pointer rounded";
-                li.setAttribute("tabindex", "0");
-                li.setAttribute("role", "button");
-                li.setAttribute("aria-label", `${item.name}, ngày: ${item.date}, thời gian nhận: ${item.time}, thời lượng: ${item.durationMinutes} phút`);
-                li.dataset.name = item.name;
-                li.dataset.date = item.date;
-                li.dataset.time = item.time;
-                li.dataset.durationMinutes = item.durationMinutes;
-
-                const img = document.createElement("img");
-                img.src = item.img;
-                img.alt = item.alt;
-                img.className = "w-16 h-16 object-contain rounded";
-                img.draggable = false;
-
-                li.appendChild(img);
-                cakeListEl.appendChild(li);
-
-                li.addEventListener("click", () => {
-                    showSessionInfoByNameDateTime(item.name, item.date, item.time, item.durationMinutes);
+            
+            // Tạo sơ đồ tư duy từ văn bản
+            function createMindMap(text) {
+                // Xóa nội dung cũ
+                mindmapContainer.innerHTML = '';
+                
+                // Tạo nút trung tâm
+                const centralNode = document.createElement('div');
+                centralNode.className = 'node central-node';
+                centralNode.style.top = '200px';
+                centralNode.style.left = '50%';
+                centralNode.style.transform = 'translateX(-50%)';
+                centralNode.innerHTML = `
+                    <div class="node-title">Chủ đề chính</div>
+                    <div class="node-content">${text.substring(0, 50)}...</div>
+                `;
+                
+                mindmapContainer.appendChild(centralNode);
+                
+                // Tạo các nút con (giả lập)
+                const nodes = [
+                    { title: 'Ý tưởng 1', content: text.substring(0, 30), top: 100, left: '30%' },
+                    { title: 'Ý tưởng 2', content: text.substring(31, 60), top: 100, left: '70%' },
+                    { title: 'Ý tưởng 3', content: text.substring(61, 90), top: 300, left: '30%' },
+                    { title: 'Ý tưởng 4', content: text.substring(91, 120), top: 300, left: '70%' }
+                ];
+                
+                nodes.forEach((node, index) => {
+                    const nodeElement = document.createElement('div');
+                    nodeElement.className = 'node';
+                    nodeElement.style.top = node.top + 'px';
+                    nodeElement.style.left = node.left;
+                    nodeElement.innerHTML = `
+                        <div class="node-title">${node.title}</div>
+                        <div class="node-content">${node.content}</div>
+                    `;
+                    
+                    mindmapContainer.appendChild(nodeElement);
                 });
-                li.addEventListener("keydown", (e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        showSessionInfoByNameDateTime(item.name, item.date, item.time, item.durationMinutes);
-                    }
-                });
-            });
-            sessionInfoEl.textContent = "";
-        }
-
-        function showSessionInfoByNameDateTime(name, date, time, duration) {
-            sessionInfoEl.textContent = `Phần thưởng: ${name} | Ngày: ${date} | ${time} | Thời lượng: ${duration} phút`;
-        }
-
-        function renderCakeMenu() {
-            const menuCakeList = document.getElementById("menu-cake-list");
-            menuCakeList.innerHTML = "";
-            Object.keys(cakes).forEach(cakeName => {
-                if (cakeName.trim() === "bánh nướng bóng đêm") return; // Bỏ bánh nướng bóng đêm khỏi menu nếu muốn
-                const cake = cakes[cakeName];
-
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.className = "flex flex-col items-center space-y-1 focus:outline-none focus:ring-2 focus:ring-[#9BBA74] rounded";
-                btn.setAttribute("data-cake", cakeName);
-                btn.setAttribute("aria-label", `Chọn món ${cakeName}`);
-
-                const img = document.createElement("img");
-                img.src = cake.img;
-                img.alt = cake.alt;
-                img.className = "w-14 h-14 object-contain";
-                img.draggable = false;
-
-                const span = document.createElement("span");
-                span.className = "text-sm font-semibold text-gray-700";
-                span.textContent = cakeName;
-
-                btn.appendChild(img);
-                btn.appendChild(span);
-
-                btn.addEventListener("click", () => {
-                    if (isRunning) return;
-                    selectedCake = cakeName;
-                    updateCakeDisplay();
-                    menuSelectCake.classList.add("hidden");
-                    updateStartButtonState();
-                });
-
-                menuCakeList.appendChild(btn);
-            });
-        }
-
-        // Xử lý sự kiện
-        inputHour.addEventListener("input", () => {
-            if (inputHour.value.length > 2) inputHour.value = inputHour.value.slice(0, 2);
-            updateStartButtonState();
-        });
-        inputMinute.addEventListener("input", () => {
-            if (inputMinute.value.length > 2) inputMinute.value = inputMinute.value.slice(0, 2);
-            updateStartButtonState();
-        });
-        inputSecond.addEventListener("input", () => {
-            if (inputSecond.value.length > 2) inputSecond.value = inputSecond.value.slice(0, 2);
-            updateStartButtonState();
-        });
-
-        btnStartStop.addEventListener("click", () => {
-            if (isRunning) {
-                stopTimer(false);
-            } else {
-                startTimer();
-            }
-        });
-btnStatistics.addEventListener('click', () => {
-    if (isRunning) return;
-    renderSessionList(); // nếu cần
-    updateMonthlyStats(); // cập nhật số liệu
-    statisticsModal.classList.remove("hidden");
-});
-
-        circleCakeBtn.addEventListener("click", () => {
-            if (isRunning) return;
-            menuSelectCake.classList.toggle("hidden");
-        });
-
-        rewardConfirmBtn.addEventListener("click", () => {
-            rewardModal.classList.add("hidden");
-        });
-
-
-
-        rewardCloseBtn.addEventListener("click", () => {
-            rewardModal.classList.add("hidden");
-        });
-
-        feedbackBtn.addEventListener("click", () => {
-            const message = prompt("Vui lòng nhập góp ý của bạn:");
-            if (message === null) return;
-            if (message.trim() === "") {
-                alert("Vui lòng nhập nội dung góp ý.");
-                return;
-            }
-            feedbackMessage.value = message.trim();
-            feedbackForm.submit();
-        });
-
-        btnStatistics.addEventListener('click', () => {
-            if (isRunning) return;
-            renderSessionList();
-            statisticsModal.classList.remove("hidden");
-        });
-
-        statisticsCloseBtn.addEventListener('click', () => {
-            statisticsModal.classList.add("hidden");
-        });
-
-        btnStatisticsReward.addEventListener('click', () => {
-            if (isRunning) return;
-            renderSessionList();
-            statisticsRewardModal.classList.remove("hidden");
-        });
-
-        statisticsRewardCloseBtn.addEventListener('click', () => {
-            statisticsRewardModal.classList.add("hidden");
-        });
-
-        // Xử lý đăng nhập Google
-        function initializeGoogleSignIn() {
-            if (typeof google === 'undefined') {
-                console.error("Google Identity Services script not loaded");
-                return;
             }
             
-            google.accounts.id.initialize({
-                client_id: "854945467513-gvec4958ef17nqjsoauvk9dcqinceeel.apps.googleusercontent.com",
-                callback: handleCredentialResponse,
-                auto_select: false,
-                cancel_on_tap_outside: true
+            // Xử lý sự kiện thêm ảnh vào ô
+            addImageBtn.addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        // Thêm ảnh vào nút đầu tiên (chỉ để minh họa)
+                        const firstNode = document.querySelector('.node');
+                        if (firstNode) {
+                            const img = document.createElement('img');
+                            img.src = event.target.result;
+                            img.className = 'node-image';
+                            firstNode.appendChild(img);
+                        }
+                    };
+                    
+                    reader.readAsDataURL(file);
+                };
+                
+                input.click();
             });
             
-            google.accounts.id.renderButton(
-                document.getElementById("googleSignInButton"),
-                { 
-                    theme: "outline", 
-                    size: "large",
-                    width: 160,
-                    text: "signin_with",
-                    shape: "pill"
-                }
-            );
+            // Xử lý sự kiện tải xuống
+            downloadBtn.addEventListener('click', function() {
+                alert('Tính năng tải xuống sẽ được kích hoạt. Ứng dụng thực tế sẽ cho phép tải sơ đồ dưới dạng hình ảnh PNG hoặc PDF.');
+            });
             
-            // Kiểm tra nếu đã đăng nhập trước đó
-            updateLoginButtonUI();
-        }
-
-        function handleCredentialResponse(response) {
-            const responsePayload = parseJwt(response.credential);
-            console.log("Google login successful:", responsePayload);
+            // Xử lý sự kiện chia sẻ
+            shareBtn.addEventListener('click', function() {
+                alert('Tính năng chia sẻ sẽ được kích hoạt. Ứng dụng thực tế sẽ cho phép chia sẻ sơ đồ qua email hoặc mạng xã hội.');
+            });
             
-            // Lưu thông tin người dùng
-            googleUser = {
-                name: responsePayload.name,
-                email: responsePayload.email,
-                picture: responsePayload.picture,
-                sub: responsePayload.sub
-            };
+            // Xử lý thay đổi tuỳ chọn
+            document.getElementById('layoutStyle').addEventListener('change', function() {
+                alert('Kiểu bố cục đã thay đổi: ' + this.value);
+            });
             
-            localStorage.setItem("googleuser", JSON.stringify(googleUser));
-            
-            // Cập nhật giao diện
-            updateLoginButtonUI();
-            
-            // Có thể gửi thông tin đến server của bạn ở đây
-            // sendUserDataToServer(googleUser);
-        }
-
-        function updateLoginButtonUI() {
-            const user = JSON.parse(localStorage.getItem("googleuser"));
-            
-            if (user) {
-                // Đã đăng nhập
-                document.getElementById("googleSignInButton").classList.add("hidden");
-                document.getElementById("googleLogoutBtn").classList.remove("hidden");
-                document.getElementById("userAvatar").classList.remove("hidden");
-                document.getElementById("userAvatar").src = user.picture;
-            } else {
-                // Chưa đăng nhập
-                document.getElementById("googleSignInButton").classList.remove("hidden");
-                document.getElementById("googleLogoutBtn").classList.add("hidden");
-                document.getElementById("userAvatar").classList.add("hidden");
-            }
-        }
-
-        function handleLogout() {
-            localStorage.removeItem("googleuser");
-            googleUser = null;
-            updateLoginButtonUI();
-            
-            // Đăng xuất khỏi Google
-            google.accounts.id.disableAutoSelect();
-            
-            console.log("User logged out");
-        }
-
-        // Xử lý sự kiện đăng xuất
-        googleLogoutBtn.addEventListener('click', () => {
-            logoutConfirmModal.classList.remove("hidden");
+            document.getElementById('colorScheme').addEventListener('change', function() {
+                alert('Màu sắc đã thay đổi: ' + this.value);
+            });
         });
-
-        logoutYesBtn.addEventListener('click', () => {
-            handleLogout();
-            logoutConfirmModal.classList.add("hidden");
-        });
-
-        logoutNoBtn.addEventListener('click', () => {
-            logoutConfirmModal.classList.add("hidden");
-        });
-
-        if (!localStorage.getItem('sessionHistory')) {
-            localStorage.setItem('sessionHistory', JSON.stringify([]));
-        }
-
-        window.addEventListener("load", () => {
-    updateCakeDisplay();
-    updateStartButtonState();
-    renderCakeMenu();
-    timeProgressBar.style.width = "100%";
-    initializeGoogleSignIn();
-    updateLoginButtonUI();
-
-    // Thêm sự kiện mở/đóng info panel
-    infoToggleBtn.addEventListener("click", () => {
-        const isHidden = infoPanel.classList.contains("scale-0");
-        if (isHidden) {
-            infoPanel.classList.remove("scale-0");
-            infoPanel.setAttribute("aria-hidden", "false");
-            overlay.classList.remove("hidden");
-        } else {
-            infoPanel.classList.add("scale-0");
-            infoPanel.setAttribute("aria-hidden", "true");
-            overlay.classList.add("hidden");
-        }
-    });
-
-    closeInfoBtn.addEventListener("click", () => {
-        infoPanel.classList.add("scale-0");
-        infoPanel.setAttribute("aria-hidden", "true");
-        overlay.classList.add("hidden");
-    });
-
-    // Ẩn info panel khi click ra ngoài (overlay)
-    overlay.addEventListener("click", () => {
-        infoPanel.classList.add("scale-0");
-        infoPanel.setAttribute("aria-hidden", "true");
-        overlay.classList.add("hidden");
-    });
-});
-
-// JWT parse helper
-function parseJwt(token) {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    } catch {
-        return {};
-    }
-}
-
-
     </script>
 </body>
 </html>
-
