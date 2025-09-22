@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mind Map Generator - Improved</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Mind Map Generator - Mobile Optimized</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
@@ -21,86 +21,107 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
             background-color: #f5f7fa;
             color: var(--dark-color);
             line-height: 1.6;
-            padding: 20px;
+            padding: 10px;
+            overflow-x: hidden;
+            touch-action: manipulation;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
         
         header {
             text-align: center;
-            padding: 30px;
+            padding: 20px 15px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
         }
         
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
         }
         
         .app-description {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             opacity: 0.9;
-            max-width: 600px;
+            max-width: 100%;
             margin: 0 auto;
         }
         
         .main-content {
             display: flex;
-            flex-wrap: wrap;
-            padding: 20px;
-        }
-        
-        .left-panel {
-            flex: 1;
-            min-width: 300px;
-            padding: 20px;
-        }
-        
-        .right-panel {
-            flex: 2;
-            min-width: 400px;
-            padding: 20px;
-            border-left: 1px solid #eee;
-            display: flex;
             flex-direction: column;
+            padding: 15px;
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px 5px;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
         
         .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             color: var(--primary-color);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .section-title i {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
         }
         
         .upload-area {
             border: 2px dashed var(--secondary-color);
             border-radius: 8px;
-            padding: 40px 20px;
+            padding: 30px 15px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
             background-color: rgba(107, 140, 188, 0.05);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             position: relative;
         }
         
@@ -109,32 +130,38 @@
         }
         
         .upload-area i {
-            font-size: 3rem;
+            font-size: 2.5rem;
             color: var(--secondary-color);
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .upload-text {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
         }
         
         .btn {
-            padding: 12px 25px;
+            padding: 12px 20px;
             background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 6px;
+            min-height: 44px; /* Đảm bảo kích thước chạm tốt trên mobile */
         }
         
         .btn:hover {
             background-color: var(--secondary-color);
-            transform: translateY(-2px);
+        }
+        
+        .btn-block {
+            width: 100%;
         }
         
         .btn-accent {
@@ -155,34 +182,35 @@
         
         .customization-options {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
         }
         
         .option-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
         
         .option-group label {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .option-group select, .option-group input {
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 1rem;
+            min-height: 44px; /* Đảm bảo kích thước chạm tốt */
         }
         
         .template-gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
         }
         
         .template-item {
@@ -193,33 +221,32 @@
             transition: all 0.3s;
         }
         
-        .template-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        .template-item.active {
             border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(74, 111, 165, 0.3);
         }
         
         .template-item img {
             width: 100%;
-            height: 80px;
+            height: 70px;
             object-fit: cover;
         }
         
         .template-name {
-            padding: 10px 5px;
+            padding: 8px 3px;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         
         .mindmap-preview {
-            flex: 1;
-            min-height: 500px;
+            min-height: 400px;
             border: 1px solid #eee;
             border-radius: 8px;
-            padding: 20px;
+            padding: 15px;
             background-color: #f9f9f9;
             position: relative;
             overflow: auto;
+            -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
         }
         
         .mindmap-container {
@@ -228,6 +255,7 @@
             position: relative;
             transform-origin: center center;
             transition: transform 0.3s;
+            min-height: 350px;
         }
         
         .node {
@@ -235,38 +263,42 @@
             background: white;
             border: 2px solid var(--primary-color);
             border-radius: 8px;
-            padding: 15px;
-            min-width: 150px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-            cursor: move;
+            padding: 12px;
+            min-width: 130px;
+            max-width: 200px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
             transition: all 0.3s;
             z-index: 2;
+            font-size: 0.85rem;
+            touch-action: none; /* Cho phép kéo thả trên mobile */
         }
         
         .node:hover {
             transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
             z-index: 3;
         }
         
         .node-title {
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: var(--primary-color);
             border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
+            padding-bottom: 4px;
+            font-size: 0.9rem;
         }
         
         .node-content {
-            font-size: 0.9rem;
-            min-height: 40px;
+            font-size: 0.8rem;
+            min-height: 35px;
         }
         
         .node-image {
-            margin-top: 10px;
+            margin-top: 8px;
             max-width: 100%;
             border-radius: 5px;
-            max-height: 100px;
+            max-height: 80px;
             object-fit: cover;
         }
         
@@ -289,18 +321,17 @@
         }
         
         .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
         }
         
         .progress-bar {
-            height: 5px;
+            height: 4px;
             background-color: #eee;
             border-radius: 5px;
-            margin-top: 15px;
+            margin-top: 12px;
             overflow: hidden;
             display: none;
         }
@@ -314,17 +345,18 @@
         
         .image-preview {
             max-width: 100%;
-            max-height: 200px;
-            margin-top: 15px;
+            max-height: 150px;
+            margin-top: 12px;
             border-radius: 8px;
             display: none;
         }
         
         .status-message {
-            margin-top: 10px;
-            padding: 10px;
+            margin-top: 8px;
+            padding: 8px;
             border-radius: 5px;
             display: none;
+            font-size: 0.85rem;
         }
         
         .status-success {
@@ -347,10 +379,11 @@
         
         .zoom-controls {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            bottom: 15px;
+            right: 15px;
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 8px;
             z-index: 10;
         }
         
@@ -365,6 +398,7 @@
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 1rem;
         }
         
         .node-controls {
@@ -372,12 +406,12 @@
             top: 5px;
             right: 5px;
             display: flex;
-            gap: 5px;
+            gap: 4px;
         }
         
         .node-btn {
-            width: 25px;
-            height: 25px;
+            width: 22px;
+            height: 22px;
             border-radius: 3px;
             background: rgba(255, 255, 255, 0.9);
             color: var(--dark-color);
@@ -385,7 +419,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 10px;
             transition: all 0.2s;
         }
         
@@ -396,30 +430,72 @@
         
         footer {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             color: #6c757d;
             background-color: #f8f9fa;
             border-top: 1px solid #eee;
+            font-size: 0.8rem;
         }
         
+        .mobile-notice {
+            display: none;
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            border: 1px solid #ffeaa7;
+        }
+        
+        /* Hiển thị thông báo trên mobile */
         @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            
-            .right-panel {
-                border-left: none;
-                border-top: 1px solid #eee;
+            .mobile-notice {
+                display: block;
             }
             
             .action-buttons {
-                flex-direction: column;
-                align-items: center;
+                grid-template-columns: 1fr;
+            }
+            
+            .template-gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Điều chỉnh cho màn hình rất nhỏ */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            .node {
+                min-width: 110px;
+                padding: 8px;
             }
             
             .btn {
-                width: 100%;
-                justify-content: center;
+                padding: 10px 15px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Tối ưu cho thiết bị di động */
+        @media (hover: none) and (pointer: coarse) {
+            .node:hover {
+                transform: none;
+            }
+            
+            .btn:hover {
+                background-color: var(--primary-color);
+            }
+            
+            .template-item:hover {
+                transform: none;
             }
         }
     </style>
@@ -428,18 +504,28 @@
     <div class="container">
         <header>
             <h1>AI Mind Map Generator</h1>
-            <p class="app-description">Tạo sơ đồ tư duy từ hình ảnh chứa văn bản với công nghệ OCR thực</p>
+            <p class="app-description">Tạo sơ đồ tư duy từ hình ảnh - Tối ưu cho điện thoại</p>
         </header>
         
+        <div class="mobile-notice">
+            <i class="fas fa-mobile-alt"></i> Ứng dụng đã được tối ưu cho điện thoại. Sử dụng hai ngón tay để phóng to/thu nhỏ sơ đồ.
+        </div>
+        
         <div class="main-content">
-            <div class="left-panel">
+            <div class="tab-container">
+                <button class="tab active" data-tab="upload">Tải ảnh</button>
+                <button class="tab" data-tab="customize">Tùy chỉnh</button>
+                <button class="tab" data-tab="preview">Sơ đồ</button>
+            </div>
+            
+            <div class="tab-content active" id="upload-tab">
                 <section class="upload-section">
                     <h2 class="section-title"><i class="fas fa-upload"></i> Tải ảnh lên</h2>
                     <div class="upload-area" id="uploadArea">
                         <i class="fas fa-cloud-upload-alt"></i>
-                        <p class="upload-text">Kéo thả ảnh vào đây hoặc click để chọn từ thiết bị</p>
-                        <button class="btn" id="browseButton">
-                            <i class="fas fa-folder-open"></i> Duyệt tệp
+                        <p class="upload-text">Chạm để chọn ảnh từ thiết bị của bạn</p>
+                        <button class="btn btn-block" id="browseButton">
+                            <i class="fas fa-folder-open"></i> Chọn ảnh
                         </button>
                         <input type="file" id="fileInput" accept="image/*" style="display: none;">
                     </div>
@@ -449,7 +535,9 @@
                     </div>
                     <div id="statusMessage" class="status-message"></div>
                 </section>
-                
+            </div>
+            
+            <div class="tab-content" id="customize-tab">
                 <section class="customize-section">
                     <h2 class="section-title"><i class="fas fa-sliders-h"></i> Tuỳ chỉnh sơ đồ</h2>
                     <div class="customization-options">
@@ -470,23 +558,13 @@
                                 <option value="green">Xanh lá</option>
                                 <option value="red">Đỏ</option>
                                 <option value="purple">Tím</option>
-                                <option value="custom">Tuỳ chỉnh</option>
-                            </select>
-                        </div>
-                        
-                        <div class="option-group">
-                            <label for="fontStyle">Kiểu chữ</label>
-                            <select id="fontStyle">
-                                <option value="normal">Bình thường</option>
-                                <option value="bold">Đậm</option>
-                                <option value="italic">Nghiêng</option>
                             </select>
                         </div>
                     </div>
                     
-                    <h3 style="margin-top: 20px;">Mẫu sơ đồ</h3>
+                    <h3 style="margin-top: 15px;">Mẫu sơ đồ</h3>
                     <div class="template-gallery">
-                        <div class="template-item" data-layout="radial">
+                        <div class="template-item active" data-layout="radial">
                             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='100' viewBox='0 0 150 100'%3E%3Ccircle cx='75' cy='50' r='30' fill='%234a6fa5'/%3E%3Ccircle cx='75' cy='50' r='40' fill='none' stroke='%234a6fa5' stroke-width='2'/%3E%3C/svg%3E" alt="Dạng tỏa tròn">
                             <div class="template-name">Tỏa tròn</div>
                         </div>
@@ -494,27 +572,19 @@
                             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='100' viewBox='0 0 150 100'%3E%3Cpath d='M75,20 V80 M75,30 H40 M75,30 H110 M75,50 H30 M75,50 H120' stroke='%2328a745' stroke-width='2' fill='none'/%3E%3Ccircle cx='75' cy='20' r='10' fill='%2328a745'/%3E%3Ccircle cx='40' cy='30' r='10' fill='%2328a745'/%3E%3Ccircle cx='110' cy='30' r='10' fill='%2328a745'/%3E%3Ccircle cx='30' cy='50' r='10' fill='%2328a745'/%3E%3Ccircle cx='120' cy='50' r='10' fill='%2328a745'/%3E%3C/svg%3E" alt="Dạng cây">
                             <div class="template-name">Dạng cây</div>
                         </div>
-                        <div class="template-item" data-layout="organizational">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='100' viewBox='0 0 150 100'%3E%3Crect x='60' y='10' width='30' height='20' fill='%23dc3545'/%3E%3Crect x='20' y='40' width='30' height='20' fill='%23dc3545'/%3E%3Crect x='100' y='40' width='30' height='20' fill='%23dc3545'/%3E%3Crect x='20' y='70' width='30' height='20' fill='%23dc3545'/%3E%3Crect x='100' y='70' width='30' height='20' fill='%23dc3545'/%3E%3Cpath d='M75,30 V40 M75,40 H40 M75,40 H110 M40,60 V70 M110,60 V70' stroke='%23dc3545' stroke-width='2'/%3E%3C/svg%3E" alt="Dạng tổ chức">
-                            <div class="template-name">Tổ chức</div>
-                        </div>
-                        <div class="template-item" data-layout="timeline">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='100' viewBox='0 0 150 100'%3E%3Cline x1='20' y1='50' x2='130' y2='50' stroke='%236f42c1' stroke-width='2'/%3E%3Ccircle cx='30' cy='50' r='8' fill='%236f42c1'/%3E%3Ccircle cx='60' cy='50' r='8' fill='%236f42c1'/%3E%3Ccircle cx='90' cy='50' r='8' fill='%236f42c1'/%3E%3Ccircle cx='120' cy='50' r='8' fill='%236f42c1'/%3E%3Ctext x='30' y='30' font-family='Arial' font-size='10' fill='%236f42c1' text-anchor='middle'%3EStep 1%3C/text%3E%3Ctext x='60' y='30' font-family='Arial' font-size='10' fill='%236f42c1' text-anchor='middle'%3EStep 2%3C/text%3E%3Ctext x='90' y='30' font-family='Arial' font-size='10' fill='%236f42c1' text-anchor='middle'%3EStep 3%3C/text%3E%3Ctext x='120' y='30' font-family='Arial' font-size='10' fill='%236f42c1' text-anchor='middle'%3EStep 4%3C/text%3E%3C/svg%3E" alt="Dạng thời gian">
-                            <div class="template-name">Thời gian</div>
-                        </div>
                     </div>
                 </section>
             </div>
             
-            <div class="right-panel">
+            <div class="tab-content" id="preview-tab">
                 <section class="preview-section">
-                    <h2 class="section-title"><i class="fas fa-eye"></i> Xem trước sơ đồ</h2>
+                    <h2 class="section-title"><i class="fas fa-eye"></i> Sơ đồ tư duy</h2>
                     <div class="mindmap-preview">
                         <div class="mindmap-container" id="mindmapContainer">
                             <!-- Sơ đồ tư duy sẽ được hiển thị ở đây -->
                             <div class="node central-node" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
                                 <div class="node-title">Chủ đề chính</div>
-                                <div class="node-content">Nội dung sẽ được hiển thị ở đây sau khi tải ảnh lên</div>
+                                <div class="node-content">Tải ảnh lên để bắt đầu</div>
                             </div>
                         </div>
                         <div class="zoom-controls">
@@ -529,10 +599,10 @@
                             <i class="fas fa-plus-circle"></i> Thêm nhánh
                         </button>
                         <button class="btn" id="addImageBtn">
-                            <i class="fas fa-image"></i> Thêm ảnh vào ô
+                            <i class="fas fa-image"></i> Thêm ảnh
                         </button>
                         <button class="btn btn-success" id="saveBtn">
-                            <i class="fas fa-save"></i> Lưu dự án
+                            <i class="fas fa-save"></i> Lưu
                         </button>
                         <button class="btn btn-accent" id="downloadBtn">
                             <i class="fas fa-download"></i> Tải xuống
@@ -543,7 +613,7 @@
         </div>
         
         <footer>
-            <p>© 2023 AI Mind Map Generator | Ứng dụng được phát triển bằng HTML, CSS và JavaScript với Tesseract.js</p>
+            <p>© 2023 AI Mind Map Generator | Tối ưu cho thiết bị di động</p>
         </footer>
     </div>
 
@@ -564,11 +634,29 @@
             const zoomIn = document.getElementById('zoomIn');
             const zoomOut = document.getElementById('zoomOut');
             const resetZoom = document.getElementById('resetZoom');
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
             
             let currentZoom = 1;
             let selectedNode = null;
             let isDragging = false;
             let dragOffset = { x: 0, y: 0 };
+            let touchStartX, touchStartY;
+            
+            // Xử lý chuyển tab
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Xóa active class từ tất cả tabs và contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Thêm active class cho tab và content được chọn
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
             
             // Xử lý sự kiện tải lên ảnh
             browseButton.addEventListener('click', function() {
@@ -579,6 +667,7 @@
                 fileInput.click();
             });
             
+            // Hỗ trợ kéo thả trên mobile
             uploadArea.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 uploadArea.style.borderColor = '#4a6fa5';
@@ -615,12 +704,24 @@
                     return;
                 }
                 
+                // Kiểm tra kích thước file (giới hạn 5MB cho mobile)
+                if (file.size > 5 * 1024 * 1024) {
+                    showStatus('Ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 5MB.', 'error');
+                    return;
+                }
+                
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
                     // Hiển thị ảnh xem trước
                     imagePreview.src = e.target.result;
                     imagePreview.style.display = 'block';
+                    
+                    // Chuyển đến tab preview
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    document.querySelector('[data-tab="preview"]').classList.add('active');
+                    document.getElementById('preview-tab').classList.add('active');
                     
                     // Xử lý ảnh và tạo sơ đồ tư duy
                     processImageWithOCR(file);
@@ -701,7 +802,7 @@
                 if (lines.length > 1) {
                     for (let i = 1; i < Math.min(lines.length, 5); i++) {
                         const angle = (i-1) * (2 * Math.PI / (lines.length - 1));
-                        const radius = 150;
+                        const radius = 120; // Giảm bán kính cho mobile
                         const top = 50 + Math.sin(angle) * radius / 2;
                         const left = 50 + Math.cos(angle) * radius;
                         
@@ -710,9 +811,6 @@
                         node.style.left = `${left}%`;
                         
                         mindmapContainer.appendChild(node);
-                        
-                        // Vẽ đường kết nối
-                        drawConnection(centralNode, node);
                     }
                 } else {
                     // Tạo các nút mẫu nếu không đủ nội dung
@@ -734,7 +832,7 @@
                 
                 sampleContents.forEach((content, i) => {
                     const angle = i * (2 * Math.PI / sampleContents.length);
-                    const radius = 150;
+                    const radius = 120; // Giảm bán kính cho mobile
                     const top = 50 + Math.sin(angle) * radius / 2;
                     const left = 50 + Math.cos(angle) * radius;
                     
@@ -743,9 +841,6 @@
                     node.style.left = `${left}%`;
                     
                     mindmapContainer.appendChild(node);
-                    
-                    // Vẽ đường kết nối
-                    drawConnection(centralNode, node);
                 });
             }
             
@@ -776,7 +871,9 @@
                 });
                 
                 nodeControls.appendChild(editBtn);
-                nodeControls.appendChild(deleteBtn);
+                if (!isCentral) {
+                    nodeControls.appendChild(deleteBtn);
+                }
                 
                 node.innerHTML = `
                     <div class="node-title" contenteditable="true">${title}</div>
@@ -785,17 +882,17 @@
                 
                 node.appendChild(nodeControls);
                 
-                // Chọn node khi click
+                // Chọn node khi chạm
                 node.addEventListener('click', (e) => {
                     if (e.target.classList.contains('node-btn')) return;
                     
                     document.querySelectorAll('.node').forEach(n => {
                         n.style.zIndex = 2;
-                        n.style.boxShadow = '0 3px 6px rgba(0, 0, 0, 0.1)';
+                        n.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)';
                     });
                     
                     node.style.zIndex = 4;
-                    node.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+                    node.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.3)';
                     
                     selectedNode = node;
                 });
@@ -803,68 +900,71 @@
                 return node;
             }
             
-            // Vẽ đường kết nối giữa các node
-            function drawConnection(node1, node2) {
-                const rect1 = node1.getBoundingClientRect();
-                const rect2 = node2.getBoundingClientRect();
-                
-                const x1 = rect1.left + rect1.width / 2;
-                const y1 = rect1.top + rect1.height / 2;
-                const x2 = rect2.left + rect2.width / 2;
-                const y2 = rect2.top + rect2.height / 2;
-                
-                const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-                const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-                
-                const connection = document.createElement('div');
-                connection.className = 'connection';
-                connection.style.width = `${length}px`;
-                connection.style.height = '2px';
-                connection.style.left = `${x1}px`;
-                connection.style.top = `${y1}px`;
-                connection.style.transform = `rotate(${angle}deg)`;
-                
-                document.body.appendChild(connection);
-                
-                // Đảm bảo đường kết nối được cập nhật khi kéo node
-                const observer = new MutationObserver(() => {
-                    const updatedRect1 = node1.getBoundingClientRect();
-                    const updatedRect2 = node2.getBoundingClientRect();
-                    
-                    const updatedX1 = updatedRect1.left + updatedRect1.width / 2;
-                    const updatedY1 = updatedRect1.top + updatedRect1.height / 2;
-                    const updatedX2 = updatedRect2.left + updatedRect2.width / 2;
-                    const updatedY2 = updatedRect2.top + updatedRect2.height / 2;
-                    
-                    const updatedLength = Math.sqrt(Math.pow(updatedX2 - updatedX1, 2) + Math.pow(updatedY2 - updatedY1, 2));
-                    const updatedAngle = Math.atan2(updatedY2 - updatedY1, updatedX2 - updatedX1) * 180 / Math.PI;
-                    
-                    connection.style.width = `${updatedLength}px`;
-                    connection.style.left = `${updatedX1}px`;
-                    connection.style.top = `${updatedY1}px`;
-                    connection.style.transform = `rotate(${updatedAngle}deg)`;
-                });
-                
-                observer.observe(node1, { attributes: true, attributeFilter: ['style'] });
-                observer.observe(node2, { attributes: true, attributeFilter: ['style'] });
-                
-                // Thêm đường kết nối vào container
-                mindmapContainer.appendChild(connection);
-            }
-            
-            // Cho phép kéo thả các node
+            // Cho phép kéo thả các node (hỗ trợ cả touch)
             function enableDragging() {
                 const nodes = document.querySelectorAll('.node');
                 
                 nodes.forEach(node => {
+                    // Sự kiện cho desktop
                     node.addEventListener('mousedown', startDrag);
+                    
+                    // Sự kiện cho mobile
+                    node.addEventListener('touchstart', handleTouchStart, { passive: false });
+                    node.addEventListener('touchmove', handleTouchMove, { passive: false });
+                    node.addEventListener('touchend', handleTouchEnd);
                 });
                 
                 document.addEventListener('mousemove', drag);
                 document.addEventListener('mouseup', stopDrag);
             }
             
-            // Bắt đầu kéo
+            // Xử lý touch start
+            function handleTouchStart(e) {
+                if (e.target.classList.contains('node-btn')) return;
+                
+                const touch = e.touches[0];
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                
+                selectedNode = e.currentTarget;
+                const rect = selectedNode.getBoundingClientRect();
+                dragOffset.x = touch.clientX - rect.left;
+                dragOffset.y = touch.clientY - rect.top;
+                
+                selectedNode.style.cursor = 'grabbing';
+                e.preventDefault();
+            }
+            
+            // Xử lý touch move
+            function handleTouchMove(e) {
+                if (!selectedNode) return;
+                
+                const touch = e.touches[0];
+                const containerRect = mindmapContainer.getBoundingClientRect();
+                
+                let x = touch.clientX - containerRect.left - dragOffset.x;
+                let y = touch.clientY - containerRect.top - dragOffset.y;
+                
+                // Giới hạn node trong container
+                x = Math.max(0, Math.min(containerRect.width - selectedNode.offsetWidth, x));
+                y = Math.max(0, Math.min(containerRect.height - selectedNode.offsetHeight, y));
+                
+                selectedNode.style.left = `${x}px`;
+                selectedNode.style.top = `${y}px`;
+                selectedNode.style.transform = 'none';
+                
+                e.preventDefault();
+            }
+            
+            // Xử lý touch end
+            function handleTouchEnd() {
+                if (selectedNode) {
+                    selectedNode.style.cursor = 'move';
+                }
+                selectedNode = null;
+            }
+            
+            // Bắt đầu kéo (desktop)
             function startDrag(e) {
                 if (e.button !== 0) return; // Chỉ xử lý click chuột trái
                 if (e.target.classList.contains('node-btn')) return;
@@ -879,7 +979,7 @@
                 selectedNode.style.cursor = 'grabbing';
             }
             
-            // Kéo node
+            // Kéo node (desktop)
             function drag(e) {
                 if (!isDragging || !selectedNode) return;
                 
@@ -897,7 +997,7 @@
                 selectedNode.style.transform = 'none';
             }
             
-            // Dừng kéo
+            // Dừng kéo (desktop)
             function stopDrag() {
                 if (!isDragging) return;
                 
@@ -998,17 +1098,14 @@
                 const rect = selectedNode.getBoundingClientRect();
                 const containerRect = mindmapContainer.getBoundingClientRect();
                 
-                const x = rect.left - containerRect.left + (Math.random() * 100 - 50);
-                const y = rect.top - containerRect.top + (Math.random() * 100 - 50);
+                const x = rect.left - containerRect.left + (Math.random() * 80 - 40);
+                const y = rect.top - containerRect.top + (Math.random() * 80 - 40);
                 
                 newNode.style.left = `${x}px`;
                 newNode.style.top = `${y}px`;
                 newNode.style.transform = 'none';
                 
                 mindmapContainer.appendChild(newNode);
-                
-                // Vẽ đường kết nối
-                drawConnection(selectedNode, newNode);
                 
                 showStatus('Đã thêm nhánh mới', 'success');
             });
@@ -1037,15 +1134,56 @@
                 mindmapContainer.style.transform = `scale(${currentZoom})`;
             }
             
+            // Hỗ trợ pinch-to-zoom trên mobile
+            let initialDistance = null;
+            mindmapContainer.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 2) {
+                    initialDistance = getDistance(e.touches[0], e.touches[1]);
+                }
+            });
+            
+            mindmapContainer.addEventListener('touchmove', function(e) {
+                if (e.touches.length === 2 && initialDistance !== null) {
+                    e.preventDefault();
+                    const currentDistance = getDistance(e.touches[0], e.touches[1]);
+                    const scale = currentDistance / initialDistance;
+                    
+                    if (scale > 1.1) {
+                        // Zoom in
+                        if (currentZoom < 2) {
+                            currentZoom += 0.05;
+                            updateZoom();
+                        }
+                        initialDistance = currentDistance;
+                    } else if (scale < 0.9) {
+                        // Zoom out
+                        if (currentZoom > 0.5) {
+                            currentZoom -= 0.05;
+                            updateZoom();
+                        }
+                        initialDistance = currentDistance;
+                    }
+                }
+            });
+            
+            mindmapContainer.addEventListener('touchend', function() {
+                initialDistance = null;
+            });
+            
+            function getDistance(touch1, touch2) {
+                return Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) +
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+            }
+            
             // Xử lý sự kiện tải xuống
             downloadBtn.addEventListener('click', function() {
-                // Trong thực tế, sử dụng thư viện như html2canvas hoặc dom-to-image
                 showStatus('Tính năng tải xuống đang được phát triển', 'info');
             });
             
             // Xử lý sự kiện lưu dự án
             saveBtn.addEventListener('click', function() {
-                // Trong thực tế, lưu trạng thái mindmap vào localStorage hoặc database
                 showStatus('Dự án đã được lưu tạm thời', 'success');
             });
             
@@ -1056,11 +1194,26 @@
             
             document.getElementById('colorScheme').addEventListener('change', function() {
                 showStatus(`Đã chọn màu sắc: ${this.options[this.selectedIndex].text}`, 'info');
+                
+                // Cập nhật màu sắc cho các node
+                const color = this.value;
+                let primaryColor = '#4a6fa5'; // Màu mặc định
+                
+                switch(color) {
+                    case 'green': primaryColor = '#28a745'; break;
+                    case 'red': primaryColor = '#dc3545'; break;
+                    case 'purple': primaryColor = '#6f42c1'; break;
+                }
+                
+                document.documentElement.style.setProperty('--primary-color', primaryColor);
             });
             
             // Xử lý chọn mẫu template
             document.querySelectorAll('.template-item').forEach(item => {
                 item.addEventListener('click', function() {
+                    document.querySelectorAll('.template-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
                     const layout = this.getAttribute('data-layout');
                     document.getElementById('layoutStyle').value = layout;
                     showStatus(`Đã chọn mẫu: ${this.querySelector('.template-name').textContent}`, 'success');
