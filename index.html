@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mind Map Generator - Giao diện tối ưu</title>
+    <title>AI Mind Map Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -20,174 +21,194 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
         }
         
         body {
             background-color: #f5f7fa;
             color: var(--dark-color);
             line-height: 1.6;
-            padding: 15px;
+            padding: 20px;
             min-height: 100vh;
         }
         
         .container {
-            max-width: 100%;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            min-height: calc(100vh - 30px);
-            display: flex;
-            flex-direction: column;
         }
         
         header {
             text-align: center;
-            padding: 20px 15px;
+            padding: 25px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            flex-shrink: 0;
         }
         
         h1 {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
         }
         
         .app-description {
-            font-size: 0.95rem;
+            font-size: 1rem;
             opacity: 0.9;
-            max-width: 100%;
+            max-width: 600px;
             margin: 0 auto;
         }
         
         .main-content {
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            flex-grow: 1;
-            gap: 20px;
+            padding: 25px;
         }
         
-        .tab-container {
-            display: flex;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            flex-shrink: 0;
+        .input-section {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
-        .tab {
+        .mode-selector {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .mode-btn {
             flex: 1;
-            padding: 12px 8px;
+            padding: 15px;
             text-align: center;
-            background: none;
+            background: white;
             border: none;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: #666;
-            border-bottom: 3px solid transparent;
             cursor: pointer;
             transition: all 0.3s;
-            min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        
-        .tab.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-        
-        .tab-content {
-            display: none;
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .section-title {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
             gap: 10px;
         }
         
-        .section-title i {
-            font-size: 1.4rem;
+        .mode-btn.active {
+            background: var(--primary-color);
+            color: white;
         }
         
-        .upload-area {
-            border: 2px dashed var(--secondary-color);
-            border-radius: 10px;
-            padding: 25px 15px;
+        .mode-btn:not(.active):hover {
+            background: #f0f0f0;
+        }
+        
+        .input-area {
+            display: none;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .input-area.active {
+            display: block;
+        }
+        
+        .text-input {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        
+        .image-upload-area {
             text-align: center;
+            padding: 30px;
+            border: 2px dashed var(--secondary-color);
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             background-color: rgba(107, 140, 188, 0.05);
             margin-bottom: 15px;
         }
         
-        .upload-area.active {
-            border-color: var(--primary-color);
-            background-color: rgba(74, 111, 165, 0.1);
+        .image-upload-area:hover {
+            background-color: rgba(107, 140, 188, 0.1);
         }
         
-        .upload-area i {
-            font-size: 2.2rem;
+        .image-upload-area i {
+            font-size: 2.5rem;
             color: var(--secondary-color);
             margin-bottom: 10px;
         }
         
         .upload-text {
             margin-bottom: 15px;
-            font-size: 0.95rem;
+        }
+        
+        .image-preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .image-preview {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .image-preview img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .generate-btn-container {
+            text-align: center;
+            margin-top: 20px;
         }
         
         .btn {
-            padding: 14px 20px;
+            padding: 12px 30px;
             background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            min-height: 50px;
-            width: 100%;
-            font-weight: 600;
+            gap: 10px;
         }
         
-        .btn:hover, .btn:active {
+        .btn:hover {
             background-color: var(--secondary-color);
             transform: translateY(-2px);
-        }
-        
-        .btn-accent {
-            background-color: var(--accent-color);
-        }
-        
-        .btn-accent:hover, .btn-accent:active {
-            background-color: #ff5252;
-        }
-        
-        .btn-success {
-            background-color: var(--success-color);
-        }
-        
-        .btn-success:hover, .btn-success:active {
-            background-color: #218838;
         }
         
         .btn:disabled {
@@ -196,85 +217,73 @@
             transform: none;
         }
         
-        .layout-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 15px;
+        .btn-accent {
+            background-color: var(--accent-color);
         }
         
-        .layout-option {
-            border: 2px solid #e0e0e0;
+        .btn-accent:hover {
+            background-color: #ff5252;
+        }
+        
+        .result-section {
+            display: none;
+            background: #f9f9f9;
             border-radius: 10px;
-            padding: 15px 10px;
-            text-align: center;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .result-section.active {
+            display: block;
+        }
+        
+        .layout-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .layout-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            background: white;
-            min-height: 100px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .layout-option:hover, .layout-option:active {
-            border-color: var(--primary-color);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .layout-option.active {
-            border-color: var(--primary-color);
-            background-color: rgba(74, 111, 165, 0.1);
-            box-shadow: 0 3px 10px rgba(74, 111, 165, 0.2);
-        }
-        
-        .layout-option i {
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-        }
-        
-        .layout-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .mindmap-preview {
-            flex-grow: 1;
-            border: 1px solid #eaeaea;
-            border-radius: 10px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            position: relative;
-            overflow: auto;
-            min-height: 400px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
+        }
+        
+        .layout-btn.active {
+            background: var(--primary-color);
+            color: white;
         }
         
         .mindmap-container {
-            width: 100%;
-            height: 100%;
+            min-height: 500px;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: white;
             position: relative;
-            min-height: 350px;
-            transition: all 0.3s;
+            overflow: auto;
         }
         
-        /* Kiểu cây (mặc định) */
+        /* Kiểu cây */
         .tree-layout .node {
             position: absolute;
             background: white;
             border: 2px solid var(--primary-color);
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 15px;
-            min-width: 160px;
-            max-width: 220px;
+            min-width: 180px;
+            max-width: 250px;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
             z-index: 2;
-            font-size: 0.9rem;
         }
         
         .tree-layout .central-node {
@@ -283,7 +292,6 @@
             transform: translateX(-50%);
             background-color: var(--primary-color);
             color: white;
-            min-width: 180px;
         }
         
         .tree-layout .node-1 { top: 160px; left: 20%; }
@@ -298,13 +306,12 @@
             position: absolute;
             background: white;
             border: 2px solid var(--primary-color);
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 15px;
-            min-width: 160px;
-            max-width: 220px;
+            min-width: 180px;
+            max-width: 250px;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
             z-index: 2;
-            font-size: 0.9rem;
         }
         
         .radial-layout .central-node {
@@ -313,7 +320,6 @@
             transform: translate(-50%, -50%);
             background-color: var(--primary-color);
             color: white;
-            min-width: 180px;
         }
         
         .radial-layout .node-1 { top: 25%; left: 25%; }
@@ -323,43 +329,13 @@
         .radial-layout .node-5 { top: 75%; left: 25%; }
         .radial-layout .node-6 { top: 75%; left: 65%; }
         
-        /* Kiểu tổ chức */
-        .org-layout .node {
-            position: absolute;
-            background: white;
-            border: 2px solid var(--primary-color);
-            border-radius: 10px;
-            padding: 15px;
-            min-width: 160px;
-            max-width: 220px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-            z-index: 2;
-            font-size: 0.9rem;
-        }
-        
-        .org-layout .central-node {
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--primary-color);
-            color: white;
-            min-width: 180px;
-        }
-        
-        .org-layout .node-1 { top: 160px; left: 25%; }
-        .org-layout .node-2 { top: 160px; left: 65%; }
-        .org-layout .node-3 { top: 270px; left: 15%; }
-        .org-layout .node-4 { top: 270px; left: 50%; }
-        .org-layout .node-5 { top: 270px; left: 85%; }
-        .org-layout .node-6 { top: 380px; left: 50%; }
-        
         .node-title {
             font-weight: 600;
             margin-bottom: 8px;
             color: var(--primary-color);
             border-bottom: 1px solid #eee;
             padding-bottom: 5px;
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
         
         .central-node .node-title {
@@ -368,8 +344,8 @@
         }
         
         .node-content {
-            font-size: 0.9rem;
-            min-height: 50px;
+            font-size: 0.95rem;
+            min-height: 60px;
             line-height: 1.5;
         }
         
@@ -377,15 +353,35 @@
             margin-top: 10px;
             max-width: 100%;
             border-radius: 6px;
-            max-height: 90px;
+            max-height: 100px;
             object-fit: cover;
         }
         
-        .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 20px;
+        .status-message {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-info {
+            background-color: #e7f3ff;
+            color: #004085;
+            border: 1px solid #b8daff;
         }
         
         .progress-container {
@@ -409,152 +405,62 @@
         }
         
         .progress-text {
-            font-size: 0.85rem;
-            color: #666;
-            text-align: center;
-        }
-        
-        .image-preview {
-            max-width: 100%;
-            max-height: 200px;
-            margin: 15px auto;
-            border-radius: 8px;
-            display: none;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .status-message {
-            margin: 10px 0;
-            padding: 12px;
-            border-radius: 8px;
-            display: none;
             font-size: 0.9rem;
-            text-align: center;
-        }
-        
-        .status-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .status-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .status-info {
-            background-color: #e7f3ff;
-            color: #004085;
-            border: 1px solid #b8daff;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
             color: #666;
-        }
-        
-        .empty-state i {
-            font-size: 3rem;
-            color: #ccc;
-            margin-bottom: 15px;
+            text-align: center;
         }
         
         footer {
             text-align: center;
-            padding: 15px;
+            padding: 20px;
             color: #6c757d;
             background-color: #f8f9fa;
             border-top: 1px solid #eee;
-            font-size: 0.8rem;
-            flex-shrink: 0;
+            font-size: 0.9rem;
         }
         
-        /* Mobile-first responsive design */
-        @media (min-width: 768px) {
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            header {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
             .main-content {
-                flex-direction: row;
+                padding: 15px;
             }
             
-            .tab-container {
-                display: none;
+            .mode-selector {
+                flex-direction: column;
             }
             
-            .tab-content {
-                display: block !important;
-                padding: 0 10px;
+            .layout-selector {
+                flex-direction: column;
+                align-items: center;
             }
             
-            .control-panel {
-                flex: 1;
-                min-width: 300px;
-                border-right: 1px solid #eee;
-                padding-right: 20px;
+            .layout-btn {
+                width: 100%;
+                justify-content: center;
             }
             
-            .preview-panel {
-                flex: 2;
-                min-width: 400px;
-                padding-left: 20px;
-            }
-            
-            .action-buttons {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 767px) {
-            .layout-options {
-                grid-template-columns: 1fr;
-            }
-            
-            .mindmap-preview {
-                min-height: 300px;
+            .mindmap-container {
+                min-height: 400px;
+                padding: 15px;
             }
             
             .tree-layout .node,
-            .radial-layout .node,
-            .org-layout .node {
-                min-width: 140px;
-                max-width: 180px;
+            .radial-layout .node {
+                min-width: 150px;
+                max-width: 200px;
                 padding: 12px;
-                font-size: 0.85rem;
             }
-            
-            .tree-layout .central-node,
-            .radial-layout .central-node,
-            .org-layout .central-node {
-                min-width: 160px;
-            }
-        }
-        
-        /* Tối ưu cho thiết bị di động */
-        @media (hover: none) and (pointer: coarse) {
-            .layout-option:hover {
-                transform: none;
-            }
-            
-            .btn:hover {
-                transform: none;
-            }
-        }
-        
-        /* Hiệu ứng loading */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -562,220 +468,237 @@
     <div class="container">
         <header>
             <h1>AI Mind Map Generator</h1>
-            <p class="app-description">Tạo sơ đồ tư duy từ hình ảnh - Giao diện tối ưu</p>
+            <p class="app-description">Tạo sơ đồ tư duy từ văn bản hoặc hình ảnh</p>
         </header>
         
         <div class="main-content">
-            <div class="control-panel">
-                <div class="tab-container">
-                    <button class="tab active" data-tab="upload">Tải ảnh</button>
-                    <button class="tab" data-tab="customize">Tùy chỉnh</button>
+            <div class="input-section">
+                <div class="mode-selector">
+                    <button class="mode-btn active" data-mode="text">
+                        <i class="fas fa-font"></i> Chế độ văn bản
+                    </button>
+                    <button class="mode-btn" data-mode="image">
+                        <i class="fas fa-image"></i> Chế độ hình ảnh
+                    </button>
                 </div>
                 
-                <div class="tab-content active" id="upload-tab">
-                    <section class="upload-section">
-                        <h2 class="section-title"><i class="fas fa-upload"></i> Tải ảnh lên</h2>
-                        <div class="upload-area" id="uploadArea">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p class="upload-text">Chọn ảnh từ thiết bị của bạn</p>
-                            <button class="btn" id="browseButton">
-                                <i class="fas fa-folder-open"></i> Chọn ảnh
-                            </button>
-                            <input type="file" id="fileInput" accept="image/*" style="display: none;">
-                        </div>
-                        <img id="imagePreview" class="image-preview" alt="Xem trước ảnh">
-                        
-                        <div class="progress-container" id="progressContainer">
-                            <div class="progress-bar">
-                                <div class="progress" id="progress"></div>
-                            </div>
-                            <div class="progress-text" id="progressText">Đang xử lý...</div>
-                        </div>
-                        
-                        <div id="statusMessage" class="status-message"></div>
-                    </section>
+                <div class="input-area active" id="text-input-area">
+                    <textarea class="text-input" id="textInput" placeholder="Nhập văn bản của bạn vào đây..."></textarea>
                 </div>
                 
-                <div class="tab-content" id="customize-tab">
-                    <section class="layout-section">
-                        <h2 class="section-title"><i class="fas fa-project-diagram"></i> Kiểu sơ đồ</h2>
-                        <p>Chọn kiểu hiển thị cho sơ đồ tư duy</p>
-                        <div class="layout-options">
-                            <div class="layout-option active" data-layout="tree">
-                                <i class="fas fa-tree"></i>
-                                <div class="layout-name">Hình cây</div>
-                            </div>
-                            <div class="layout-option" data-layout="radial">
-                                <i class="fas fa-bullseye"></i>
-                                <div class="layout-name">Tỏa tròn</div>
-                            </div>
-                            <div class="layout-option" data-layout="org">
-                                <i class="fas fa-sitemap"></i>
-                                <div class="layout-name">Tổ chức</div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </div>
-            
-            <div class="preview-panel">
-                <section class="preview-section">
-                    <h2 class="section-title"><i class="fas fa-eye"></i> Sơ đồ tư duy</h2>
-                    <div class="mindmap-preview">
-                        <div class="mindmap-container tree-layout" id="mindmapContainer">
-                            <div class="empty-state">
-                                <i class="fas fa-project-diagram"></i>
-                                <p>Chưa có sơ đồ. Hãy tải ảnh lên để bắt đầu!</p>
-                            </div>
-                        </div>
+                <div class="input-area" id="image-input-area">
+                    <div class="image-upload-area" id="imageUploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p class="upload-text">Nhấn để chọn hình ảnh (tối đa 3 ảnh)</p>
+                        <button class="btn">
+                            <i class="fas fa-folder-open"></i> Chọn ảnh
+                        </button>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;" multiple>
                     </div>
                     
-                    <div class="action-buttons">
-                        <button class="btn" id="addImageBtn" disabled>
-                            <i class="fas fa-image"></i> Thêm ảnh vào ô
-                        </button>
-                        <button class="btn btn-success" id="saveBtn" disabled>
-                            <i class="fas fa-save"></i> Lưu sơ đồ
-                        </button>
-                        <button class="btn btn-accent" id="downloadBtn" disabled>
-                            <i class="fas fa-download"></i> Tải xuống
-                        </button>
+                    <div class="image-preview-container" id="imagePreviewContainer">
+                        <!-- Ảnh xem trước sẽ hiển thị ở đây -->
                     </div>
-                </section>
+                </div>
+                
+                <div class="generate-btn-container">
+                    <button class="btn" id="generateBtn" disabled>
+                        <i class="fas fa-magic"></i> Tạo Sơ Đồ Tư Duy
+                    </button>
+                </div>
+                
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Đang xử lý...</div>
+                </div>
+                
+                <div id="statusMessage" class="status-message"></div>
+            </div>
+            
+            <div class="result-section" id="resultSection">
+                <div class="layout-selector">
+                    <button class="layout-btn active" data-layout="tree">
+                        <i class="fas fa-tree"></i> Sơ đồ hình cây
+                    </button>
+                    <button class="layout-btn" data-layout="radial">
+                        <i class="fas fa-bullseye"></i> Sơ đồ tỏa tròn
+                    </button>
+                </div>
+                
+                <div class="mindmap-container tree-layout" id="mindmapContainer">
+                    <!-- Sơ đồ tư duy sẽ được hiển thị ở đây -->
+                </div>
             </div>
         </div>
         
         <footer>
-            <p>© 2023 AI Mind Map Generator | Giao diện đã tối ưu cho trải nghiệm người dùng</p>
+            <p>© 2023 AI Mind Map Generator | Tạo sơ đồ tư duy thông minh từ nội dung của bạn</p>
         </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Các phần tử DOM
+            const modeBtns = document.querySelectorAll('.mode-btn');
+            const textInputArea = document.getElementById('text-input-area');
+            const imageInputArea = document.getElementById('image-input-area');
+            const textInput = document.getElementById('textInput');
             const fileInput = document.getElementById('fileInput');
-            const uploadArea = document.getElementById('uploadArea');
-            const browseButton = document.getElementById('browseButton');
+            const imageUploadArea = document.getElementById('imageUploadArea');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            const generateBtn = document.getElementById('generateBtn');
             const progressContainer = document.getElementById('progressContainer');
             const progress = document.getElementById('progress');
             const progressText = document.getElementById('progressText');
-            const mindmapContainer = document.getElementById('mindmapContainer');
-            const addImageBtn = document.getElementById('addImageBtn');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const saveBtn = document.getElementById('saveBtn');
-            const imagePreview = document.getElementById('imagePreview');
             const statusMessage = document.getElementById('statusMessage');
-            const layoutOptions = document.querySelectorAll('.layout-option');
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
+            const resultSection = document.getElementById('resultSection');
+            const mindmapContainer = document.getElementById('mindmapContainer');
+            const layoutBtns = document.querySelectorAll('.layout-btn');
             
-            let selectedNode = null;
+            // Biến toàn cục
+            let currentMode = 'text';
+            let uploadedImages = [];
             let currentLayout = 'tree';
-            let hasMindmap = false;
             
-            // Xử lý chuyển tab (chỉ trên mobile)
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabId = tab.getAttribute('data-tab');
+            // Xử lý chuyển đổi chế độ
+            modeBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const mode = this.getAttribute('data-mode');
                     
-                    // Xóa active class từ tất cả tabs và contents
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
+                    // Cập nhật trạng thái nút
+                    modeBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
                     
-                    // Thêm active class cho tab và content được chọn
-                    tab.classList.add('active');
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    // Ẩn tất cả các khu vực nhập liệu
+                    document.querySelectorAll('.input-area').forEach(area => {
+                        area.classList.remove('active');
+                    });
+                    
+                    // Hiển thị khu vực nhập liệu tương ứng
+                    if (mode === 'text') {
+                        textInputArea.classList.add('active');
+                        currentMode = 'text';
+                    } else {
+                        imageInputArea.classList.add('active');
+                        currentMode = 'image';
+                    }
+                    
+                    // Kiểm tra xem có thể kích hoạt nút tạo sơ đồ không
+                    checkGenerateButton();
                 });
             });
             
-            // Xử lý sự kiện tải lên ảnh
-            browseButton.addEventListener('click', function() {
+            // Xử lý tải lên ảnh
+            imageUploadArea.addEventListener('click', function() {
                 fileInput.click();
             });
             
-            uploadArea.addEventListener('click', function() {
-                fileInput.click();
-            });
-            
-            // Hiệu ứng khi kéo file vào khu vực upload
-            uploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                uploadArea.classList.add('active');
-            });
-            
-            uploadArea.addEventListener('dragleave', function() {
-                uploadArea.classList.remove('active');
-            });
-            
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                uploadArea.classList.remove('active');
+            fileInput.addEventListener('change', function() {
+                if (!this.files.length) return;
                 
-                if (e.dataTransfer.files.length) {
-                    fileInput.files = e.dataTransfer.files;
-                    handleImageUpload();
-                }
-            });
-            
-            fileInput.addEventListener('change', handleImageUpload);
-            
-            // Xử lý tải lên ảnh và hiển thị xem trước
-            function handleImageUpload() {
-                if (!fileInput.files.length) {
-                    showStatus('Không có tệp nào được chọn!', 'error');
+                const files = Array.from(this.files);
+                
+                // Kiểm tra số lượng ảnh
+                if (uploadedImages.length + files.length > 3) {
+                    showStatus('Bạn chỉ có thể tải lên tối đa 3 ảnh!', 'error');
                     return;
                 }
                 
-                const file = fileInput.files[0];
-                
-                // Kiểm tra xem có phải là file ảnh không
-                if (!file.type.match('image.*')) {
-                    showStatus('Vui lòng chọn file ảnh (JPEG, PNG, GIF)!', 'error');
-                    return;
-                }
-                
-                // Kiểm tra kích thước file (giới hạn 10MB)
-                if (file.size > 10 * 1024 * 1024) {
-                    showStatus('Ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 10MB.', 'error');
-                    return;
-                }
-                
-                const reader = new FileReader();
-                
-                // Hiển thị trạng thái loading
-                browseButton.innerHTML = '<div class="loading"></div> Đang xử lý...';
-                browseButton.disabled = true;
-                
-                reader.onload = function(e) {
-                    // Hiển thị ảnh xem trước
-                    imagePreview.src = e.target.result;
-                    imagePreview.style.display = 'block';
+                // Xử lý từng file
+                files.forEach(file => {
+                    // Kiểm tra xem có phải là file ảnh không
+                    if (!file.type.match('image.*')) {
+                        showStatus('Vui lòng chọn file ảnh (JPEG, PNG, GIF)!', 'error');
+                        return;
+                    }
                     
-                    // Xử lý ảnh và tạo sơ đồ tư duy
-                    processImage(file);
-                };
+                    // Kiểm tra kích thước file (giới hạn 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showStatus(`Ảnh "${file.name}" quá lớn. Vui lòng chọn ảnh nhỏ hơn 5MB.`, 'error');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        // Thêm ảnh vào mảng
+                        uploadedImages.push({
+                            name: file.name,
+                            data: e.target.result
+                        });
+                        
+                        // Hiển thị ảnh xem trước
+                        displayImagePreview();
+                        
+                        // Kiểm tra xem có thể kích hoạt nút tạo sơ đồ không
+                        checkGenerateButton();
+                    };
+                    
+                    reader.readAsDataURL(file);
+                });
                 
-                reader.onerror = function() {
-                    browseButton.innerHTML = '<i class="fas fa-folder-open"></i> Chọn ảnh';
-                    browseButton.disabled = false;
-                    showStatus('Lỗi khi đọc tệp!', 'error');
-                };
+                // Reset input file để cho phép chọn lại cùng file
+                this.value = '';
+            });
+            
+            // Hiển thị ảnh xem trước
+            function displayImagePreview() {
+                imagePreviewContainer.innerHTML = '';
                 
-                reader.readAsDataURL(file);
+                uploadedImages.forEach((image, index) => {
+                    const preview = document.createElement('div');
+                    preview.className = 'image-preview';
+                    
+                    preview.innerHTML = `
+                        <img src="${image.data}" alt="${image.name}">
+                        <button class="remove-image" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    
+                    imagePreviewContainer.appendChild(preview);
+                });
+                
+                // Thêm sự kiện xóa ảnh
+                document.querySelectorAll('.remove-image').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        uploadedImages.splice(index, 1);
+                        displayImagePreview();
+                        checkGenerateButton();
+                    });
+                });
             }
             
-            // Xử lý ảnh và tạo sơ đồ
-            function processImage(file) {
+            // Kiểm tra nút tạo sơ đồ
+            function checkGenerateButton() {
+                if (currentMode === 'text') {
+                    generateBtn.disabled = textInput.value.trim().length === 0;
+                } else {
+                    generateBtn.disabled = uploadedImages.length === 0;
+                }
+            }
+            
+            // Xử lý sự kiện nhập văn bản
+            textInput.addEventListener('input', checkGenerateButton);
+            
+            // Xử lý tạo sơ đồ tư duy
+            generateBtn.addEventListener('click', function() {
+                // Hiển thị tiến trình
                 progressContainer.style.display = 'block';
                 progress.style.width = '10%';
-                progressText.textContent = 'Đang phân tích ảnh...';
+                progressText.textContent = 'Đang phân tích nội dung...';
                 
-                showStatus('Đang xử lý ảnh...', 'info');
+                // Vô hiệu hóa nút trong quá trình xử lý
+                generateBtn.disabled = true;
                 
-                // Mô phỏng quá trình xử lý AI và OCR
+                // Mô phỏng quá trình xử lý AI
                 const steps = [
-                    {percent: 30, text: 'Đang nhận dạng văn bản...'},
-                    {percent: 60, text: 'Đang phân tích nội dung...'},
-                    {percent: 90, text: 'Đang tạo sơ đồ...'},
+                    {percent: 30, text: 'Đang trích xuất thông tin...'},
+                    {percent: 60, text: 'Đang tổ chức cấu trúc...'},
+                    {percent: 90, text: 'Đang tạo sơ đồ tư duy...'},
                     {percent: 100, text: 'Hoàn thành!'}
                 ];
                 
@@ -786,57 +709,46 @@
                         progress.style.width = steps[currentStep].percent + '%';
                         progressText.textContent = steps[currentStep].text;
                         currentStep++;
-                        setTimeout(processStep, 800);
+                        setTimeout(processStep, 1000);
                     } else {
-                        // Giả lập kết quả trích xuất văn bản từ ảnh
-                        const extractedText = "Sơ đồ tư duy là công cụ hiệu quả để tổ chức thông tin. Nó giúp não bộ ghi nhớ và xử lý thông tin tốt hơn. Bắt đầu từ ý tưởng trung tâm, phát triển các nhánh ý tưởng phụ. Mỗi nhánh có thể có các ý con nhỏ hơn. Sử dụng màu sắc và hình ảnh để tăng tính trực quan. Sơ đồ tư duy ứng dụng trong nhiều lĩnh vực như học tập, quản lý dự án.";
+                        // Tạo sơ đồ tư duy
+                        createMindMap();
                         
-                        // Tạo sơ đồ tư duy từ văn bản
-                        createMindMap(extractedText);
+                        // Hiển thị kết quả
+                        resultSection.classList.add('active');
                         
-                        // Kích hoạt các nút chức năng
-                        addImageBtn.disabled = false;
-                        saveBtn.disabled = false;
-                        downloadBtn.disabled = false;
+                        // Cuộn đến kết quả
+                        resultSection.scrollIntoView({ behavior: 'smooth' });
                         
-                        browseButton.innerHTML = '<i class="fas fa-folder-open"></i> Chọn ảnh khác';
-                        browseButton.disabled = false;
-                        
-                        showStatus('Đã tạo sơ đồ tư duy thành công!', 'success');
-                        
-                        // Ẩn thanh tiến trình sau khi hoàn thành
+                        // Ẩn tiến trình
                         setTimeout(() => {
                             progressContainer.style.display = 'none';
-                        }, 1500);
+                            generateBtn.disabled = false;
+                        }, 1000);
+                        
+                        showStatus('Đã tạo sơ đồ tư duy thành công!', 'success');
                     }
                 };
                 
                 processStep();
-            }
+            });
             
-            // Hiển thị thông báo trạng thái
-            function showStatus(message, type) {
-                statusMessage.textContent = message;
-                statusMessage.className = 'status-message';
-                statusMessage.classList.add(`status-${type}`);
-                statusMessage.style.display = 'block';
-                
-                // Tự động ẩn thông báo sau 5 giây (trừ lỗi)
-                if (type !== 'error') {
-                    setTimeout(() => {
-                        statusMessage.style.display = 'none';
-                    }, 5000);
-                }
-            }
-            
-            // Tạo sơ đồ tư duy từ văn bản
-            function createMindMap(text) {
+            // Tạo sơ đồ tư duy
+            function createMindMap() {
                 // Xóa nội dung cũ
                 mindmapContainer.innerHTML = '';
-                mindmapContainer.classList.remove('empty');
+                
+                // Tạo nội dung mẫu dựa trên chế độ
+                let content = '';
+                
+                if (currentMode === 'text') {
+                    content = textInput.value.trim() || "Sơ đồ tư duy là công cụ hiệu quả để tổ chức thông tin. Nó giúp não bộ ghi nhớ và xử lý thông tin tốt hơn. Bắt đầu từ ý tưởng trung tâm, phát triển các nhánh ý tưởng phụ. Mỗi nhánh có thể có các ý con nhỏ hơn. Sử dụng màu sắc và hình ảnh để tăng tính trực quan.";
+                } else {
+                    content = "Dựa trên hình ảnh đã tải lên, AI đã phân tích và tạo sơ đồ tư duy. Sơ đồ này tổ chức thông tin từ hình ảnh thành các ý tưởng có cấu trúc. Bạn có thể chỉnh sửa nội dung các ô để phù hợp hơn với nhu cầu của mình.";
+                }
                 
                 // Tách văn bản thành các câu
-                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+                const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0);
                 
                 // Tạo nút trung tâm
                 const centralNode = createNode('Chủ đề chính', sentences.length > 0 ? sentences[0].trim() : 'Nội dung chính', true);
@@ -855,9 +767,6 @@
                     // Tạo các nút mẫu nếu không đủ nội dung
                     createSampleNodes();
                 }
-                
-                // Đánh dấu đã có sơ đồ
-                hasMindmap = true;
                 
                 // Áp dụng layout mặc định (hình cây)
                 applyLayout(currentLayout);
@@ -891,31 +800,13 @@
                     <div class="node-content" contenteditable="true">${content}</div>
                 `;
                 
-                // Chọn node khi click
-                node.addEventListener('click', (e) => {
-                    // Bỏ chọn node cũ
-                    if (selectedNode) {
-                        selectedNode.style.boxShadow = '';
-                    }
-                    
-                    // Chọn node mới
-                    selectedNode = node;
-                    node.style.boxShadow = '0 0 0 3px ' + (isCentral ? 'rgba(255,255,255,0.7)' : 'var(--primary-color)');
-                    
-                    // Di chuyển node lên trên cùng (z-index)
-                    document.querySelectorAll('.node').forEach(n => {
-                        n.style.zIndex = 2;
-                    });
-                    node.style.zIndex = 3;
-                });
-                
                 return node;
             }
             
             // Áp dụng layout cho sơ đồ
             function applyLayout(layoutType) {
                 // Xóa tất cả các lớp layout cũ
-                mindmapContainer.classList.remove('tree-layout', 'radial-layout', 'org-layout');
+                mindmapContainer.classList.remove('tree-layout', 'radial-layout');
                 
                 // Thêm lớp layout mới
                 mindmapContainer.classList.add(layoutType + '-layout');
@@ -924,92 +815,33 @@
                 currentLayout = layoutType;
             }
             
-            // Xử lý sự kiện thêm ảnh vào ô
-            addImageBtn.addEventListener('click', function() {
-                if (!selectedNode) {
-                    showStatus('Vui lòng chọn một ô để thêm ảnh', 'error');
-                    return;
-                }
-                
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                
-                input.onchange = function(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    
-                    // Kiểm tra xem có phải là file ảnh không
-                    if (!file.type.match('image.*')) {
-                        showStatus('Vui lòng chọn file ảnh!', 'error');
-                        return;
-                    }
-                    
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        // Kiểm tra xem đã có ảnh trong node chưa
-                        const existingImage = selectedNode.querySelector('.node-image');
-                        if (existingImage) {
-                            existingImage.src = event.target.result;
-                        } else {
-                            const img = document.createElement('img');
-                            img.src = event.target.result;
-                            img.className = 'node-image';
-                            selectedNode.querySelector('.node-content').appendChild(img);
-                        }
-                        
-                        showStatus('Đã thêm ảnh vào ô', 'success');
-                    };
-                    
-                    reader.readAsDataURL(file);
-                };
-                
-                input.click();
-            });
-            
-            // Xử lý sự kiện tải xuống
-            downloadBtn.addEventListener('click', function() {
-                if (!hasMindmap) {
-                    showStatus('Chưa có sơ đồ để tải xuống!', 'error');
-                    return;
-                }
-                
-                // Hiển thị thông báo
-                showStatus('Tính năng tải xuống đang được phát triển', 'info');
-            });
-            
-            // Xử lý sự kiện lưu sơ đồ
-            saveBtn.addEventListener('click', function() {
-                if (!hasMindmap) {
-                    showStatus('Chưa có sơ đồ để lưu!', 'error');
-                    return;
-                }
-                
-                // Hiển thị thông báo
-                showStatus('Sơ đồ đã được lưu thành công', 'success');
-            });
-            
-            // Xử lý thay đổi kiểu layout
-            layoutOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    if (!hasMindmap) {
-                        showStatus('Hãy tạo sơ đồ trước khi thay đổi kiểu hiển thị', 'info');
-                        return;
-                    }
-                    
-                    // Xóa active class từ tất cả options
-                    layoutOptions.forEach(opt => opt.classList.remove('active'));
-                    
-                    // Thêm active class cho option được chọn
+            // Xử lý thay đổi layout
+            layoutBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Cập nhật trạng thái nút
+                    layoutBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     
                     // Áp dụng layout mới
                     const layoutType = this.getAttribute('data-layout');
                     applyLayout(layoutType);
-                    
-                    showStatus(`Đã chuyển sang kiểu sơ đồ: ${this.querySelector('.layout-name').textContent}`, 'success');
                 });
             });
+            
+            // Hiển thị thông báo trạng thái
+            function showStatus(message, type) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-message';
+                statusMessage.classList.add(`status-${type}`);
+                statusMessage.style.display = 'block';
+                
+                // Tự động ẩn thông báo sau 5 giây (trừ lỗi)
+                if (type !== 'error') {
+                    setTimeout(() => {
+                        statusMessage.style.display = 'none';
+                    }, 5000);
+                }
+            }
         });
     </script>
 </body>
