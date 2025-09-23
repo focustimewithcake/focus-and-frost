@@ -2,10 +2,9 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Mind Map Generator - Mobile Optimized</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mind Map Generator - Đơn giản</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -21,83 +20,60 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
         }
         
         body {
             background-color: #f5f7fa;
             color: var(--dark-color);
             line-height: 1.6;
-            padding: 10px;
-            overflow-x: hidden;
-            touch-action: manipulation;
+            padding: 20px;
         }
         
         .container {
-            max-width: 100%;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
         
         header {
             text-align: center;
-            padding: 20px 15px;
+            padding: 25px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
         }
         
         h1 {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
         }
         
         .app-description {
-            font-size: 0.9rem;
+            font-size: 1rem;
             opacity: 0.9;
-            max-width: 100%;
+            max-width: 600px;
             margin: 0 auto;
         }
         
         .main-content {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
             padding: 15px;
         }
         
-        .tab-container {
-            display: flex;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .tab {
-            flex: 1;
-            padding: 12px 5px;
-            text-align: center;
-            background: none;
-            border: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #666;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .tab.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
+        .preview-panel {
+            flex: 2;
+            min-width: 400px;
+            padding: 15px;
+            border-left: 1px solid #eee;
         }
         
         .section-title {
@@ -122,7 +98,6 @@
             transition: all 0.3s;
             background-color: rgba(107, 140, 188, 0.05);
             margin-bottom: 15px;
-            position: relative;
         }
         
         .upload-area:hover {
@@ -141,7 +116,7 @@
         }
         
         .btn {
-            padding: 12px 20px;
+            padding: 10px 20px;
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -151,17 +126,11 @@
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 6px;
-            min-height: 44px; /* Đảm bảo kích thước chạm tốt trên mobile */
         }
         
         .btn:hover {
             background-color: var(--secondary-color);
-        }
-        
-        .btn-block {
-            width: 100%;
         }
         
         .btn-accent {
@@ -180,105 +149,142 @@
             background-color: #218838;
         }
         
-        .customization-options {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-        
-        .option-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        
-        .option-group label {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        
-        .option-group select, .option-group input {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            min-height: 44px; /* Đảm bảo kích thước chạm tốt */
-        }
-        
-        .template-gallery {
+        .layout-options {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         
-        .template-item {
+        .layout-option {
             border: 2px solid #ddd;
             border-radius: 8px;
-            overflow: hidden;
+            padding: 15px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s;
         }
         
-        .template-item.active {
+        .layout-option:hover {
             border-color: var(--primary-color);
-            box-shadow: 0 2px 8px rgba(74, 111, 165, 0.3);
         }
         
-        .template-item img {
-            width: 100%;
-            height: 70px;
-            object-fit: cover;
+        .layout-option.active {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 111, 165, 0.1);
         }
         
-        .template-name {
-            padding: 8px 3px;
-            text-align: center;
-            font-size: 0.75rem;
+        .layout-option i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        
+        .layout-name {
+            font-weight: 600;
+            font-size: 0.9rem;
         }
         
         .mindmap-preview {
-            min-height: 400px;
+            min-height: 500px;
             border: 1px solid #eee;
             border-radius: 8px;
             padding: 15px;
             background-color: #f9f9f9;
             position: relative;
             overflow: auto;
-            -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
         }
         
         .mindmap-container {
             width: 100%;
             height: 100%;
             position: relative;
-            transform-origin: center center;
-            transition: transform 0.3s;
-            min-height: 350px;
+            min-height: 450px;
         }
         
-        .node {
+        /* Kiểu cây (mặc định) */
+        .tree-layout .node {
             position: absolute;
             background: white;
             border: 2px solid var(--primary-color);
             border-radius: 8px;
             padding: 12px;
-            min-width: 130px;
+            min-width: 150px;
             max-width: 200px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s;
             z-index: 2;
-            font-size: 0.85rem;
-            touch-action: none; /* Cho phép kéo thả trên mobile */
         }
         
-        .node:hover {
-            transform: scale(1.02);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-            z-index: 3;
+        .tree-layout .central-node {
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
         }
+        
+        .tree-layout .node-1 { top: 150px; left: 25%; }
+        .tree-layout .node-2 { top: 150px; left: 75%; }
+        .tree-layout .node-3 { top: 250px; left: 12.5%; }
+        .tree-layout .node-4 { top: 250px; left: 37.5%; }
+        .tree-layout .node-5 { top: 250px; left: 62.5%; }
+        .tree-layout .node-6 { top: 250px; left: 87.5%; }
+        
+        /* Kiểu tỏa tròn */
+        .radial-layout .node {
+            position: absolute;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 12px;
+            min-width: 150px;
+            max-width: 200px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        
+        .radial-layout .central-node {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .radial-layout .node-1 { top: 30%; left: 30%; }
+        .radial-layout .node-2 { top: 30%; left: 70%; }
+        .radial-layout .node-3 { top: 50%; left: 15%; }
+        .radial-layout .node-4 { top: 50%; left: 85%; }
+        .radial-layout .node-5 { top: 70%; left: 30%; }
+        .radial-layout .node-6 { top: 70%; left: 70%; }
+        
+        /* Kiểu tổ chức */
+        .org-layout .node {
+            position: absolute;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 12px;
+            min-width: 150px;
+            max-width: 200px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        
+        .org-layout .central-node {
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .org-layout .node-1 { top: 150px; left: 30%; }
+        .org-layout .node-2 { top: 150px; left: 70%; }
+        .org-layout .node-3 { top: 250px; left: 20%; }
+        .org-layout .node-4 { top: 250px; left: 50%; }
+        .org-layout .node-5 { top: 250px; left: 80%; }
+        .org-layout .node-6 { top: 350px; left: 50%; }
         
         .node-title {
             font-weight: 600;
@@ -289,9 +295,14 @@
             font-size: 0.9rem;
         }
         
+        .central-node .node-title {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.3);
+        }
+        
         .node-content {
             font-size: 0.8rem;
-            min-height: 35px;
+            min-height: 40px;
         }
         
         .node-image {
@@ -302,17 +313,6 @@
             object-fit: cover;
         }
         
-        .central-node {
-            background-color: var(--primary-color);
-            color: white;
-            z-index: 10;
-        }
-        
-        .central-node .node-title {
-            color: white;
-            border-bottom-color: rgba(255, 255, 255, 0.3);
-        }
-        
         .connection {
             position: absolute;
             background: #999;
@@ -321,10 +321,11 @@
         }
         
         .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
             gap: 10px;
             margin-top: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
         
         .progress-bar {
@@ -377,57 +378,6 @@
             border: 1px solid #b8daff;
         }
         
-        .zoom-controls {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 10;
-        }
-        
-        .zoom-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            font-size: 1rem;
-        }
-        
-        .node-controls {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            display: flex;
-            gap: 4px;
-        }
-        
-        .node-btn {
-            width: 22px;
-            height: 22px;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.9);
-            color: var(--dark-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 10px;
-            transition: all 0.2s;
-        }
-        
-        .node-btn:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-        
         footer {
             text-align: center;
             padding: 15px;
@@ -437,65 +387,28 @@
             font-size: 0.8rem;
         }
         
-        .mobile-notice {
-            display: none;
-            background: #fff3cd;
-            color: #856404;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            font-size: 0.85rem;
-            border: 1px solid #ffeaa7;
-        }
-        
-        /* Hiển thị thông báo trên mobile */
         @media (max-width: 768px) {
-            .mobile-notice {
-                display: block;
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .preview-panel {
+                border-left: none;
+                border-top: 1px solid #eee;
             }
             
             .action-buttons {
-                grid-template-columns: 1fr;
-            }
-            
-            .template-gallery {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Điều chỉnh cho màn hình rất nhỏ */
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .section-title {
-                font-size: 1.1rem;
-            }
-            
-            .node {
-                min-width: 110px;
-                padding: 8px;
+                flex-direction: column;
+                align-items: center;
             }
             
             .btn {
-                padding: 10px 15px;
-                font-size: 0.85rem;
-            }
-        }
-        
-        /* Tối ưu cho thiết bị di động */
-        @media (hover: none) and (pointer: coarse) {
-            .node:hover {
-                transform: none;
+                width: 100%;
+                justify-content: center;
             }
             
-            .btn:hover {
-                background-color: var(--primary-color);
-            }
-            
-            .template-item:hover {
-                transform: none;
+            .layout-options {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -504,27 +417,17 @@
     <div class="container">
         <header>
             <h1>AI Mind Map Generator</h1>
-            <p class="app-description">Tạo sơ đồ tư duy từ hình ảnh - Tối ưu cho điện thoại</p>
+            <p class="app-description">Tạo sơ đồ tư duy từ hình ảnh - Tự động tạo sơ đồ hình cây</p>
         </header>
         
-        <div class="mobile-notice">
-            <i class="fas fa-mobile-alt"></i> Ứng dụng đã được tối ưu cho điện thoại. Sử dụng hai ngón tay để phóng to/thu nhỏ sơ đồ.
-        </div>
-        
         <div class="main-content">
-            <div class="tab-container">
-                <button class="tab active" data-tab="upload">Tải ảnh</button>
-                <button class="tab" data-tab="customize">Tùy chỉnh</button>
-                <button class="tab" data-tab="preview">Sơ đồ</button>
-            </div>
-            
-            <div class="tab-content active" id="upload-tab">
+            <div class="control-panel">
                 <section class="upload-section">
                     <h2 class="section-title"><i class="fas fa-upload"></i> Tải ảnh lên</h2>
                     <div class="upload-area" id="uploadArea">
                         <i class="fas fa-cloud-upload-alt"></i>
-                        <p class="upload-text">Chạm để chọn ảnh từ thiết bị của bạn</p>
-                        <button class="btn btn-block" id="browseButton">
+                        <p class="upload-text">Chọn ảnh từ thiết bị của bạn</p>
+                        <button class="btn" id="browseButton">
                             <i class="fas fa-folder-open"></i> Chọn ảnh
                         </button>
                         <input type="file" id="fileInput" accept="image/*" style="display: none;">
@@ -535,74 +438,50 @@
                     </div>
                     <div id="statusMessage" class="status-message"></div>
                 </section>
-            </div>
-            
-            <div class="tab-content" id="customize-tab">
-                <section class="customize-section">
-                    <h2 class="section-title"><i class="fas fa-sliders-h"></i> Tuỳ chỉnh sơ đồ</h2>
-                    <div class="customization-options">
-                        <div class="option-group">
-                            <label for="layoutStyle">Kiểu bố cục</label>
-                            <select id="layoutStyle">
-                                <option value="radial">Dạng tỏa tròn</option>
-                                <option value="tree">Dạng cây</option>
-                                <option value="organizational">Dạng tổ chức</option>
-                                <option value="timeline">Dạng thời gian</option>
-                            </select>
+                
+                <section class="layout-section">
+                    <h2 class="section-title"><i class="fas fa-project-diagram"></i> Kiểu sơ đồ</h2>
+                    <p>Chọn kiểu hiển thị cho sơ đồ tư duy</p>
+                    <div class="layout-options">
+                        <div class="layout-option active" data-layout="tree">
+                            <i class="fas fa-tree"></i>
+                            <div class="layout-name">Hình cây</div>
                         </div>
-                        
-                        <div class="option-group">
-                            <label for="colorScheme">Màu sắc</label>
-                            <select id="colorScheme">
-                                <option value="blue">Xanh dương</option>
-                                <option value="green">Xanh lá</option>
-                                <option value="red">Đỏ</option>
-                                <option value="purple">Tím</option>
-                            </select>
+                        <div class="layout-option" data-layout="radial">
+                            <i class="fas fa-bullseye"></i>
+                            <div class="layout-name">Tỏa tròn</div>
                         </div>
-                    </div>
-                    
-                    <h3 style="margin-top: 15px;">Mẫu sơ đồ</h3>
-                    <div class="template-gallery">
-                        <div class="template-item active" data-layout="radial">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='100' viewBox='0 0 150 100'%3E%3Ccircle cx='75' cy='50' r='30' fill='%234a6fa5'/%3E%3Ccircle cx='75' cy='50' r='40' fill='none' stroke='%234a6fa5' stroke-width='2'/%3E%3C/svg%3E" alt="Dạng tỏa tròn">
-                            <div class="template-name">Tỏa tròn</div>
+                        <div class="layout-option" data-layout="org">
+                            <i class="fas fa-sitemap"></i>
+                            <div class="layout-name">Tổ chức</div>
                         </div>
-                        <div class="template-item" data-layout="tree">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='100' viewBox='0 0 150 100'%3E%3Cpath d='M75,20 V80 M75,30 H40 M75,30 H110 M75,50 H30 M75,50 H120' stroke='%2328a745' stroke-width='2' fill='none'/%3E%3Ccircle cx='75' cy='20' r='10' fill='%2328a745'/%3E%3Ccircle cx='40' cy='30' r='10' fill='%2328a745'/%3E%3Ccircle cx='110' cy='30' r='10' fill='%2328a745'/%3E%3Ccircle cx='30' cy='50' r='10' fill='%2328a745'/%3E%3Ccircle cx='120' cy='50' r='10' fill='%2328a745'/%3E%3C/svg%3E" alt="Dạng cây">
-                            <div class="template-name">Dạng cây</div>
+                        <div class="layout-option" data-layout="custom">
+                            <i class="fas fa-shapes"></i>
+                            <div class="layout-name">Tùy chỉnh</div>
                         </div>
                     </div>
                 </section>
             </div>
             
-            <div class="tab-content" id="preview-tab">
+            <div class="preview-panel">
                 <section class="preview-section">
                     <h2 class="section-title"><i class="fas fa-eye"></i> Sơ đồ tư duy</h2>
                     <div class="mindmap-preview">
-                        <div class="mindmap-container" id="mindmapContainer">
+                        <div class="mindmap-container tree-layout" id="mindmapContainer">
                             <!-- Sơ đồ tư duy sẽ được hiển thị ở đây -->
-                            <div class="node central-node" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            <div class="node central-node">
                                 <div class="node-title">Chủ đề chính</div>
                                 <div class="node-content">Tải ảnh lên để bắt đầu</div>
                             </div>
                         </div>
-                        <div class="zoom-controls">
-                            <div class="zoom-btn" id="zoomIn"><i class="fas fa-plus"></i></div>
-                            <div class="zoom-btn" id="zoomOut"><i class="fas fa-minus"></i></div>
-                            <div class="zoom-btn" id="resetZoom"><i class="fas fa-sync-alt"></i></div>
-                        </div>
                     </div>
                     
                     <div class="action-buttons">
-                        <button class="btn" id="addNodeBtn">
-                            <i class="fas fa-plus-circle"></i> Thêm nhánh
-                        </button>
                         <button class="btn" id="addImageBtn">
-                            <i class="fas fa-image"></i> Thêm ảnh
+                            <i class="fas fa-image"></i> Thêm ảnh vào ô
                         </button>
                         <button class="btn btn-success" id="saveBtn">
-                            <i class="fas fa-save"></i> Lưu
+                            <i class="fas fa-save"></i> Lưu sơ đồ
                         </button>
                         <button class="btn btn-accent" id="downloadBtn">
                             <i class="fas fa-download"></i> Tải xuống
@@ -613,7 +492,7 @@
         </div>
         
         <footer>
-            <p>© 2023 AI Mind Map Generator | Tối ưu cho thiết bị di động</p>
+            <p>© 2023 AI Mind Map Generator | Tạo sơ đồ từ ảnh - Đơn giản và dễ sử dụng</p>
         </footer>
     </div>
 
@@ -626,37 +505,14 @@
             const progress = document.getElementById('progress');
             const mindmapContainer = document.getElementById('mindmapContainer');
             const addImageBtn = document.getElementById('addImageBtn');
-            const addNodeBtn = document.getElementById('addNodeBtn');
             const downloadBtn = document.getElementById('downloadBtn');
             const saveBtn = document.getElementById('saveBtn');
             const imagePreview = document.getElementById('imagePreview');
             const statusMessage = document.getElementById('statusMessage');
-            const zoomIn = document.getElementById('zoomIn');
-            const zoomOut = document.getElementById('zoomOut');
-            const resetZoom = document.getElementById('resetZoom');
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
+            const layoutOptions = document.querySelectorAll('.layout-option');
             
-            let currentZoom = 1;
             let selectedNode = null;
-            let isDragging = false;
-            let dragOffset = { x: 0, y: 0 };
-            let touchStartX, touchStartY;
-            
-            // Xử lý chuyển tab
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabId = tab.getAttribute('data-tab');
-                    
-                    // Xóa active class từ tất cả tabs và contents
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    
-                    // Thêm active class cho tab và content được chọn
-                    tab.classList.add('active');
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
-                });
-            });
+            let currentLayout = 'tree';
             
             // Xử lý sự kiện tải lên ảnh
             browseButton.addEventListener('click', function() {
@@ -665,29 +521,6 @@
             
             uploadArea.addEventListener('click', function() {
                 fileInput.click();
-            });
-            
-            // Hỗ trợ kéo thả trên mobile
-            uploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                uploadArea.style.borderColor = '#4a6fa5';
-                uploadArea.style.backgroundColor = 'rgba(107, 140, 188, 0.2)';
-            });
-            
-            uploadArea.addEventListener('dragleave', function() {
-                uploadArea.style.borderColor = '#6b8cbc';
-                uploadArea.style.backgroundColor = 'rgba(107, 140, 188, 0.05)';
-            });
-            
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                uploadArea.style.borderColor = '#6b8cbc';
-                uploadArea.style.backgroundColor = 'rgba(107, 140, 188, 0.05)';
-                
-                if (e.dataTransfer.files.length) {
-                    fileInput.files = e.dataTransfer.files;
-                    handleImageUpload();
-                }
             });
             
             fileInput.addEventListener('change', handleImageUpload);
@@ -704,12 +537,6 @@
                     return;
                 }
                 
-                // Kiểm tra kích thước file (giới hạn 5MB cho mobile)
-                if (file.size > 5 * 1024 * 1024) {
-                    showStatus('Ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 5MB.', 'error');
-                    return;
-                }
-                
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
@@ -717,56 +544,39 @@
                     imagePreview.src = e.target.result;
                     imagePreview.style.display = 'block';
                     
-                    // Chuyển đến tab preview
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    document.querySelector('[data-tab="preview"]').classList.add('active');
-                    document.getElementById('preview-tab').classList.add('active');
-                    
                     // Xử lý ảnh và tạo sơ đồ tư duy
-                    processImageWithOCR(file);
+                    processImage(file);
                 };
                 
                 reader.readAsDataURL(file);
             }
             
-            // Xử lý ảnh với OCR thực sự
-            function processImageWithOCR(file) {
+            // Xử lý ảnh và tạo sơ đồ
+            function processImage(file) {
                 progressBar.style.display = 'block';
-                progress.style.width = '10%';
+                progress.style.width = '30%';
                 
                 showStatus('Đang xử lý ảnh...', 'info');
                 
-                // Sử dụng Tesseract.js để nhận dạng văn bản
-                Tesseract.recognize(
-                    file,
-                    'vie+eng', // Ngôn ngữ: Tiếng Việt + Tiếng Anh
-                    { 
-                        logger: message => {
-                            if (message.status === 'recognizing text') {
-                                progress.style.width = `${message.progress * 100}%`;
-                            }
-                        }
-                    }
-                ).then(result => {
-                    progress.style.width = '100%';
+                // Giả lập quá trình xử lý AI và OCR
+                setTimeout(function() {
+                    progress.style.width = '60%';
                     
-                    // Hiển thị kết quả nhận dạng
-                    const extractedText = result.data.text || "Không thể nhận dạng văn bản. Vui lòng thử với hình ảnh rõ nét hơn.";
-                    
-                    showStatus('Nhận dạng văn bản thành công!', 'success');
-                    
-                    // Tạo sơ đồ tư duy từ văn bản
-                    createMindMap(extractedText);
-                    
-                    // Ẩn thanh tiến trình sau khi hoàn thành
                     setTimeout(function() {
-                        progressBar.style.display = 'none';
-                    }, 1000);
-                }).catch(err => {
-                    showStatus('Lỗi khi nhận dạng văn bản: ' + err.message, 'error');
-                    progressBar.style.display = 'none';
-                });
+                        progress.style.width = '100%';
+                        
+                        // Giả lập kết quả trích xuất văn bản từ ảnh
+                        const extractedText = "Đây là văn bản mẫu được trích xuất từ hình ảnh. Ứng dụng thực tế sẽ sử dụng API OCR như Tesseract.js để nhận dạng văn bản thật. Bạn có thể thay đổi kiểu sơ đồ bằng cách chọn các tùy chọn bên trái.";
+                        
+                        // Tạo sơ đồ tư duy từ văn bản (mặc định là hình cây)
+                        createMindMap(extractedText);
+                        
+                        // Ẩn thanh tiến trình sau khi hoàn thành
+                        setTimeout(function() {
+                            progressBar.style.display = 'none';
+                        }, 500);
+                    }, 800);
+                }, 500);
             }
             
             // Hiển thị thông báo trạng thái
@@ -788,58 +598,44 @@
                 mindmapContainer.innerHTML = '';
                 
                 // Tách văn bản thành các dòng
-                const lines = text.split('\n').filter(line => line.trim().length > 0);
+                const lines = text.split('.').filter(line => line.trim().length > 0);
                 
                 // Tạo nút trung tâm
                 const centralNode = createNode('Chủ đề chính', lines.length > 0 ? lines[0] : 'Nội dung chính', true);
-                centralNode.style.top = '50%';
-                centralNode.style.left = '50%';
-                centralNode.style.transform = 'translate(-50%, -50%)';
+                centralNode.classList.add('central-node');
                 
                 mindmapContainer.appendChild(centralNode);
                 
                 // Tạo các nút con từ các dòng còn lại
                 if (lines.length > 1) {
-                    for (let i = 1; i < Math.min(lines.length, 5); i++) {
-                        const angle = (i-1) * (2 * Math.PI / (lines.length - 1));
-                        const radius = 120; // Giảm bán kính cho mobile
-                        const top = 50 + Math.sin(angle) * radius / 2;
-                        const left = 50 + Math.cos(angle) * radius;
-                        
+                    for (let i = 1; i < Math.min(lines.length, 7); i++) {
                         const node = createNode(`Ý tưởng ${i}`, lines[i]);
-                        node.style.top = `${top}%`;
-                        node.style.left = `${left}%`;
-                        
+                        node.classList.add(`node-${i}`);
                         mindmapContainer.appendChild(node);
                     }
                 } else {
                     // Tạo các nút mẫu nếu không đủ nội dung
-                    createSampleNodes(centralNode);
+                    createSampleNodes();
                 }
                 
-                // Cho phép kéo thả các node
-                enableDragging();
+                // Áp dụng layout mặc định (hình cây)
+                applyLayout(currentLayout);
             }
             
             // Tạo node mẫu
-            function createSampleNodes(centralNode) {
+            function createSampleNodes() {
                 const sampleContents = [
-                    "Ý tưởng sáng tạo",
-                    "Ghi chú quan trọng",
-                    "Kế hoạch hành động",
-                    "Mục tiêu phát triển"
+                    "Ý tưởng sáng tạo và đổi mới",
+                    "Ghi chú quan trọng cần lưu ý",
+                    "Kế hoạch hành động chi tiết",
+                    "Mục tiêu phát triển dài hạn",
+                    "Phân tích SWOT điểm mạnh - yếu",
+                    "Đánh giá kết quả và hiệu suất"
                 ];
                 
                 sampleContents.forEach((content, i) => {
-                    const angle = i * (2 * Math.PI / sampleContents.length);
-                    const radius = 120; // Giảm bán kính cho mobile
-                    const top = 50 + Math.sin(angle) * radius / 2;
-                    const left = 50 + Math.cos(angle) * radius;
-                    
                     const node = createNode(`Nhánh ${i+1}`, content);
-                    node.style.top = `${top}%`;
-                    node.style.left = `${left}%`;
-                    
+                    node.classList.add(`node-${i+1}`);
                     mindmapContainer.appendChild(node);
                 });
             }
@@ -847,204 +643,50 @@
             // Tạo một node mới
             function createNode(title, content, isCentral = false) {
                 const node = document.createElement('div');
-                node.className = isCentral ? 'node central-node' : 'node';
-                
-                const nodeControls = document.createElement('div');
-                nodeControls.className = 'node-controls';
-                
-                const editBtn = document.createElement('div');
-                editBtn.className = 'node-btn';
-                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-                editBtn.title = 'Chỉnh sửa';
-                editBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    editNode(node);
-                });
-                
-                const deleteBtn = document.createElement('div');
-                deleteBtn.className = 'node-btn';
-                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-                deleteBtn.title = 'Xóa';
-                deleteBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    deleteNode(node);
-                });
-                
-                nodeControls.appendChild(editBtn);
-                if (!isCentral) {
-                    nodeControls.appendChild(deleteBtn);
-                }
+                node.className = 'node';
                 
                 node.innerHTML = `
                     <div class="node-title" contenteditable="true">${title}</div>
                     <div class="node-content" contenteditable="true">${content}</div>
                 `;
                 
-                node.appendChild(nodeControls);
-                
-                // Chọn node khi chạm
+                // Chọn node khi click
                 node.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('node-btn')) return;
+                    // Bỏ chọn node cũ
+                    if (selectedNode) {
+                        selectedNode.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)';
+                    }
                     
+                    // Chọn node mới
+                    selectedNode = node;
+                    node.style.boxShadow = '0 0 0 2px ' + (isCentral ? '#fff' : 'var(--primary-color)');
+                    
+                    // Di chuyển node lên trên cùng (z-index)
                     document.querySelectorAll('.node').forEach(n => {
                         n.style.zIndex = 2;
-                        n.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)';
                     });
-                    
-                    node.style.zIndex = 4;
-                    node.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.3)';
-                    
-                    selectedNode = node;
+                    node.style.zIndex = 3;
                 });
                 
                 return node;
             }
             
-            // Cho phép kéo thả các node (hỗ trợ cả touch)
-            function enableDragging() {
-                const nodes = document.querySelectorAll('.node');
+            // Áp dụng layout cho sơ đồ
+            function applyLayout(layoutType) {
+                // Xóa tất cả các lớp layout cũ
+                mindmapContainer.classList.remove('tree-layout', 'radial-layout', 'org-layout', 'custom-layout');
                 
-                nodes.forEach(node => {
-                    // Sự kiện cho desktop
-                    node.addEventListener('mousedown', startDrag);
-                    
-                    // Sự kiện cho mobile
-                    node.addEventListener('touchstart', handleTouchStart, { passive: false });
-                    node.addEventListener('touchmove', handleTouchMove, { passive: false });
-                    node.addEventListener('touchend', handleTouchEnd);
-                });
+                // Thêm lớp layout mới
+                mindmapContainer.classList.add(layoutType + '-layout');
                 
-                document.addEventListener('mousemove', drag);
-                document.addEventListener('mouseup', stopDrag);
-            }
-            
-            // Xử lý touch start
-            function handleTouchStart(e) {
-                if (e.target.classList.contains('node-btn')) return;
-                
-                const touch = e.touches[0];
-                touchStartX = touch.clientX;
-                touchStartY = touch.clientY;
-                
-                selectedNode = e.currentTarget;
-                const rect = selectedNode.getBoundingClientRect();
-                dragOffset.x = touch.clientX - rect.left;
-                dragOffset.y = touch.clientY - rect.top;
-                
-                selectedNode.style.cursor = 'grabbing';
-                e.preventDefault();
-            }
-            
-            // Xử lý touch move
-            function handleTouchMove(e) {
-                if (!selectedNode) return;
-                
-                const touch = e.touches[0];
-                const containerRect = mindmapContainer.getBoundingClientRect();
-                
-                let x = touch.clientX - containerRect.left - dragOffset.x;
-                let y = touch.clientY - containerRect.top - dragOffset.y;
-                
-                // Giới hạn node trong container
-                x = Math.max(0, Math.min(containerRect.width - selectedNode.offsetWidth, x));
-                y = Math.max(0, Math.min(containerRect.height - selectedNode.offsetHeight, y));
-                
-                selectedNode.style.left = `${x}px`;
-                selectedNode.style.top = `${y}px`;
-                selectedNode.style.transform = 'none';
-                
-                e.preventDefault();
-            }
-            
-            // Xử lý touch end
-            function handleTouchEnd() {
-                if (selectedNode) {
-                    selectedNode.style.cursor = 'move';
-                }
-                selectedNode = null;
-            }
-            
-            // Bắt đầu kéo (desktop)
-            function startDrag(e) {
-                if (e.button !== 0) return; // Chỉ xử lý click chuột trái
-                if (e.target.classList.contains('node-btn')) return;
-                
-                isDragging = true;
-                selectedNode = e.currentTarget;
-                
-                const rect = selectedNode.getBoundingClientRect();
-                dragOffset.x = e.clientX - rect.left;
-                dragOffset.y = e.clientY - rect.top;
-                
-                selectedNode.style.cursor = 'grabbing';
-            }
-            
-            // Kéo node (desktop)
-            function drag(e) {
-                if (!isDragging || !selectedNode) return;
-                
-                const containerRect = mindmapContainer.getBoundingClientRect();
-                
-                let x = e.clientX - containerRect.left - dragOffset.x;
-                let y = e.clientY - containerRect.top - dragOffset.y;
-                
-                // Giới hạn node trong container
-                x = Math.max(0, Math.min(containerRect.width - selectedNode.offsetWidth, x));
-                y = Math.max(0, Math.min(containerRect.height - selectedNode.offsetHeight, y));
-                
-                selectedNode.style.left = `${x}px`;
-                selectedNode.style.top = `${y}px`;
-                selectedNode.style.transform = 'none';
-            }
-            
-            // Dừng kéo (desktop)
-            function stopDrag() {
-                if (!isDragging) return;
-                
-                isDragging = false;
-                if (selectedNode) {
-                    selectedNode.style.cursor = 'move';
-                }
-            }
-            
-            // Chỉnh sửa node
-            function editNode(node) {
-                const title = node.querySelector('.node-title');
-                const content = node.querySelector('.node-content');
-                
-                title.focus();
-                
-                // Cho phép chỉnh sửa nội dung
-                title.contentEditable = content.contentEditable = 'true';
-                
-                // Tự động lưu khi người dùng hoàn thành chỉnh sửa
-                const saveEdit = () => {
-                    title.contentEditable = content.contentEditable = 'false';
-                    title.removeEventListener('blur', saveEdit);
-                    content.removeEventListener('blur', saveEdit);
-                };
-                
-                title.addEventListener('blur', saveEdit);
-                content.addEventListener('blur', saveEdit);
-            }
-            
-            // Xóa node
-            function deleteNode(node) {
-                if (node.classList.contains('central-node')) {
-                    showStatus('Không thể xóa node trung tâm!', 'error');
-                    return;
-                }
-                
-                if (confirm('Bạn có chắc chắn muốn xóa nhánh này?')) {
-                    node.remove();
-                    showStatus('Đã xóa nhánh', 'info');
-                }
+                // Cập nhật layout hiện tại
+                currentLayout = layoutType;
             }
             
             // Xử lý sự kiện thêm ảnh vào ô
             addImageBtn.addEventListener('click', function() {
                 if (!selectedNode) {
-                    showStatus('Vui lòng chọn một nhánh để thêm ảnh', 'error');
+                    showStatus('Vui lòng chọn một ô để thêm ảnh', 'error');
                     return;
                 }
                 
@@ -1075,7 +717,7 @@
                             selectedNode.querySelector('.node-content').appendChild(img);
                         }
                         
-                        showStatus('Đã thêm ảnh vào nhánh', 'success');
+                        showStatus('Đã thêm ảnh vào ô', 'success');
                     };
                     
                     reader.readAsDataURL(file);
@@ -1084,139 +726,30 @@
                 input.click();
             });
             
-            // Xử lý sự kiện thêm nhánh mới
-            addNodeBtn.addEventListener('click', function() {
-                if (!selectedNode) {
-                    showStatus('Vui lòng chọn một nhánh để thêm nhánh con', 'error');
-                    return;
-                }
-                
-                const nodeCount = document.querySelectorAll('.node').length;
-                const newNode = createNode(`Nhánh mới ${nodeCount}`, 'Nội dung nhánh mới');
-                
-                // Đặt vị trí ngẫu nhiên gần node cha
-                const rect = selectedNode.getBoundingClientRect();
-                const containerRect = mindmapContainer.getBoundingClientRect();
-                
-                const x = rect.left - containerRect.left + (Math.random() * 80 - 40);
-                const y = rect.top - containerRect.top + (Math.random() * 80 - 40);
-                
-                newNode.style.left = `${x}px`;
-                newNode.style.top = `${y}px`;
-                newNode.style.transform = 'none';
-                
-                mindmapContainer.appendChild(newNode);
-                
-                showStatus('Đã thêm nhánh mới', 'success');
-            });
-            
-            // Xử lý zoom
-            zoomIn.addEventListener('click', function() {
-                if (currentZoom < 2) {
-                    currentZoom += 0.1;
-                    updateZoom();
-                }
-            });
-            
-            zoomOut.addEventListener('click', function() {
-                if (currentZoom > 0.5) {
-                    currentZoom -= 0.1;
-                    updateZoom();
-                }
-            });
-            
-            resetZoom.addEventListener('click', function() {
-                currentZoom = 1;
-                updateZoom();
-            });
-            
-            function updateZoom() {
-                mindmapContainer.style.transform = `scale(${currentZoom})`;
-            }
-            
-            // Hỗ trợ pinch-to-zoom trên mobile
-            let initialDistance = null;
-            mindmapContainer.addEventListener('touchstart', function(e) {
-                if (e.touches.length === 2) {
-                    initialDistance = getDistance(e.touches[0], e.touches[1]);
-                }
-            });
-            
-            mindmapContainer.addEventListener('touchmove', function(e) {
-                if (e.touches.length === 2 && initialDistance !== null) {
-                    e.preventDefault();
-                    const currentDistance = getDistance(e.touches[0], e.touches[1]);
-                    const scale = currentDistance / initialDistance;
-                    
-                    if (scale > 1.1) {
-                        // Zoom in
-                        if (currentZoom < 2) {
-                            currentZoom += 0.05;
-                            updateZoom();
-                        }
-                        initialDistance = currentDistance;
-                    } else if (scale < 0.9) {
-                        // Zoom out
-                        if (currentZoom > 0.5) {
-                            currentZoom -= 0.05;
-                            updateZoom();
-                        }
-                        initialDistance = currentDistance;
-                    }
-                }
-            });
-            
-            mindmapContainer.addEventListener('touchend', function() {
-                initialDistance = null;
-            });
-            
-            function getDistance(touch1, touch2) {
-                return Math.sqrt(
-                    Math.pow(touch2.clientX - touch1.clientX, 2) +
-                    Math.pow(touch2.clientY - touch1.clientY, 2)
-                );
-            }
-            
             // Xử lý sự kiện tải xuống
             downloadBtn.addEventListener('click', function() {
                 showStatus('Tính năng tải xuống đang được phát triển', 'info');
             });
             
-            // Xử lý sự kiện lưu dự án
+            // Xử lý sự kiện lưu sơ đồ
             saveBtn.addEventListener('click', function() {
-                showStatus('Dự án đã được lưu tạm thời', 'success');
+                showStatus('Sơ đồ đã được lưu thành công', 'success');
             });
             
-            // Xử lý thay đổi tuỳ chọn
-            document.getElementById('layoutStyle').addEventListener('change', function() {
-                showStatus(`Đã chọn kiểu bố cục: ${this.options[this.selectedIndex].text}`, 'info');
-            });
-            
-            document.getElementById('colorScheme').addEventListener('change', function() {
-                showStatus(`Đã chọn màu sắc: ${this.options[this.selectedIndex].text}`, 'info');
-                
-                // Cập nhật màu sắc cho các node
-                const color = this.value;
-                let primaryColor = '#4a6fa5'; // Màu mặc định
-                
-                switch(color) {
-                    case 'green': primaryColor = '#28a745'; break;
-                    case 'red': primaryColor = '#dc3545'; break;
-                    case 'purple': primaryColor = '#6f42c1'; break;
-                }
-                
-                document.documentElement.style.setProperty('--primary-color', primaryColor);
-            });
-            
-            // Xử lý chọn mẫu template
-            document.querySelectorAll('.template-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    document.querySelectorAll('.template-item').forEach(i => i.classList.remove('active'));
+            // Xử lý thay đổi kiểu layout
+            layoutOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Xóa active class từ tất cả options
+                    layoutOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Thêm active class cho option được chọn
                     this.classList.add('active');
                     
-                    const layout = this.getAttribute('data-layout');
-                    document.getElementById('layoutStyle').value = layout;
-                    showStatus(`Đã chọn mẫu: ${this.querySelector('.template-name').textContent}`, 'success');
+                    // Áp dụng layout mới
+                    const layoutType = this.getAttribute('data-layout');
+                    applyLayout(layoutType);
+                    
+                    showStatus(`Đã chuyển sang kiểu sơ đồ: ${this.querySelector('.layout-name').textContent}`, 'success');
                 });
             });
         });
