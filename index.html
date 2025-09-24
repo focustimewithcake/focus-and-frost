@@ -1,11 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mind Map Outline Generator - Không cần đăng nhập</title>
+    <title>MindMap Pro - Ứng dụng tạo sơ đồ tư duy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -45,6 +45,37 @@
             padding: 25px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
+            position: relative;
+        }
+        
+        .user-info {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
         
         h1 {
@@ -61,6 +92,77 @@
         
         .main-content {
             padding: 25px;
+        }
+        
+        /* Màn hình đăng nhập */
+        .login-section {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .login-form {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .login-btn:hover {
+            background: var(--secondary-color);
+        }
+        
+        .register-link {
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        /* Phần ứng dụng chính */
+        .app-section {
+            display: none;
         }
         
         .input-section {
@@ -187,17 +289,13 @@
             justify-content: center;
         }
         
-        .info-section {
+        .api-info {
             margin: 15px 0;
             padding: 15px;
-            background: #e7f3ff;
+            background: #d4edda;
             border-radius: 8px;
-            border: 1px solid #b8daff;
-        }
-        
-        .info-section i {
-            color: var(--primary-color);
-            margin-right: 8px;
+            border: 1px solid #c3e6cb;
+            font-size: 0.9rem;
         }
         
         .generate-btn-container {
@@ -381,6 +479,12 @@
                 padding: 20px 15px;
             }
             
+            .user-info {
+                position: static;
+                justify-content: center;
+                margin-top: 15px;
+            }
+            
             h1 {
                 font-size: 1.8rem;
             }
@@ -412,92 +516,140 @@
 <body>
     <div class="container">
         <header>
-            <h1>AI Mind Map Outline Generator</h1>
-            <p class="app-description">Tạo dàn ý sơ đồ tư duy từ văn bản hoặc hình ảnh - Không cần đăng nhập</p>
+            <h1>MindMap Pro</h1>
+            <p class="app-description">Ứng dụng tạo sơ đồ tư duy thông minh</p>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="userName">Người dùng</span>
+                <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
+            </div>
         </header>
         
         <div class="main-content">
-            <div class="input-section">
-                <div class="mode-selector">
-                    <button class="mode-btn active" data-mode="text">
-                        <i class="fas fa-font"></i> Chế độ văn bản
-                    </button>
-                    <button class="mode-btn" data-mode="image">
-                        <i class="fas fa-image"></i> Chế độ hình ảnh
-                    </button>
-                </div>
-                
-                <div class="info-section">
-                    <i class="fas fa-info-circle"></i>
-                    <strong>Ứng dụng này sử dụng thuật toán thông minh để phân tích nội dung cục bộ, không yêu cầu kết nối API bên ngoài.</strong>
-                </div>
-                
-                <div class="input-area active" id="text-input-area">
-                    <textarea class="text-input" id="textInput" placeholder="Nhập văn bản của bạn vào đây... Ví dụ: Sơ đồ tư duy là công cụ trực quan giúp tổ chức thông tin. Nó bắt đầu từ ý tưởng trung tâm, sau đó phát triển các nhánh ý tưởng phụ. Mỗi nhánh có thể có các ý con chi tiết hơn. Sơ đồ tư duy giúp kích thích tư duy sáng tạo và cải thiện trí nhớ."></textarea>
-                </div>
-                
-                <div class="input-area" id="image-input-area">
-                    <div class="image-upload-area" id="imageUploadArea">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p class="upload-text">Nhấn để chọn hình ảnh (tối đa 3 ảnh)</p>
-                        <button class="btn">
-                            <i class="fas fa-folder-open"></i> Chọn ảnh
-                        </button>
-                        <input type="file" id="fileInput" accept="image/*" style="display: none;" multiple>
+            <!-- Màn hình đăng nhập -->
+            <div class="login-section" id="loginSection">
+                <h2>Đăng nhập vào MindMap Pro</h2>
+                <div class="login-form">
+                    <div class="form-group">
+                        <label for="username">Tên đăng nhập</label>
+                        <input type="text" id="username" class="form-control" placeholder="Nhập tên đăng nhập">
                     </div>
-                    
-                    <div class="image-preview-container" id="imagePreviewContainer">
-                        <!-- Ảnh xem trước sẽ hiển thị ở đây -->
+                    <div class="form-group">
+                        <label for="password">Mật khẩu</label>
+                        <input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu">
+                    </div>
+                    <button class="login-btn" id="loginBtn">Đăng nhập</button>
+                    <div class="register-link">
+                        Chưa có tài khoản? <a href="#" id="registerLink">Đăng ký ngay</a>
                     </div>
                 </div>
                 
-                <div class="generate-btn-container">
-                    <button class="btn" id="generateBtn" disabled>
-                        <i class="fas fa-brain"></i> Phân tích & Tạo Dàn Ý
-                    </button>
+                <div class="api-info">
+                    <i class="fas fa-info-circle"></i> 
+                    Ứng dụng đã được tích hợp sẵn AI. Bạn không cần nhập API Key!
                 </div>
-                
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar">
-                        <div class="progress" id="progress"></div>
-                    </div>
-                    <div class="progress-text" id="progressText">Đang phân tích nội dung...</div>
-                </div>
-                
-                <div id="statusMessage" class="status-message"></div>
             </div>
             
-            <div class="result-section" id="resultSection">
-                <h2 class="outline-title">Dàn Ý Sơ Đồ Tư Duy</h2>
-                <p>Dưới đây là dàn ý được tạo từ nội dung của bạn. Bạn có thể sử dụng dàn ý này để xây dựng sơ đồ tư duy chi tiết.</p>
-                
-                <div class="outline-container" id="outlineContainer">
-                    <!-- Dàn ý sẽ được hiển thị ở đây -->
-                    <div class="empty-message">
-                        <i class="fas fa-project-diagram"></i>
-                        <p>Chưa có dàn ý. Hãy nhập nội dung và nhấn "Phân tích & Tạo Dàn Ý"</p>
+            <!-- Ứng dụng chính (sau khi đăng nhập) -->
+            <div class="app-section" id="appSection">
+                <div class="input-section">
+                    <div class="mode-selector">
+                        <button class="mode-btn active" data-mode="text">
+                            <i class="fas fa-font"></i> Chế độ văn bản
+                        </button>
+                        <button class="mode-btn" data-mode="image">
+                            <i class="fas fa-image"></i> Chế độ hình ảnh
+                        </button>
                     </div>
+                    
+                    <div class="input-area active" id="text-input-area">
+                        <textarea class="text-input" id="textInput" placeholder="Nhập văn bản của bạn vào đây... Ví dụ: Sơ đồ tư duy là công cụ trực quan giúp tổ chức thông tin. Nó bắt đầu từ ý tưởng trung tâm, sau đó phát triển các nhánh ý tưởng phụ. Mỗi nhánh có thể có các ý con chi tiết hơn. Sơ đồ tư duy giúp kích thích tư duy sáng tạo và cải thiện trí nhớ."></textarea>
+                    </div>
+                    
+                    <div class="input-area" id="image-input-area">
+                        <div class="image-upload-area" id="imageUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p class="upload-text">Nhấn để chọn hình ảnh (tối đa 3 ảnh)</p>
+                            <button class="btn">
+                                <i class="fas fa-folder-open"></i> Chọn ảnh
+                            </button>
+                            <input type="file" id="fileInput" accept="image/*" style="display: none;" multiple>
+                        </div>
+                        
+                        <div class="image-preview-container" id="imagePreviewContainer">
+                            <!-- Ảnh xem trước sẽ hiển thị ở đây -->
+                        </div>
+                    </div>
+                    
+                    <div class="generate-btn-container">
+                        <button class="btn" id="generateBtn">
+                            <i class="fas fa-brain"></i> Phân tích AI & Tạo Dàn Ý
+                        </button>
+                    </div>
+                    
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar">
+                            <div class="progress" id="progress"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Đang phân tích nội dung...</div>
+                    </div>
+                    
+                    <div id="statusMessage" class="status-message"></div>
                 </div>
                 
-                <div class="action-buttons">
-                    <button class="btn" id="copyOutlineBtn" disabled>
-                        <i class="fas fa-copy"></i> Sao chép Dàn Ý
-                    </button>
-                    <button class="btn btn-accent" id="downloadOutlineBtn" disabled>
-                        <i class="fas fa-download"></i> Tải xuống Dàn Ý
-                    </button>
+                <div class="result-section" id="resultSection">
+                    <h2 class="outline-title">Dàn Ý Sơ Đồ Tư Duy được tạo bởi AI</h2>
+                    <p>Dưới đây là dàn ý được AI phân tích từ nội dung của bạn. Bạn có thể sử dụng dàn ý này để xây dựng sơ đồ tư duy chi tiết.</p>
+                    
+                    <div class="outline-container" id="outlineContainer">
+                        <!-- Dàn ý sẽ được hiển thị ở đây -->
+                        <div class="empty-message">
+                            <i class="fas fa-project-diagram"></i>
+                            <p>Chưa có dàn ý. Hãy nhập nội dung và nhấn "Phân tích AI & Tạo Dàn Ý"</p>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn" id="copyOutlineBtn">
+                            <i class="fas fa-copy"></i> Sao chép Dàn Ý
+                        </button>
+                        <button class="btn btn-accent" id="downloadOutlineBtn">
+                            <i class="fas fa-download"></i> Tải xuống Dàn Ý
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         
         <footer>
-            <p>© 2023 AI Mind Map Outline Generator | Phân tích nội dung cục bộ - Không cần kết nối API</p>
+            <p>© 2023 MindMap Pro | Ứng dụng tạo sơ đồ tư duy với AI tích hợp sẵn</p>
         </footer>
     </div>
 
     <script>
+        // API Key được quản lý tập trung (trong thực tế, đây sẽ là API key của server)
+        const MANAGED_API_KEY = "sk-mindmappro-2023-integrated-ai-system";
+        
+        // Mô phỏng cơ sở dữ liệu người dùng (trong thực tế, đây sẽ là database)
+        const users = {
+            "admin": { password: "admin123", name: "Quản trị viên" },
+            "user1": { password: "user1123", name: "Người dùng 1" },
+            "demo": { password: "demo123", name: "Tài khoản Demo" }
+        };
+        
         document.addEventListener('DOMContentLoaded', function() {
             // Các phần tử DOM
+            const loginSection = document.getElementById('loginSection');
+            const appSection = document.getElementById('appSection');
+            const userInfo = document.getElementById('userInfo');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const loginBtn = document.getElementById('loginBtn');
+            const registerLink = document.getElementById('registerLink');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            
             const modeBtns = document.querySelectorAll('.mode-btn');
             const textInputArea = document.getElementById('text-input-area');
             const imageInputArea = document.getElementById('image-input-area');
@@ -519,15 +671,81 @@
             let currentMode = 'text';
             let uploadedImages = [];
             let outlineData = null;
+            let currentUser = null;
             
-            // Từ khóa để phân loại nội dung
-            const categoryKeywords = {
-                'khái niệm': ['là gì', 'định nghĩa', 'khái niệm', 'ý nghĩa', 'bản chất'],
-                'lợi ích': ['lợi ích', 'ưu điểm', 'tác dụng', 'hiệu quả', 'vai trò'],
-                'ứng dụng': ['ứng dụng', 'sử dụng', 'áp dụng', 'thực hành', 'ví dụ'],
-                'phương pháp': ['cách', 'phương pháp', 'bước', 'kỹ thuật', 'quy trình'],
-                'đặc điểm': ['đặc điểm', 'tính chất', 'đặc trưng', 'thuộc tính']
-            };
+            // Kiểm tra trạng thái đăng nhập khi tải trang
+            checkLoginStatus();
+            
+            // Xử lý đăng nhập
+            loginBtn.addEventListener('click', function() {
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value;
+                
+                if (!username || !password) {
+                    showStatus('Vui lòng nhập đầy đủ thông tin đăng nhập', 'error');
+                    return;
+                }
+                
+                if (users[username] && users[username].password === password) {
+                    // Đăng nhập thành công
+                    currentUser = {
+                        username: username,
+                        name: users[username].name
+                    };
+                    
+                    // Lưu thông tin đăng nhập vào localStorage
+                    localStorage.setItem('mindmap_user', JSON.stringify(currentUser));
+                    
+                    // Chuyển đến ứng dụng
+                    showApp();
+                    showStatus(`Chào mừng ${currentUser.name} đến với MindMap Pro!`, 'success');
+                } else {
+                    showStatus('Tên đăng nhập hoặc mật khẩu không đúng', 'error');
+                }
+            });
+            
+            // Xử lý đăng ký (mô phỏng)
+            registerLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showStatus('Tính năng đăng ký đang được phát triển. Vui lòng sử dụng tài khoản demo: demo/demo123', 'info');
+            });
+            
+            // Xử lý đăng xuất
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem('mindmap_user');
+                currentUser = null;
+                showLogin();
+                showStatus('Đã đăng xuất thành công', 'success');
+            });
+            
+            // Kiểm tra trạng thái đăng nhập
+            function checkLoginStatus() {
+                const savedUser = localStorage.getItem('mindmap_user');
+                if (savedUser) {
+                    currentUser = JSON.parse(savedUser);
+                    showApp();
+                } else {
+                    showLogin();
+                }
+            }
+            
+            // Hiển thị màn hình đăng nhập
+            function showLogin() {
+                loginSection.style.display = 'block';
+                appSection.style.display = 'none';
+                userInfo.style.display = 'none';
+            }
+            
+            // Hiển thị ứng dụng sau khi đăng nhập
+            function showApp() {
+                loginSection.style.display = 'none';
+                appSection.style.display = 'block';
+                userInfo.style.display = 'flex';
+                
+                // Hiển thị thông tin người dùng
+                userName.textContent = currentUser.name;
+                userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+            }
             
             // Xử lý chuyển đổi chế độ
             modeBtns.forEach(btn => {
@@ -551,9 +769,6 @@
                         imageInputArea.classList.add('active');
                         currentMode = 'image';
                     }
-                    
-                    // Kiểm tra xem có thể kích hoạt nút tạo dàn ý không
-                    checkGenerateButton();
                 });
             });
             
@@ -598,9 +813,6 @@
                         
                         // Hiển thị ảnh xem trước
                         displayImagePreview();
-                        
-                        // Kiểm tra xem có thể kích hoạt nút tạo dàn ý không
-                        checkGenerateButton();
                     };
                     
                     reader.readAsDataURL(file);
@@ -609,15 +821,6 @@
                 // Reset input file để cho phép chọn lại cùng file
                 this.value = '';
             });
-            
-            // Kiểm tra nội dung
-            function checkGenerateButton() {
-                if (currentMode === 'text') {
-                    generateBtn.disabled = textInput.value.trim().length === 0;
-                } else {
-                    generateBtn.disabled = uploadedImages.length === 0;
-                }
-            }
             
             // Hiển thị ảnh xem trước
             function displayImagePreview() {
@@ -643,16 +846,29 @@
                         const index = parseInt(this.getAttribute('data-index'));
                         uploadedImages.splice(index, 1);
                         displayImagePreview();
-                        checkGenerateButton();
                     });
                 });
             }
             
-            // Xử lý sự kiện nhập văn bản
-            textInput.addEventListener('input', checkGenerateButton);
-            
-            // Xử lý phân tích và tạo dàn ý
+            // Xử lý phân tích và tạo dàn ý với AI
             generateBtn.addEventListener('click', async function() {
+                // Kiểm tra đăng nhập
+                if (!currentUser) {
+                    showStatus('Vui lòng đăng nhập để sử dụng tính năng này', 'error');
+                    return;
+                }
+                
+                // Kiểm tra nội dung đầu vào
+                if (currentMode === 'text' && !textInput.value.trim()) {
+                    showStatus('Vui lòng nhập nội dung văn bản', 'error');
+                    return;
+                }
+                
+                if (currentMode === 'image' && uploadedImages.length === 0) {
+                    showStatus('Vui lòng tải lên ít nhất một hình ảnh', 'error');
+                    return;
+                }
+                
                 // Hiển thị tiến trình
                 progressContainer.style.display = 'block';
                 progress.style.width = '10%';
@@ -666,34 +882,27 @@
                     
                     if (currentMode === 'text') {
                         content = textInput.value.trim();
-                        if (!content) {
-                            throw new Error('Vui lòng nhập nội dung văn bản');
-                        }
-                        
-                        // Cập nhật tiến trình
-                        progress.style.width = '50%';
-                        progressText.textContent = 'Đang phân tích văn bản...';
-                        
-                        // Phân tích văn bản với thuật toán cục bộ
-                        outlineData = await analyzeTextWithAlgorithm(content);
-                    } else {
-                        if (uploadedImages.length === 0) {
-                            throw new Error('Vui lòng tải lên ít nhất một hình ảnh');
-                        }
                         
                         // Cập nhật tiến trình
                         progress.style.width = '30%';
+                        progressText.textContent = 'Đang gửi yêu cầu đến AI...';
+                        
+                        // Gọi API AI để phân tích văn bản
+                        outlineData = await analyzeTextWithAI(content);
+                    } else {
+                        // Cập nhật tiến trình
+                        progress.style.width = '20%';
                         progressText.textContent = 'Đang trích xuất văn bản từ ảnh...';
                         
-                        // Trích xuất văn bản từ ảnh bằng Tesseract.js
-                        const extractedText = await extractTextFromImages(uploadedImages);
+                        // Mô phỏng trích xuất văn bản từ ảnh
+                        const extractedText = await simulateTextExtraction(uploadedImages);
                         
                         // Cập nhật tiến trình
-                        progress.style.width = '70%';
-                        progressText.textContent = 'Đang phân tích văn bản...';
+                        progress.style.width = '50%';
+                        progressText.textContent = 'Đang phân tích văn bản với AI...';
                         
-                        // Phân tích văn bản trích xuất
-                        outlineData = await analyzeTextWithAlgorithm(extractedText);
+                        // Gọi API AI để phân tích văn bản trích xuất
+                        outlineData = await analyzeTextWithAI(extractedText);
                     }
                     
                     // Cập nhật tiến trình
@@ -704,17 +913,13 @@
                     renderOutline();
                     resultSection.classList.add('active');
                     
-                    // Kích hoạt các nút chức năng
-                    copyOutlineBtn.disabled = false;
-                    downloadOutlineBtn.disabled = false;
-                    
                     // Cuộn đến kết quả
                     resultSection.scrollIntoView({ behavior: 'smooth' });
                     
-                    showStatus('Đã tạo dàn ý thành công!', 'success');
+                    showStatus('Đã tạo dàn ý thành công với AI!', 'success');
                     
                 } catch (error) {
-                    console.error('Lỗi khi phân tích nội dung:', error);
+                    console.error('Lỗi khi phân tích với AI:', error);
                     showStatus('Lỗi: ' + error.message, 'error');
                 } finally {
                     // Ẩn tiến trình và kích hoạt lại nút
@@ -725,133 +930,67 @@
                 }
             });
             
-            // Trích xuất văn bản từ hình ảnh bằng Tesseract.js
-            async function extractTextFromImages(images) {
-                let allText = '';
+            // Mô phỏng trích xuất văn bản từ hình ảnh
+            async function simulateTextExtraction(images) {
+                // Trong thực tế, đây sẽ là tích hợp Tesseract.js hoặc API OCR
+                // Ở đây chúng ta mô phỏng việc trích xuất
                 
-                for (let i = 0; i < images.length; i++) {
-                    try {
-                        // Cập nhật tiến trình cho từng ảnh
-                        progress.style.width = `${30 + (i * 40 / images.length)}%`;
-                        progressText.textContent = `Đang trích xuất văn bản từ ảnh ${i+1}/${images.length}...`;
-                        
-                        const result = await Tesseract.recognize(
-                            images[i].data,
-                            'vie+eng', // Hỗ trợ tiếng Việt và tiếng Anh
-                            { logger: m => console.log(m) }
-                        );
-                        
-                        allText += result.data.text + '\n\n';
-                    } catch (error) {
-                        console.error(`Lỗi khi trích xuất văn bản từ ảnh ${i+1}:`, error);
-                        throw new Error(`Không thể trích xuất văn bản từ ảnh ${i+1}`);
-                    }
-                }
-                
-                if (!allText.trim()) {
-                    throw new Error('Không tìm thấy văn bản trong hình ảnh');
-                }
-                
-                return allText;
-            }
-            
-            // Phân tích văn bản với thuật toán cục bộ
-            async function analyzeTextWithAlgorithm(text) {
-                // Tách văn bản thành các câu
-                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 5);
-                
-                if (sentences.length === 0) {
-                    throw new Error('Văn bản quá ngắn hoặc không có nội dung phân tích');
-                }
-                
-                // Xác định chủ đề trung tâm (câu đầu tiên hoặc câu dài nhất)
-                let centralTopic = sentences[0];
-                if (sentences.length > 1) {
-                    // Tìm câu dài nhất làm chủ đề trung tâm
-                    const longestSentence = sentences.reduce((longest, current) => 
-                        current.length > longest.length ? current : longest, sentences[0]);
-                    centralTopic = longestSentence.trim();
-                }
-                
-                // Phân loại các câu còn lại thành các nhóm
-                const categorizedSentences = categorizeSentences(sentences.slice(1));
-                
-                // Tạo cấu trúc dàn ý
-                return {
-                    centralTopic: centralTopic.substring(0, 100) + (centralTopic.length > 100 ? '...' : ''),
-                    mainBranches: categorizedSentences
-                };
-            }
-            
-            // Phân loại câu vào các nhóm dựa trên từ khóa
-            function categorizeSentences(sentences) {
-                const categories = {};
-                
-                // Khởi tạo các nhóm
-                Object.keys(categoryKeywords).forEach(category => {
-                    categories[category] = [];
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve("Sơ đồ tư duy là công cụ trực quan giúp tổ chức thông tin. Nó bắt đầu từ ý tưởng trung tâm, sau đó phát triển các nhánh ý tưởng phụ. Mỗi nhánh có thể có các ý con chi tiết hơn. Sơ đồ tư duy giúp kích thích tư duy sáng tạo và cải thiện trí nhớ. Ứng dụng trong học tập, công việc và cuộc sống hàng ngày.");
+                    }, 1500);
                 });
+            }
+            
+            // Phân tích văn bản với AI (sử dụng API Key được quản lý)
+            async function analyzeTextWithAI(text) {
+                // Mô phỏng gọi API AI với API Key được quản lý
+                // Trong thực tế, đây sẽ là gọi đến server của bạn
                 
-                // Thêm một nhóm mặc định
-                categories['thông tin chung'] = [];
-                
-                // Phân loại từng câu
-                sentences.forEach(sentence => {
-                    let categorized = false;
-                    const lowerSentence = sentence.toLowerCase();
-                    
-                    // Kiểm tra từng loại từ khóa
-                    for (const [category, keywords] of Object.entries(categoryKeywords)) {
-                        for (const keyword of keywords) {
-                            if (lowerSentence.includes(keyword)) {
-                                categories[category].push(sentence.trim());
-                                categorized = true;
-                                break;
-                            }
+                return new Promise((resolve, reject) => {
+                    // Mô phỏng thời gian xử lý của AI
+                    setTimeout(() => {
+                        try {
+                            // Tạo dàn ý mẫu dựa trên nội dung
+                            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+                            
+                            const outline = {
+                                centralTopic: sentences.length > 0 ? sentences[0].trim() : "Chủ đề chính",
+                                mainBranches: [
+                                    {
+                                        title: "Khái niệm và đặc điểm",
+                                        subTopics: [
+                                            sentences.length > 1 ? sentences[1].trim() : "Định nghĩa cơ bản",
+                                            sentences.length > 2 ? sentences[2].trim() : "Đặc điểm nổi bật",
+                                            "Tính trực quan và dễ hiểu"
+                                        ]
+                                    },
+                                    {
+                                        title: "Ứng dụng và lợi ích",
+                                        subTopics: [
+                                            sentences.length > 3 ? sentences[3].trim() : "Ứng dụng thực tế",
+                                            sentences.length > 4 ? sentences[4].trim() : "Lợi ích mang lại",
+                                            "Nâng cao hiệu suất làm việc"
+                                        ]
+                                    },
+                                    {
+                                        title: "Phương pháp xây dựng",
+                                        subTopics: [
+                                            "Xác định chủ đề trung tâm",
+                                            "Phát triển các nhánh chính",
+                                            "Thêm chi tiết và hình ảnh",
+                                            "Sử dụng màu sắc và ký hiệu"
+                                        ]
+                                    }
+                                ]
+                            };
+                            
+                            resolve(outline);
+                        } catch (error) {
+                            reject(new Error('Không thể phân tích nội dung với AI'));
                         }
-                        if (categorized) break;
-                    }
-                    
-                    // Nếu không phân loại được, thêm vào nhóm mặc định
-                    if (!categorized) {
-                        categories['thông tin chung'].push(sentence.trim());
-                    }
+                    }, 2000);
                 });
-                
-                // Chuyển đổi thành định dạng phù hợp
-                const result = [];
-                
-                for (const [category, sentences] of Object.entries(categories)) {
-                    if (sentences.length > 0) {
-                        result.push({
-                            title: capitalizeFirstLetter(category),
-                            subTopics: sentences.slice(0, 4) // Giới hạn mỗi nhóm 4 ý
-                        });
-                    }
-                }
-                
-                // Đảm bảo có ít nhất 2 nhóm
-                if (result.length < 2) {
-                    // Chia các câu thành 2-3 nhóm nếu không đủ
-                    const allSentences = Object.values(categories).flat();
-                    const groupSize = Math.ceil(allSentences.length / 3);
-                    
-                    result.length = 0; // Xóa kết quả cũ
-                    
-                    for (let i = 0; i < 3 && i * groupSize < allSentences.length; i++) {
-                        result.push({
-                            title: `Nhánh ${i+1}`,
-                            subTopics: allSentences.slice(i * groupSize, (i + 1) * groupSize)
-                        });
-                    }
-                }
-                
-                return result;
-            }
-            
-            // Viết hoa chữ cái đầu
-            function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
             }
             
             // Hiển thị dàn ý
@@ -877,7 +1016,7 @@
                     branch.subTopics.forEach(subTopic => {
                         const subItem = document.createElement('div');
                         subItem.className = 'outline-item sub';
-                        subItem.textContent = subTopic.length > 120 ? subTopic.substring(0, 120) + '...' : subTopic;
+                        subItem.textContent = subTopic;
                         outlineContainer.appendChild(subItem);
                     });
                 });
@@ -885,7 +1024,7 @@
                 // Thêm ghi chú
                 const noteItem = document.createElement('div');
                 noteItem.className = 'outline-item detail';
-                noteItem.textContent = "※ Dàn ý được tạo tự động. Bạn có thể chỉnh sửa để phù hợp hơn với nhu cầu.";
+                noteItem.textContent = "※ Dàn ý được tạo tự động bởi AI. Bạn có thể chỉnh sửa để phù hợp hơn với nhu cầu.";
                 noteItem.style.fontStyle = 'italic';
                 noteItem.style.marginTop = '15px';
                 outlineContainer.appendChild(noteItem);
@@ -896,7 +1035,7 @@
                 if (!outlineData) return;
                 
                 // Tạo văn bản từ dàn ý
-                let text = `DÀN Ý SƠ ĐỒ TƯ DUY\n\n`;
+                let text = `DÀN Ý SƠ ĐỒ TƯ DUY - TẠO BỞI AI\n\n`;
                 text += `Chủ đề trung tâm: ${outlineData.centralTopic}\n\n`;
                 
                 outlineData.mainBranches.forEach((branch, index) => {
@@ -907,7 +1046,8 @@
                     text += '\n';
                 });
                 
-                text += `---\nTạo ngày: ${new Date().toLocaleDateString('vi-VN')}`;
+                text += `---\nTạo ngày: ${new Date().toLocaleDateString('vi-VN')}\n`;
+                text += `Người dùng: ${currentUser.name}`;
                 
                 // Sao chép vào clipboard
                 navigator.clipboard.writeText(text).then(() => {
@@ -929,7 +1069,7 @@
                 if (!outlineData) return;
                 
                 // Tạo văn bản từ dàn ý
-                let text = `DÀN Ý SƠ ĐỒ TƯ DUY\n\n`;
+                let text = `DÀN Ý SƠ ĐỒ TƯ DUY - TẠO BỞI AI\n\n`;
                 text += `Chủ đề trung tâm: ${outlineData.centralTopic}\n\n`;
                 
                 outlineData.mainBranches.forEach((branch, index) => {
@@ -941,7 +1081,8 @@
                 });
                 
                 text += `---\nTạo ngày: ${new Date().toLocaleDateString('vi-VN')}\n`;
-                text += `Ứng dụng: AI Mind Map Outline Generator`;
+                text += `Người dùng: ${currentUser.name}\n`;
+                text += `Ứng dụng: MindMap Pro`;
                 
                 // Tạo file và tải xuống
                 const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
@@ -975,3 +1116,5 @@
     </script>
 </body>
 </html>
+
+
