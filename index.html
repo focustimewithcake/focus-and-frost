@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mind Map Generator - Phiên bản cải tiến</title>
+    <title>AI Mind Map Outline Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -31,7 +31,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -117,12 +117,13 @@
         
         .text-input {
             width: 100%;
-            min-height: 150px;
+            min-height: 200px;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
             resize: vertical;
+            line-height: 1.6;
         }
         
         .image-upload-area {
@@ -236,175 +237,63 @@
             display: block;
         }
         
-        .layout-selector {
+        .outline-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .outline-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+        }
+        
+        .outline-item {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .outline-item.main {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark-color);
+            margin-top: 15px;
+            padding-left: 0;
+        }
+        
+        .outline-item.main:before {
+            content: "•";
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            position: absolute;
+            left: -5px;
+        }
+        
+        .outline-item.sub {
+            padding-left: 30px;
+            color: #555;
+        }
+        
+        .outline-item.detail {
+            padding-left: 50px;
+            color: #777;
+            font-size: 0.95rem;
+        }
+        
+        .action-buttons {
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .layout-btn {
-            padding: 10px 20px;
-            background: white;
-            border: 2px solid var(--primary-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .layout-btn.active {
-            background: var(--primary-color);
-            color: white;
-        }
-        
-        .mindmap-container {
-            min-height: 600px;
-            border: 1px solid #eaeaea;
-            border-radius: 8px;
-            padding: 20px;
-            background-color: white;
-            position: relative;
-            overflow: auto;
-        }
-        
-        /* Sơ đồ hình cây */
-        .tree-layout {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .tree-level {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            margin-bottom: 40px;
-        }
-        
-        .tree-node {
-            background: white;
-            border: 2px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 15px;
-            margin: 0 15px;
-            min-width: 200px;
-            max-width: 300px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        
-        .tree-node.main {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-        
-        .tree-node.sub {
-            background-color: rgba(74, 111, 165, 0.8);
-            color: white;
-            border-color: rgba(74, 111, 165, 0.8);
-        }
-        
-        .tree-node.detail {
-            background-color: rgba(74, 111, 165, 0.6);
-            color: white;
-            border-color: rgba(74, 111, 165, 0.6);
-        }
-        
-        .tree-node.more-detail {
-            background-color: rgba(74, 111, 165, 0.4);
-            color: var(--dark-color);
-            border-color: rgba(74, 111, 165, 0.4);
-        }
-        
-        /* Kết nối cho sơ đồ cây */
-        .tree-connector {
-            position: absolute;
-            background: #999;
-            z-index: -1;
-        }
-        
-        /* Sơ đồ tỏa tròn */
-        .radial-layout {
-            position: relative;
-            height: 600px;
-        }
-        
-        .radial-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--primary-color);
-            color: white;
-            border-radius: 8px;
-            padding: 15px;
-            min-width: 150px;
-            max-width: 200px;
-            text-align: center;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-        }
-        
-        .radial-node {
-            position: absolute;
-            background: white;
-            border: 2px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 12px;
-            min-width: 140px;
-            max-width: 180px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .radial-node.main {
-            background-color: rgba(74, 111, 165, 0.9);
-            color: white;
-        }
-        
-        .radial-node.sub {
-            background-color: rgba(74, 111, 165, 0.7);
-            color: white;
-        }
-        
-        .radial-node.detail {
-            background-color: rgba(74, 111, 165, 0.5);
-            color: var(--dark-color);
-        }
-        
-        .radial-connector {
-            position: absolute;
-            background: #999;
-            z-index: -1;
-        }
-        
-        .node-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: inherit;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 5px;
-            font-size: 1.1rem;
-        }
-        
-        .node-content {
-            font-size: 0.95rem;
-            min-height: 40px;
-            line-height: 1.5;
-            color: inherit;
-        }
-        
-        .node-image {
-            margin-top: 10px;
-            max-width: 100%;
-            border-radius: 6px;
-            max-height: 100px;
-            object-fit: cover;
+            margin-top: 20px;
         }
         
         .status-message {
@@ -490,38 +379,18 @@
                 flex-direction: column;
             }
             
-            .layout-selector {
+            .action-buttons {
                 flex-direction: column;
                 align-items: center;
             }
             
-            .layout-btn {
+            .btn {
                 width: 100%;
                 justify-content: center;
             }
             
-            .mindmap-container {
-                min-height: 500px;
-                padding: 15px;
-            }
-            
-            .tree-node {
-                min-width: 150px;
-                max-width: 200px;
-                padding: 12px;
-                margin: 0 8px;
-            }
-            
-            .radial-node {
-                min-width: 120px;
-                max-width: 160px;
-                padding: 10px;
-            }
-            
-            .radial-center {
-                min-width: 120px;
-                max-width: 160px;
-                padding: 12px;
+            .outline-container {
+                max-height: 400px;
             }
         }
     </style>
@@ -529,8 +398,8 @@
 <body>
     <div class="container">
         <header>
-            <h1>AI Mind Map Generator</h1>
-            <p class="app-description">Tạo sơ đồ tư duy từ văn bản hoặc hình ảnh</p>
+            <h1>AI Mind Map Outline Generator</h1>
+            <p class="app-description">Phân tích nội dung và tạo dàn ý cho sơ đồ tư duy</p>
         </header>
         
         <div class="main-content">
@@ -545,7 +414,7 @@
                 </div>
                 
                 <div class="input-area active" id="text-input-area">
-                    <textarea class="text-input" id="textInput" placeholder="Nhập văn bản của bạn vào đây..."></textarea>
+                    <textarea class="text-input" id="textInput" placeholder="Nhập văn bản của bạn vào đây... Ví dụ: Sơ đồ tư duy là công cụ trực quan giúp tổ chức thông tin. Nó bắt đầu từ ý tưởng trung tâm, sau đó phát triển các nhánh ý tưởng phụ. Mỗi nhánh có thể có các ý con chi tiết hơn. Sơ đồ tư duy giúp kích thích tư duy sáng tạo và cải thiện trí nhớ."></textarea>
                 </div>
                 
                 <div class="input-area" id="image-input-area">
@@ -565,7 +434,7 @@
                 
                 <div class="generate-btn-container">
                     <button class="btn" id="generateBtn" disabled>
-                        <i class="fas fa-magic"></i> Tạo Sơ Đồ Tư Duy
+                        <i class="fas fa-brain"></i> Phân tích & Tạo Dàn ý
                     </button>
                 </div>
                 
@@ -573,34 +442,37 @@
                     <div class="progress-bar">
                         <div class="progress" id="progress"></div>
                     </div>
-                    <div class="progress-text" id="progressText">Đang xử lý...</div>
+                    <div class="progress-text" id="progressText">Đang phân tích nội dung...</div>
                 </div>
                 
                 <div id="statusMessage" class="status-message"></div>
             </div>
             
             <div class="result-section" id="resultSection">
-                <div class="layout-selector">
-                    <button class="layout-btn active" data-layout="tree">
-                        <i class="fas fa-tree"></i> Sơ đồ hình cây
-                    </button>
-                    <button class="layout-btn" data-layout="radial">
-                        <i class="fas fa-bullseye"></i> Sơ đồ tỏa tròn
-                    </button>
-                </div>
+                <h2 class="outline-title">Dàn ý Sơ đồ Tư duy</h2>
+                <p>Dưới đây là dàn ý được AI phân tích từ nội dung của bạn. Bạn có thể sử dụng dàn ý này để xây dựng sơ đồ tư duy chi tiết.</p>
                 
-                <div class="mindmap-container" id="mindmapContainer">
-                    <!-- Sơ đồ tư duy sẽ được hiển thị ở đây -->
+                <div class="outline-container" id="outlineContainer">
+                    <!-- Dàn ý sẽ được hiển thị ở đây -->
                     <div class="empty-message">
                         <i class="fas fa-project-diagram"></i>
-                        <p>Chưa có sơ đồ. Hãy nhập nội dung và nhấn "Tạo Sơ Đồ Tư Duy"</p>
+                        <p>Chưa có dàn ý. Hãy nhập nội dung và nhấn "Phân tích & Tạo Dàn ý"</p>
                     </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn" id="copyOutlineBtn" disabled>
+                        <i class="fas fa-copy"></i> Sao chép Dàn ý
+                    </button>
+                    <button class="btn btn-accent" id="downloadOutlineBtn" disabled>
+                        <i class="fas fa-download"></i> Tải xuống Dàn ý
+                    </button>
                 </div>
             </div>
         </div>
         
         <footer>
-            <p>© 2023 AI Mind Map Generator | Tạo sơ đồ tư duy thông minh từ nội dung của bạn</p>
+            <p>© 2023 AI Mind Map Outline Generator | Phân tích nội dung thông minh cho sơ đồ tư duy</p>
         </footer>
     </div>
 
@@ -620,14 +492,14 @@
             const progressText = document.getElementById('progressText');
             const statusMessage = document.getElementById('statusMessage');
             const resultSection = document.getElementById('resultSection');
-            const mindmapContainer = document.getElementById('mindmapContainer');
-            const layoutBtns = document.querySelectorAll('.layout-btn');
+            const outlineContainer = document.getElementById('outlineContainer');
+            const copyOutlineBtn = document.getElementById('copyOutlineBtn');
+            const downloadOutlineBtn = document.getElementById('downloadOutlineBtn');
             
             // Biến toàn cục
             let currentMode = 'text';
             let uploadedImages = [];
-            let currentLayout = 'tree';
-            let mindmapData = null;
+            let outlineData = null;
             
             // Xử lý chuyển đổi chế độ
             modeBtns.forEach(btn => {
@@ -652,7 +524,7 @@
                         currentMode = 'image';
                     }
                     
-                    // Kiểm tra xem có thể kích hoạt nút tạo sơ đồ không
+                    // Kiểm tra xem có thể kích hoạt nút tạo dàn ý không
                     checkGenerateButton();
                 });
             });
@@ -699,7 +571,7 @@
                         // Hiển thị ảnh xem trước
                         displayImagePreview();
                         
-                        // Kiểm tra xem có thể kích hoạt nút tạo sơ đồ không
+                        // Kiểm tra xem có thể kích hoạt nút tạo dàn ý không
                         checkGenerateButton();
                     };
                     
@@ -739,7 +611,7 @@
                 });
             }
             
-            // Kiểm tra nút tạo sơ đồ
+            // Kiểm tra nút tạo dàn ý
             function checkGenerateButton() {
                 if (currentMode === 'text') {
                     generateBtn.disabled = textInput.value.trim().length === 0;
@@ -751,7 +623,7 @@
             // Xử lý sự kiện nhập văn bản
             textInput.addEventListener('input', checkGenerateButton);
             
-            // Xử lý tạo sơ đồ tư duy
+            // Xử lý phân tích và tạo dàn ý
             generateBtn.addEventListener('click', function() {
                 // Hiển thị tiến trình
                 progressContainer.style.display = 'block';
@@ -763,9 +635,10 @@
                 
                 // Mô phỏng quá trình xử lý AI
                 const steps = [
-                    {percent: 30, text: 'Đang trích xuất thông tin...'},
-                    {percent: 60, text: 'Đang tổ chức cấu trúc...'},
-                    {percent: 90, text: 'Đang tạo sơ đồ tư duy...'},
+                    {percent: 20, text: 'Đang trích xuất thông tin...'},
+                    {percent: 40, text: 'Đang xác định ý chính...'},
+                    {percent: 60, text: 'Đang phân loại thông tin...'},
+                    {percent: 80, text: 'Đang xây dựng cấu trúc...'},
                     {percent: 100, text: 'Hoàn thành!'}
                 ];
                 
@@ -778,11 +651,15 @@
                         currentStep++;
                         setTimeout(processStep, 800);
                     } else {
-                        // Tạo sơ đồ tư duy
-                        createMindMap();
+                        // Tạo dàn ý
+                        createOutline();
                         
                         // Hiển thị kết quả
                         resultSection.classList.add('active');
+                        
+                        // Kích hoạt các nút chức năng
+                        copyOutlineBtn.disabled = false;
+                        downloadOutlineBtn.disabled = false;
                         
                         // Cuộn đến kết quả
                         resultSection.scrollIntoView({ behavior: 'smooth' });
@@ -793,207 +670,173 @@
                             generateBtn.disabled = false;
                         }, 1000);
                         
-                        showStatus('Đã tạo sơ đồ tư duy thành công!', 'success');
+                        showStatus('Đã tạo dàn ý thành công!', 'success');
                     }
                 };
                 
                 processStep();
             });
             
-            // Tạo sơ đồ tư duy
-            function createMindMap() {
+            // Tạo dàn ý từ nội dung
+            function createOutline() {
                 // Xóa nội dung cũ
-                mindmapContainer.innerHTML = '';
+                outlineContainer.innerHTML = '';
                 
-                // Tạo nội dung mẫu dựa trên chế độ
+                // Lấy nội dung từ chế độ được chọn
                 let content = '';
                 
                 if (currentMode === 'text') {
-                    content = textInput.value.trim() || "Sơ đồ tư duy là công cụ hiệu quả để tổ chức thông tin. Nó giúp não bộ ghi nhớ và xử lý thông tin tốt hơn. Bắt đầu từ ý tưởng trung tâm, phát triển các nhánh ý tưởng phụ. Mỗi nhánh có thể có các ý con nhỏ hơn. Sử dụng màu sắc và hình ảnh để tăng tính trực quan.";
+                    content = textInput.value.trim() || "Sơ đồ tư duy là công cụ trực quan giúp tổ chức thông tin. Nó bắt đầu từ ý tưởng trung tâm, sau đó phát triển các nhánh ý tưởng phụ. Mỗi nhánh có thể có các ý con chi tiết hơn. Sơ đồ tư duy giúp kích thích tư duy sáng tạo và cải thiện trí nhớ. Ứng dụng trong học tập, công việc và cuộc sống hàng ngày.";
                 } else {
-                    content = "Dựa trên hình ảnh đã tải lên, AI đã phân tích và tạo sơ đồ tư duy. Sơ đồ này tổ chức thông tin từ hình ảnh thành các ý tưởng có cấu trúc. Bạn có thể chỉnh sửa nội dung các ô để phù hợp hơn với nhu cầu của mình.";
+                    content = "Dựa trên hình ảnh đã tải lên, AI đã phân tích và tạo dàn ý cho sơ đồ tư duy. Dàn ý này tổ chức thông tin thành các cấp độ từ tổng quan đến chi tiết, giúp bạn dễ dàng xây dựng sơ đồ tư duy hoàn chỉnh.";
                 }
                 
-                // Tạo dữ liệu sơ đồ mẫu
-                mindmapData = generateSampleMindMapData(content);
+                // Tạo dữ liệu dàn ý mẫu
+                outlineData = generateOutlineData(content);
                 
-                // Hiển thị sơ đồ
-                renderMindMap();
+                // Hiển thị dàn ý
+                renderOutline();
             }
             
-            // Tạo dữ liệu sơ đồ mẫu
-            function generateSampleMindMapData(content) {
+            // Tạo dữ liệu dàn ý mẫu
+            function generateOutlineData(content) {
                 // Tách văn bản thành các câu
                 const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0);
                 
-                // Tạo cấu trúc phân cấp cho sơ đồ
+                // Tạo cấu trúc phân cấp cho dàn ý
                 return {
                     central: sentences.length > 0 ? sentences[0].trim() : "Chủ đề chính",
                     branches: [
                         {
-                            title: sentences.length > 1 ? sentences[1].trim() : "Nhánh 1",
+                            title: sentences.length > 1 ? extractMainTopic(sentences[1]) : "Khái niệm cơ bản",
                             children: [
-                                sentences.length > 2 ? sentences[2].trim() : "Nội dung chi tiết 1.1",
-                                sentences.length > 3 ? sentences[3].trim() : "Nội dung chi tiết 1.2"
+                                sentences.length > 2 ? sentences[2].trim() : "Định nghĩa và đặc điểm",
+                                sentences.length > 3 ? sentences[3].trim() : "Lợi ích và ứng dụng"
                             ]
                         },
                         {
-                            title: sentences.length > 4 ? sentences[4].trim() : "Nhánh 2",
+                            title: sentences.length > 4 ? extractMainTopic(sentences[4]) : "Cách xây dựng",
                             children: [
-                                sentences.length > 5 ? sentences[5].trim() : "Nội dung chi tiết 2.1",
-                                sentences.length > 6 ? sentences[6].trim() : "Nội dung chi tiết 2.2"
+                                sentences.length > 5 ? sentences[5].trim() : "Bước 1: Xác định chủ đề trung tâm",
+                                sentences.length > 6 ? sentences[6].trim() : "Bước 2: Phát triển các nhánh chính",
+                                sentences.length > 7 ? sentences[7].trim() : "Bước 3: Thêm chi tiết và hình ảnh"
                             ]
                         },
                         {
-                            title: sentences.length > 7 ? sentences[7].trim() : "Nhánh 3",
+                            title: sentences.length > 8 ? extractMainTopic(sentences[8]) : "Mẹo và kỹ thuật",
                             children: [
-                                sentences.length > 8 ? sentences[8].trim() : "Nội dung chi tiết 3.1"
+                                sentences.length > 9 ? sentences[9].trim() : "Sử dụng màu sắc hiệu quả",
+                                sentences.length > 10 ? sentences[10].trim() : "Kết hợp từ khóa và hình ảnh"
                             ]
                         }
                     ]
                 };
             }
             
-            // Hiển thị sơ đồ
-            function renderMindMap() {
-                if (currentLayout === 'tree') {
-                    renderTreeMap();
-                } else {
-                    renderRadialMap();
-                }
+            // Trích xuất chủ đề chính từ câu
+            function extractMainTopic(sentence) {
+                const words = sentence.trim().split(' ');
+                if (words.length <= 5) return sentence.trim();
+                
+                // Lấy 3-5 từ đầu tiên làm chủ đề
+                return words.slice(0, Math.min(5, words.length)).join(' ') + '...';
             }
             
-            // Hiển thị sơ đồ hình cây
-            function renderTreeMap() {
-                mindmapContainer.className = 'mindmap-container tree-layout';
+            // Hiển thị dàn ý
+            function renderOutline() {
+                outlineContainer.innerHTML = '';
                 
-                // Tạo cấp độ chính
-                const mainLevel = document.createElement('div');
-                mainLevel.className = 'tree-level';
+                // Thêm chủ đề trung tâm
+                const centralItem = document.createElement('div');
+                centralItem.className = 'outline-item main';
+                centralItem.textContent = outlineData.central;
+                outlineContainer.appendChild(centralItem);
                 
-                const mainNode = createNode(mindmapData.central, 'main', true);
-                mainLevel.appendChild(mainNode);
-                
-                mindmapContainer.appendChild(mainLevel);
-                
-                // Tạo cấp độ nhánh
-                const branchLevel = document.createElement('div');
-                branchLevel.className = 'tree-level';
-                
-                mindmapData.branches.forEach(branch => {
-                    const branchNode = createNode(branch.title, 'sub');
-                    branchLevel.appendChild(branchNode);
-                });
-                
-                mindmapContainer.appendChild(branchLevel);
-                
-                // Tạo cấp độ chi tiết
-                const detailLevel = document.createElement('div');
-                detailLevel.className = 'tree-level';
-                
-                mindmapData.branches.forEach(branch => {
-                    const detailContainer = document.createElement('div');
-                    detailContainer.className = 'detail-container';
-                    detailContainer.style.display = 'flex';
-                    detailContainer.style.flexDirection = 'column';
-                    detailContainer.style.alignItems = 'center';
-                    detailContainer.style.margin = '0 15px';
+                // Thêm các nhánh
+                outlineData.branches.forEach(branch => {
+                    const branchItem = document.createElement('div');
+                    branchItem.className = 'outline-item main';
+                    branchItem.textContent = branch.title;
+                    outlineContainer.appendChild(branchItem);
                     
-                    branch.children.forEach((child, index) => {
-                        const childNode = createNode(child, index % 2 === 0 ? 'detail' : 'more-detail');
-                        detailContainer.appendChild(childNode);
+                    // Thêm các ý con
+                    branch.children.forEach(child => {
+                        const childItem = document.createElement('div');
+                        childItem.className = 'outline-item sub';
+                        childItem.textContent = child;
+                        outlineContainer.appendChild(childItem);
                     });
-                    
-                    detailLevel.appendChild(detailContainer);
                 });
                 
-                mindmapContainer.appendChild(detailLevel);
+                // Thêm gợi ý
+                const tipsItem = document.createElement('div');
+                tipsItem.className = 'outline-item main';
+                tipsItem.textContent = "Gợi ý phát triển thêm";
+                outlineContainer.appendChild(tipsItem);
+                
+                const tip1 = document.createElement('div');
+                tip1.className = 'outline-item sub';
+                tip1.textContent = "Thêm ví dụ minh họa cụ thể";
+                outlineContainer.appendChild(tip1);
+                
+                const tip2 = document.createElement('div');
+                tip2.className = 'outline-item sub';
+                tip2.textContent = "Liên kết với kiến thức liên quan";
+                outlineContainer.appendChild(tip2);
             }
             
-            // Hiển thị sơ đồ tỏa tròn
-            function renderRadialMap() {
-                mindmapContainer.className = 'mindmap-container radial-layout';
+            // Xử lý sao chép dàn ý
+            copyOutlineBtn.addEventListener('click', function() {
+                if (!outlineData) return;
                 
-                // Tạo node trung tâm
-                const centerNode = document.createElement('div');
-                centerNode.className = 'radial-center';
-                centerNode.innerHTML = `
-                    <div class="node-title" contenteditable="true">${mindmapData.central}</div>
-                `;
-                mindmapContainer.appendChild(centerNode);
+                // Tạo văn bản từ dàn ý
+                let text = `DÀN Ý SƠ ĐỒ TƯ DUY\n\n`;
+                text += `Chủ đề trung tâm: ${outlineData.central}\n\n`;
                 
-                // Tạo các node xung quanh
-                const radius = 200;
-                const angleStep = (2 * Math.PI) / mindmapData.branches.length;
-                
-                mindmapData.branches.forEach((branch, index) => {
-                    const angle = index * angleStep;
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
-                    
-                    const node = document.createElement('div');
-                    node.className = 'radial-node main';
-                    node.style.left = `calc(50% + ${x}px)`;
-                    node.style.top = `calc(50% + ${y}px)`;
-                    node.style.transform = 'translate(-50%, -50%)';
-                    node.innerHTML = `
-                        <div class="node-title" contenteditable="true">${branch.title}</div>
-                    `;
-                    mindmapContainer.appendChild(node);
-                    
-                    // Tạo các node chi tiết xung quanh node chính
-                    const subRadius = 120;
-                    const subAngleStep = (2 * Math.PI) / branch.children.length;
-                    
+                outlineData.branches.forEach((branch, index) => {
+                    text += `${index + 1}. ${branch.title}\n`;
                     branch.children.forEach((child, childIndex) => {
-                        const subAngle = angle + (childIndex - (branch.children.length - 1) / 2) * subAngleStep;
-                        const subX = Math.cos(angle) * radius + Math.cos(subAngle) * subRadius;
-                        const subY = Math.sin(angle) * radius + Math.sin(subAngle) * subRadius;
-                        
-                        const subNode = document.createElement('div');
-                        subNode.className = 'radial-node sub';
-                        subNode.style.left = `calc(50% + ${subX}px)`;
-                        subNode.style.top = `calc(50% + ${subY}px)`;
-                        subNode.style.transform = 'translate(-50%, -50%)';
-                        subNode.innerHTML = `
-                            <div class="node-content" contenteditable="true">${child}</div>
-                        `;
-                        mindmapContainer.appendChild(subNode);
+                        text += `   ${childIndex + 1}. ${child}\n`;
                     });
+                    text += '\n';
                 });
-            }
-            
-            // Tạo một node mới
-            function createNode(content, level, isCentral = false) {
-                const node = document.createElement('div');
-                node.className = `tree-node ${level}`;
                 
-                node.innerHTML = `
-                    <div class="node-title" contenteditable="true">${isCentral ? content : content}</div>
-                    ${level === 'main' ? `<div class="node-content" contenteditable="true">Nội dung khái quát</div>` : ''}
-                `;
-                
-                return node;
-            }
-            
-            // Xử lý thay đổi layout
-            layoutBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (!mindmapData) {
-                        showStatus('Hãy tạo sơ đồ trước khi thay đổi kiểu hiển thị', 'info');
-                        return;
-                    }
-                    
-                    // Cập nhật trạng thái nút
-                    layoutBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Áp dụng layout mới
-                    currentLayout = this.getAttribute('data-layout');
-                    renderMindMap();
-                    
-                    showStatus(`Đã chuyển sang kiểu sơ đồ: ${this.textContent}`, 'success');
+                // Sao chép vào clipboard
+                navigator.clipboard.writeText(text).then(() => {
+                    showStatus('Đã sao chép dàn ý vào clipboard!', 'success');
+                }).catch(err => {
+                    showStatus('Không thể sao chép dàn ý. Vui lòng thử lại!', 'error');
                 });
+            });
+            
+            // Xử lý tải xuống dàn ý
+            downloadOutlineBtn.addEventListener('click', function() {
+                if (!outlineData) return;
+                
+                // Tạo văn bản từ dàn ý
+                let text = `DÀN Ý SƠ ĐỒ TƯ DUY\n\n`;
+                text += `Chủ đề trung tâm: ${outlineData.central}\n\n`;
+                
+                outlineData.branches.forEach((branch, index) => {
+                    text += `${index + 1}. ${branch.title}\n`;
+                    branch.children.forEach((child, childIndex) => {
+                        text += `   ${childIndex + 1}. ${child}\n`;
+                    });
+                    text += '\n';
+                });
+                
+                // Tạo file và tải xuống
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'dan-y-so-do-tu-duy.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('Đã tải xuống dàn ý thành công!', 'success');
             });
             
             // Hiển thị thông báo trạng thái
