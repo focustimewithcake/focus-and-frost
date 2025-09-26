@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mind Map Outline Generator - Tích hợp AI thực</title>
+    <title>AI Mind Map Outline Generator - Hoạt động Offline</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
@@ -187,26 +187,12 @@
             justify-content: center;
         }
         
-        .api-key-section {
+        .info-section {
             margin: 15px 0;
             padding: 15px;
             background: #e7f3ff;
             border-radius: 8px;
             border: 1px solid #b8daff;
-        }
-        
-        .api-key-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #b8daff;
-            border-radius: 5px;
-            margin-top: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .api-key-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
         }
         
         .generate-btn-container {
@@ -428,7 +414,7 @@
     <div class="container">
         <header>
             <h1>AI Mind Map Outline Generator</h1>
-            <p class="app-description">Tích hợp AI thực sự để phân tích và tạo dàn ý sơ đồ tư duy</p>
+            <p class="app-description">Ứng dụng tạo dàn ý sơ đồ tư duy thông minh - Hoạt động hoàn toàn offline</p>
         </header>
         
         <div class="main-content">
@@ -442,13 +428,8 @@
                     </button>
                 </div>
                 
-                <div class="api-key-section">
-                    <label for="apiKey"><i class="fas fa-key"></i> OpenAI API Key (bắt buộc):</label>
-                    <input type="password" id="apiKey" class="api-key-input" placeholder="Nhập API Key của bạn vào đây...">
-                    <p style="font-size: 0.8rem; margin-top: 5px; color: #666;">
-                        API Key được sử dụng để kết nối với OpenAI. Chúng tôi không lưu trữ key của bạn.
-                        <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--primary-color);">Lấy API Key tại đây</a>
-                    </p>
+                <div class="info-section">
+                    <p><i class="fas fa-info-circle"></i> Ứng dụng này sử dụng AI mô phỏng để phân tích nội dung và tạo dàn ý sơ đồ tư duy. Hoạt động hoàn toàn offline, không cần kết nối internet.</p>
                 </div>
                 
                 <div class="input-area active" id="text-input-area">
@@ -471,8 +452,8 @@
                 </div>
                 
                 <div class="generate-btn-container">
-                    <button class="btn" id="generateBtn" disabled>
-                        <i class="fas fa-brain"></i> Phân tích AI & Tạo Dàn Ý
+                    <button class="btn" id="generateBtn">
+                        <i class="fas fa-brain"></i> Phân tích & Tạo Dàn Ý
                     </button>
                 </div>
                 
@@ -487,14 +468,14 @@
             </div>
             
             <div class="result-section" id="resultSection">
-                <h2 class="outline-title">Dàn Ý Sơ Đồ Tư Duy được tạo bởi AI</h2>
-                <p>Dưới đây là dàn ý được AI phân tích từ nội dung của bạn. Bạn có thể sử dụng dàn ý này để xây dựng sơ đồ tư duy chi tiết.</p>
+                <h2 class="outline-title">Dàn Ý Sơ Đồ Tư Duy được tạo bởi AI Mô Phỏng</h2>
+                <p>Dưới đây là dàn ý được AI mô phỏng phân tích từ nội dung của bạn. Bạn có thể sử dụng dàn ý này để xây dựng sơ đồ tư duy chi tiết.</p>
                 
                 <div class="outline-container" id="outlineContainer">
                     <!-- Dàn ý sẽ được hiển thị ở đây -->
                     <div class="empty-message">
                         <i class="fas fa-project-diagram"></i>
-                        <p>Chưa có dàn ý. Hãy nhập nội dung và nhấn "Phân tích AI & Tạo Dàn Ý"</p>
+                        <p>Chưa có dàn ý. Hãy nhập nội dung và nhấn "Phân tích & Tạo Dàn Ý"</p>
                     </div>
                 </div>
                 
@@ -510,7 +491,7 @@
         </div>
         
         <footer>
-            <p>© 2023 AI Mind Map Outline Generator | Tích hợp OpenAI API để phân tích nội dung thông minh</p>
+            <p>© 2023 AI Mind Map Outline Generator | Sử dụng AI mô phỏng để phân tích nội dung - Hoạt động offline</p>
         </footer>
     </div>
 
@@ -522,7 +503,6 @@
             const imageInputArea = document.getElementById('image-input-area');
             const textInput = document.getElementById('textInput');
             const fileInput = document.getElementById('fileInput');
-            const apiKeyInput = document.getElementById('apiKey');
             const imageUploadArea = document.getElementById('imageUploadArea');
             const imagePreviewContainer = document.getElementById('imagePreviewContainer');
             const generateBtn = document.getElementById('generateBtn');
@@ -562,9 +542,6 @@
                         imageInputArea.classList.add('active');
                         currentMode = 'image';
                     }
-                    
-                    // Kiểm tra xem có thể kích hoạt nút tạo dàn ý không
-                    checkGenerateButton();
                 });
             });
             
@@ -609,9 +586,6 @@
                         
                         // Hiển thị ảnh xem trước
                         displayImagePreview();
-                        
-                        // Kiểm tra xem có thể kích hoạt nút tạo dàn ý không
-                        checkGenerateButton();
                     };
                     
                     reader.readAsDataURL(file);
@@ -620,25 +594,6 @@
                 // Reset input file để cho phép chọn lại cùng file
                 this.value = '';
             });
-            
-            // Kiểm tra API Key và nội dung
-            function checkGenerateButton() {
-                const hasApiKey = apiKeyInput.value.trim().length > 0;
-                
-                if (currentMode === 'text') {
-                    generateBtn.disabled = !hasApiKey || textInput.value.trim().length === 0;
-                } else {
-                    generateBtn.disabled = !hasApiKey || uploadedImages.length === 0;
-                }
-                
-                // Hiển thị cảnh báo nếu thiếu API Key
-                if (!hasApiKey) {
-                    showStatus('Vui lòng nhập OpenAI API Key để sử dụng tính năng AI', 'warning');
-                }
-            }
-            
-            // Lắng nghe sự kiện nhập API Key
-            apiKeyInput.addEventListener('input', checkGenerateButton);
             
             // Hiển thị ảnh xem trước
             function displayImagePreview() {
@@ -664,23 +619,12 @@
                         const index = parseInt(this.getAttribute('data-index'));
                         uploadedImages.splice(index, 1);
                         displayImagePreview();
-                        checkGenerateButton();
                     });
                 });
             }
             
-            // Xử lý sự kiện nhập văn bản
-            textInput.addEventListener('input', checkGenerateButton);
-            
-            // Xử lý phân tích và tạo dàn ý với AI thực sự
+            // Xử lý phân tích và tạo dàn ý với AI mô phỏng
             generateBtn.addEventListener('click', async function() {
-                // Kiểm tra API Key
-                const apiKey = apiKeyInput.value.trim();
-                if (!apiKey) {
-                    showStatus('Vui lòng nhập OpenAI API Key', 'error');
-                    return;
-                }
-                
                 // Hiển thị tiến trình
                 progressContainer.style.display = 'block';
                 progress.style.width = '10%';
@@ -700,10 +644,10 @@
                         
                         // Cập nhật tiến trình
                         progress.style.width = '30%';
-                        progressText.textContent = 'Đang gửi yêu cầu đến AI...';
+                        progressText.textContent = 'Đang xử lý với AI mô phỏng...';
                         
-                        // Gọi API OpenAI để phân tích văn bản
-                        outlineData = await analyzeTextWithAI(content, apiKey);
+                        // Sử dụng AI mô phỏng để phân tích văn bản
+                        outlineData = await analyzeTextWithSimulatedAI(content);
                     } else {
                         if (uploadedImages.length === 0) {
                             throw new Error('Vui lòng tải lên ít nhất một hình ảnh');
@@ -718,10 +662,10 @@
                         
                         // Cập nhật tiến trình
                         progress.style.width = '50%';
-                        progressText.textContent = 'Đang phân tích văn bản với AI...';
+                        progressText.textContent = 'Đang phân tích văn bản với AI mô phỏng...';
                         
-                        // Gọi API OpenAI để phân tích văn bản trích xuất
-                        outlineData = await analyzeTextWithAI(extractedText, apiKey);
+                        // Sử dụng AI mô phỏng để phân tích văn bản trích xuất
+                        outlineData = await analyzeTextWithSimulatedAI(extractedText);
                     }
                     
                     // Cập nhật tiến trình
@@ -739,10 +683,10 @@
                     // Cuộn đến kết quả
                     resultSection.scrollIntoView({ behavior: 'smooth' });
                     
-                    showStatus('Đã tạo dàn ý thành công với AI!', 'success');
+                    showStatus('Đã tạo dàn ý thành công với AI mô phỏng!', 'success');
                     
                 } catch (error) {
-                    console.error('Lỗi khi phân tích với AI:', error);
+                    console.error('Lỗi khi phân tích với AI mô phỏng:', error);
                     showStatus('Lỗi: ' + error.message, 'error');
                 } finally {
                     // Ẩn tiến trình và kích hoạt lại nút
@@ -783,109 +727,108 @@
                 return allText;
             }
             
-            // Phân tích văn bản với OpenAI API
-            async function analyzeTextWithAI(text, apiKey) {
-                // Prompt được thiết kế để tạo dàn ý sơ đồ tư duy
-                const prompt = `
-                Hãy phân tích văn bản sau và tạo dàn ý cho một sơ đồ tư duy. Dàn ý nên có cấu trúc phân cấp rõ ràng với:
-                1. Chủ đề trung tâm (ngắn gọn, xúc tích)
-                2. Các nhánh chính (3-5 nhánh)
-                3. Các ý phụ dưới mỗi nhánh (2-4 ý mỗi nhánh)
+            // Phân tích văn bản với AI mô phỏng
+            async function analyzeTextWithSimulatedAI(text) {
+                // Giả lập thời gian xử lý của AI
+                await new Promise(resolve => setTimeout(resolve, 1500));
                 
-                Văn bản cần phân tích:
-                "${text}"
+                // Phân tích văn bản để tạo dàn ý phù hợp
+                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+                const words = text.split(/\s+/).filter(w => w.length > 0);
                 
-                Hãy trả về kết quả dưới dạng JSON với cấu trúc:
-                {
-                    "centralTopic": "Chủ đề trung tâm",
-                    "mainBranches": [
-                        {
-                            "title": "Tên nhánh chính",
-                            "subTopics": ["Ý phụ 1", "Ý phụ 2", ...]
-                        },
-                        ...
-                    ]
-                }
-                `;
-                
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: 'gpt-3.5-turbo',
-                        messages: [
-                            {
-                                role: 'system',
-                                content: 'Bạn là một trợ lý chuyên tạo dàn ý sơ đồ tư duy. Hãy phân tích văn bản và tạo cấu trúc phân cấp phù hợp.'
-                            },
-                            {
-                                role: 'user',
-                                content: prompt
-                            }
-                        ],
-                        max_tokens: 1500,
-                        temperature: 0.7
-                    })
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Lỗi API: ${errorData.error?.message || 'Không thể kết nối đến AI'}`);
+                // Xác định chủ đề trung tâm
+                let centralTopic = "Chủ đề chính";
+                if (sentences.length > 0) {
+                    centralTopic = extractCentralTopic(sentences[0]);
                 }
                 
-                const data = await response.json();
-                const aiResponse = data.choices[0].message.content;
-                
-                // Trích xuất JSON từ phản hồi
-                try {
-                    // Tìm và parse JSON từ phản hồi
-                    const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-                    if (jsonMatch) {
-                        return JSON.parse(jsonMatch[0]);
-                    } else {
-                        // Fallback: tạo dàn ý cơ bản nếu không parse được JSON
-                        return createFallbackOutline(text);
-                    }
-                } catch (error) {
-                    console.error('Lỗi khi parse JSON từ AI:', error);
-                    // Fallback: tạo dàn ý cơ bản
-                    return createFallbackOutline(text);
-                }
+                // Tạo các nhánh chính dựa trên nội dung
+                return {
+                    centralTopic: centralTopic,
+                    mainBranches: generateMainBranches(text, sentences)
+                };
             }
             
-            // Tạo dàn ý fallback nếu AI không trả về kết quả đúng định dạng
-            function createFallbackOutline(text) {
+            // Trích xuất chủ đề trung tâm từ câu đầu tiên
+            function extractCentralTopic(firstSentence) {
+                // Thuật toán đơn giản để tìm chủ đề chính
+                const stopWords = ['là', 'của', 'và', 'trong', 'với', 'để', 'từ', 'theo', 'bằng', 'ở', 'tại'];
+                const words = firstSentence.split(/\s+/).filter(w => 
+                    w.length > 3 && !stopWords.includes(w.toLowerCase())
+                );
+                
+                if (words.length > 0) {
+                    return words.slice(0, 3).join(' ') + (words.length > 3 ? '...' : '');
+                }
+                
+                return firstSentence.substring(0, 50) + (firstSentence.length > 50 ? '...' : '');
+            }
+            
+            // Tạo các nhánh chính dựa trên nội dung
+            function generateMainBranches(text, sentences) {
+                const branches = [];
+                
+                // Nhánh 1: Khái niệm và đặc điểm
+                branches.push({
+                    title: "Khái niệm và đặc điểm",
+                    subTopics: generateSubTopics(text, "khái niệm", "đặc điểm", "định nghĩa", "tính chất")
+                });
+                
+                // Nhánh 2: Ứng dụng và lợi ích
+                branches.push({
+                    title: "Ứng dụng và lợi ích",
+                    subTopics: generateSubTopics(text, "ứng dụng", "lợi ích", "ích lợi", "tác dụng")
+                });
+                
+                // Nhánh 3: Phương pháp và kỹ thuật
+                branches.push({
+                    title: "Phương pháp và kỹ thuật",
+                    subTopics: generateSubTopics(text, "phương pháp", "kỹ thuật", "cách thức", "bước")
+                });
+                
+                // Nhánh 4: Ví dụ và minh họa
+                branches.push({
+                    title: "Ví dụ và minh họa",
+                    subTopics: generateSubTopics(text, "ví dụ", "minh họa", "trường hợp", "thực tế")
+                });
+                
+                return branches;
+            }
+            
+            // Tạo các ý phụ dựa trên từ khóa tìm thấy trong văn bản
+            function generateSubTopics(text, ...keywords) {
+                const subTopics = [];
                 const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
                 
-                return {
-                    centralTopic: sentences.length > 0 ? sentences[0].trim() : "Chủ đề chính",
-                    mainBranches: [
-                        {
-                            title: "Khái niệm và đặc điểm",
-                            subTopics: [
-                                sentences.length > 1 ? sentences[1].trim() : "Định nghĩa cơ bản",
-                                sentences.length > 2 ? sentences[2].trim() : "Đặc điểm nổi bật"
-                            ]
-                        },
-                        {
-                            title: "Ứng dụng và lợi ích",
-                            subTopics: [
-                                sentences.length > 3 ? sentences[3].trim() : "Ứng dụng thực tế",
-                                sentences.length > 4 ? sentences[4].trim() : "Lợi ích mang lại"
-                            ]
-                        },
-                        {
-                            title: "Phương pháp và kỹ thuật",
-                            subTopics: [
-                                sentences.length > 5 ? sentences[5].trim() : "Cách thực hiện",
-                                sentences.length > 6 ? sentences[6].trim() : "Mẹo và kỹ thuật"
-                            ]
+                // Tìm câu có chứa từ khóa
+                for (const keyword of keywords) {
+                    const matchingSentences = sentences.filter(s => 
+                        s.toLowerCase().includes(keyword.toLowerCase())
+                    );
+                    
+                    if (matchingSentences.length > 0) {
+                        const sentence = matchingSentences[0].substring(0, 100);
+                        if (sentence.length > 0) {
+                            subTopics.push(sentence + (sentence.length >= 100 ? '...' : ''));
                         }
-                    ]
-                };
+                    }
+                }
+                
+                // Nếu không tìm thấy câu phù hợp, tạo ý phụ mẫu
+                if (subTopics.length === 0) {
+                    subTopics.push(
+                        "Định nghĩa và mô tả chi tiết",
+                        "Các đặc điểm nổi bật",
+                        "Ý nghĩa thực tiễn"
+                    );
+                }
+                
+                // Đảm bảo có ít nhất 3 ý phụ
+                while (subTopics.length < 3) {
+                    subTopics.push(`Ý phụ ${subTopics.length + 1} về ${keywords[0]}`);
+                }
+                
+                return subTopics.slice(0, 3);
             }
             
             // Hiển thị dàn ý
@@ -919,7 +862,7 @@
                 // Thêm ghi chú
                 const noteItem = document.createElement('div');
                 noteItem.className = 'outline-item detail';
-                noteItem.textContent = "※ Dàn ý được tạo tự động bởi AI. Bạn có thể chỉnh sửa để phù hợp hơn với nhu cầu.";
+                noteItem.textContent = "※ Dàn ý được tạo tự động bởi AI mô phỏng. Bạn có thể chỉnh sửa để phù hợp hơn với nhu cầu.";
                 noteItem.style.fontStyle = 'italic';
                 noteItem.style.marginTop = '15px';
                 outlineContainer.appendChild(noteItem);
@@ -930,7 +873,7 @@
                 if (!outlineData) return;
                 
                 // Tạo văn bản từ dàn ý
-                let text = `DÀN Ý SƠ ĐỒ TƯ DUY - TẠO BỞI AI\n\n`;
+                let text = `DÀN Ý SƠ ĐỒ TƯ DUY - TẠO BỞI AI MÔ PHỎNG\n\n`;
                 text += `Chủ đề trung tâm: ${outlineData.centralTopic}\n\n`;
                 
                 outlineData.mainBranches.forEach((branch, index) => {
@@ -963,7 +906,7 @@
                 if (!outlineData) return;
                 
                 // Tạo văn bản từ dàn ý
-                let text = `DÀN Ý SƠ ĐỒ TƯ DUY - TẠO BỞI AI\n\n`;
+                let text = `DÀN Ý SƠ ĐỒ TƯ DUY - TẠO BỞI AI MÔ PHỎNG\n\n`;
                 text += `Chủ đề trung tâm: ${outlineData.centralTopic}\n\n`;
                 
                 outlineData.mainBranches.forEach((branch, index) => {
@@ -975,7 +918,7 @@
                 });
                 
                 text += `---\nTạo ngày: ${new Date().toLocaleDateString('vi-VN')}\n`;
-                text += `Ứng dụng: AI Mind Map Outline Generator`;
+                text += `Ứng dụng: AI Mind Map Outline Generator (Offline)`;
                 
                 // Tạo file và tải xuống
                 const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
