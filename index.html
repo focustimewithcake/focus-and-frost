@@ -443,11 +443,10 @@
                 </div>
                 
                 <div class="api-config">
-                    <label for="apiUrl"><i class="fas fa-link"></i> Netlify Function URL:</label>
-                    <input type="text" id="apiUrl" class="api-url-input" value="https://mind-ma.netlify.app/.netlify/functions/mindmap-analyzer" readonly>
+                    <label for="apiUrl"><i class="fas fa-link"></i> Netlify Function URL (tự động điền):</label>
+                    <input type="text" id="apiUrl" class="api-url-input" placeholder="Đang tải URL từ Netlify...">
                     <p style="font-size: 0.8rem; margin-top: 5px; color: #666;">
-                        <i class="fas fa-check-circle" style="color: var(--success-color);"></i> 
-                        Đã tự động cấu hình URL cho domain của bạn
+                        URL này trỏ đến Netlify Function của bạn. Nếu cần thay đổi, hãy chỉnh sửa thủ công.
                     </p>
                 </div>
                 
@@ -510,7 +509,7 @@
         </div>
         
         <footer>
-            <p>© 2023 AI Mind Map Outline Generator | Đang chạy trên: mind-ma.netlify.app</p>
+            <p>© 2023 AI Mind Map Outline Generator | Tích hợp OpenAI API thông qua Netlify Functions</p>
         </footer>
     </div>
 
@@ -540,18 +539,35 @@
             let uploadedImages = [];
             let outlineData = null;
             
-            // Tự động cấu hình URL cho domain hiện tại
-            function configureApiUrl() {
-                const currentDomain = window.location.hostname;
-                if (currentDomain === 'mind-ma.netlify.app') {
-                    return 'https://mind-ma.netlify.app/.netlify/functions/mindmap-analyzer';
+            // Tự động xác định Netlify Function URL
+            function detectNetlifyFunctionUrl() {
+                // Lấy URL hiện tại
+                const currentUrl = window.location.href;
+                
+                // Nếu đang chạy trên Netlify, tạo URL function
+                if (currentUrl.includes('netlify.app')) {
+                    const baseUrl = currentUrl.split('/').slice(0, 3).join('/');
+                    return `${baseUrl}/.netlify/functions/analyze-mindmap`;
                 }
-                return 'https://mind-ma.netlify.app/.netlify/functions/mindmap-analyzer';
+                
+                // Nếu đang chạy local, sử dụng local function (nếu có)
+                if (currentUrl.includes('localhost') || currentUrl.includes('127.0.0.1')) {
+                    return 'http://localhost:8888/.netlify/functions/analyze-mindmap';
+                }
+                
+                // Trường hợp không xác định, để người dùng nhập thủ công
+                return '';
             }
             
             // Khởi tạo API URL
-            apiUrlInput.value = configureApiUrl();
-            showStatus('Đã cấu hình tự động cho domain của bạn!', 'success');
+            const detectedUrl = detectNetlifyFunctionUrl();
+            if (detectedUrl) {
+                apiUrlInput.value = detectedUrl;
+                apiUrlInput.disabled = true; // Không cho chỉnh sửa nếu tự động phát hiện
+                showStatus('Đã tự động phát hiện Netlify Function URL!', 'success');
+            } else {
+                showStatus('Vui lòng nhập Netlify Function URL thủ công', 'warning');
+            }
             
             // Xử lý chuyển đổi chế độ
             modeBtns.forEach(btn => {
@@ -661,7 +677,7 @@
                 // Kiểm tra API URL
                 const apiUrl = apiUrlInput.value.trim();
                 if (!apiUrl) {
-                    showStatus('Vui lòng kiểm tra cấu hình API URL', 'error');
+                    showStatus('Vui lòng nhập Netlify Function URL', 'error');
                     return;
                 }
                 
@@ -749,7 +765,7 @@
                         
                         const result = await Tesseract.recognize(
                             images[i].data,
-                            'vie+eng',
+                            'vie+eng', // Hỗ trợ tiếng Việt và tiếng Anh
                             { logger: m => console.log(m) }
                         );
                         
@@ -769,24 +785,27 @@
             
             // Phân tích văn bản với AI thông qua Netlify Function
             async function analyzeTextWithAI(text, apiUrl) {
-                const prompt = `Hãy phân tích văn bản sau và tạo dàn ý cho một sơ đồ tư duy. Dàn ý nên có cấu trúc phân cấp rõ ràng với:
-1. Chủ đề trung tâm (ngắn gọn, xúc tích)
-2. Các nhánh chính (3-5 nhánh)
-3. Các ý phụ dưới mỗi nhánh (2-4 ý mỗi nhánh)
-
-Văn bản cần phân tích: "${text}"
-
-Hãy trả về kết quả dưới dạng JSON với cấu trúc:
-{
-    "centralTopic": "Chủ đề trung tâm",
-    "mainBranches": [
-        {
-            "title": "Tên nhánh chính",
-            "subTopics": ["Ý phụ 1", "Ý phụ 2", ...]
-        },
-        ...
-    ]
-}`;
+                const prompt = `
+                Hãy phân tích văn bản sau và tạo dàn ý cho một sơ đồ tư duy. Dàn ý nên có cấu trúc phân cấp rõ ràng với:
+                1. Chủ đề trung tâm (ngắn gọn, xúc tích)
+                2. Các nhánh chính (3-5 nhánh)
+                3. Các ý phụ dưới mỗi nhánh (2-4 ý mỗi nhánh)
+                
+                Văn bản cần phân tích:
+                "${text}"
+                
+                Hãy trả về kết quả dưới dạng JSON với cấu trúc:
+                {
+                    "centralTopic": "Chủ đề trung tâm",
+                    "mainBranches": [
+                        {
+                            "title": "Tên nhánh chính",
+                            "subTopics": ["Ý phụ 1", "Ý phụ 2", ...]
+                        },
+                        ...
+                    ]
+                }
+                `;
                 
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -799,8 +818,8 @@ Hãy trả về kết quả dưới dạng JSON với cấu trúc:
                 });
                 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Lỗi kết nối: ${response.status} - ${errorText}`);
+                    const errorData = await response.json();
+                    throw new Error(`Lỗi API: ${errorData.error?.message || 'Không thể kết nối đến AI'}`);
                 }
                 
                 const data = await response.json();
@@ -817,4 +836,165 @@ Hãy trả về kết quả dưới dạng JSON với cấu trúc:
                         } else {
                             return createFallbackOutline(text);
                         }
+                    } catch (error) {
+                        console.error('Lỗi khi parse JSON từ AI:', error);
+                        return createFallbackOutline(text);
                     }
+                } else {
+                    throw new Error('Phản hồi từ AI không hợp lệ');
+                }
+            }
+            
+            // Tạo dàn ý fallback nếu AI không trả về kết quả đúng định dạng
+            function createFallbackOutline(text) {
+                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+                
+                return {
+                    centralTopic: sentences.length > 0 ? sentences[0].trim() : "Chủ đề chính",
+                    mainBranches: [
+                        {
+                            title: "Khái niệm và đặc điểm",
+                            subTopics: [
+                                sentences.length > 1 ? sentences[1].trim() : "Định nghĩa cơ bản",
+                                sentences.length > 2 ? sentences[2].trim() : "Đặc điểm nổi bật"
+                            ]
+                        },
+                        {
+                            title: "Ứng dụng và lợi ích",
+                            subTopics: [
+                                sentences.length > 3 ? sentences[3].trim() : "Ứng dụng thực tế",
+                                sentences.length > 4 ? sentences[4].trim() : "Lợi ích mang lại"
+                            ]
+                        },
+                        {
+                            title: "Phương pháp và kỹ thuật",
+                            subTopics: [
+                                sentences.length > 5 ? sentences[5].trim() : "Cách thực hiện",
+                                sentences.length > 6 ? sentences[6].trim() : "Mẹo và kỹ thuật"
+                            ]
+                        }
+                    ]
+                };
+            }
+            
+            // Hiển thị dàn ý
+            function renderOutline() {
+                if (!outlineData) return;
+                
+                outlineContainer.innerHTML = '';
+                
+                // Thêm chủ đề trung tâm
+                const centralItem = document.createElement('div');
+                centralItem.className = 'outline-item main';
+                centralItem.textContent = outlineData.centralTopic;
+                outlineContainer.appendChild(centralItem);
+                
+                // Thêm các nhánh chính
+                outlineData.mainBranches.forEach(branch => {
+                    const branchItem = document.createElement('div');
+                    branchItem.className = 'outline-item main';
+                    branchItem.textContent = branch.title;
+                    outlineContainer.appendChild(branchItem);
+                    
+                    // Thêm các ý phụ
+                    branch.subTopics.forEach(subTopic => {
+                        const subItem = document.createElement('div');
+                        subItem.className = 'outline-item sub';
+                        subItem.textContent = subTopic;
+                        outlineContainer.appendChild(subItem);
+                    });
+                });
+                
+                // Thêm ghi chú
+                const noteItem = document.createElement('div');
+                noteItem.className = 'outline-item detail';
+                noteItem.textContent = "※ Dàn ý được tạo tự động bởi AI. Bạn có thể chỉnh sửa để phù hợp hơn với nhu cầu.";
+                noteItem.style.fontStyle = 'italic';
+                noteItem.style.marginTop = '15px';
+                outlineContainer.appendChild(noteItem);
+            }
+            
+            // Xử lý sao chép dàn ý
+            copyOutlineBtn.addEventListener('click', function() {
+                if (!outlineData) return;
+                
+                // Tạo văn bản từ dàn ý
+                let text = `DÀN Ý SƠ ĐỒ TƯ DUY - TẠO BỞI AI\n\n`;
+                text += `Chủ đề trung tâm: ${outlineData.centralTopic}\n\n`;
+                
+                outlineData.mainBranches.forEach((branch, index) => {
+                    text += `${index + 1}. ${branch.title}\n`;
+                    branch.subTopics.forEach((subTopic, subIndex) => {
+                        text += `   ${subIndex + 1}. ${subTopic}\n`;
+                    });
+                    text += '\n';
+                });
+                
+                text += `---\nTạo ngày: ${new Date().toLocaleDateString('vi-VN')}`;
+                
+                // Sao chép vào clipboard
+                navigator.clipboard.writeText(text).then(() => {
+                    showStatus('Đã sao chép dàn ý vào clipboard!', 'success');
+                }).catch(err => {
+                    // Fallback cho trình duyệt không hỗ trợ clipboard API
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showStatus('Đã sao chép dàn ý vào clipboard!', 'success');
+                });
+            });
+            
+            // Xử lý tải xuống dàn ý
+            downloadOutlineBtn.addEventListener('click', function() {
+                if (!outlineData) return;
+                
+                // Tạo văn bản từ dàn ý
+                let text = `DÀN Ý SƠ ĐỒ TƯ DUY - TẠO BỞI AI\n\n`;
+                text += `Chủ đề trung tâm: ${outlineData.centralTopic}\n\n`;
+                
+                outlineData.mainBranches.forEach((branch, index) => {
+                    text += `${index + 1}. ${branch.title}\n`;
+                    branch.subTopics.forEach((subTopic, subIndex) => {
+                        text += `   ${subIndex + 1}. ${subTopic}\n`;
+                    });
+                    text += '\n';
+                });
+                
+                text += `---\nTạo ngày: ${new Date().toLocaleDateString('vi-VN')}\n`;
+                text += `Ứng dụng: AI Mind Map Outline Generator`;
+                
+                // Tạo file và tải xuống
+                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'dan-y-so-do-tu-duy.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('Đã tải xuống dàn ý thành công!', 'success');
+            });
+            
+            // Hiển thị thông báo trạng thái
+            function showStatus(message, type) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-message';
+                statusMessage.classList.add(`status-${type}`);
+                statusMessage.style.display = 'block';
+                
+                // Tự động ẩn thông báo sau 5 giây (trừ lỗi)
+                if (type !== 'error' && type !== 'warning') {
+                    setTimeout(() => {
+                        statusMessage.style.display = 'none';
+                    }, 5000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
