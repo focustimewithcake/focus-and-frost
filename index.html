@@ -3,998 +3,522 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mind Map Outline Generator - Tích hợp AI thực</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <title>Hỗ trợ Hình học Không gian</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        :root {
-            --primary-color: #4a6fa5;
-            --secondary-color: #6b8cbc;
-            --accent-color: #ff6b6b;
-            --light-color: #f8f9fa;
-            --dark-color: #343a40;
-            --success-color: #28a745;
-        }
-        
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background-color: #f5f7fa;
-            color: var(--dark-color);
-            line-height: 1.6;
-            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding: 20px;
         }
-        
+
         .container {
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             overflow: hidden;
         }
-        
+
         header {
-            text-align: center;
-            padding: 25px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: #2c3e50;
             color: white;
+            padding: 20px;
+            text-align: center;
         }
-        
+
         h1 {
-            font-size: 2.2rem;
+            font-size: 2.2em;
             margin-bottom: 10px;
         }
-        
-        .app-description {
-            font-size: 1rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.8;
         }
-        
+
         .main-content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .control-panel {
+            width: 400px;
+            background: #f8f9fa;
             padding: 25px;
+            border-right: 2px solid #e9ecef;
         }
-        
-        .input-section {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        .mode-selector {
-            display: flex;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .mode-btn {
+
+        .viewer-container {
             flex: 1;
-            padding: 15px;
-            text-align: center;
-            background: white;
-            border: none;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            background: #1a1a2e;
+            position: relative;
+            overflow: hidden;
         }
-        
-        .mode-btn.active {
-            background: var(--primary-color);
-            color: white;
-        }
-        
-        .mode-btn:not(.active):hover {
-            background: #f0f0f0;
-        }
-        
-        .input-area {
-            display: none;
-            padding: 20px;
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-            background: white;
-        }
-        
-        .input-area.active {
-            display: block;
-        }
-        
-        .text-input {
+
+        #viewer3d {
             width: 100%;
-            min-height: 200px;
+            height: 100%;
+        }
+
+        .coordinate-system {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
             padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .control-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #3498db;
+            font-size: 1.1em;
+        }
+
+        select, input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
             border: 1px solid #ddd;
             border-radius: 8px;
-            font-size: 1rem;
-            resize: vertical;
-            line-height: 1.6;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
-        
-        .image-upload-area {
-            text-align: center;
-            padding: 30px;
-            border: 2px dashed var(--secondary-color);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            background-color: rgba(107, 140, 188, 0.05);
-            margin-bottom: 15px;
-        }
-        
-        .image-upload-area:hover {
-            background-color: rgba(107, 140, 188, 0.1);
-        }
-        
-        .image-upload-area i {
-            font-size: 2.5rem;
-            color: var(--secondary-color);
-            margin-bottom: 10px;
-        }
-        
-        .upload-text {
-            margin-bottom: 15px;
-        }
-        
-        .image-preview-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .image-preview {
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .image-preview img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-        }
-        
-        .remove-image {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(255, 255, 255, 0.8);
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .api-config {
-            margin: 15px 0;
-            padding: 15px;
-            background: #e7f3ff;
-            border-radius: 8px;
-            border: 1px solid #b8daff;
-        }
-        
-        .api-url-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #b8daff;
-            border-radius: 5px;
-            margin-top: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .api-url-input:focus {
+
+        select:focus, input:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
-        
-        .generate-btn-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .btn {
-            padding: 12px 30px;
-            background-color: var(--primary-color);
+
+        button {
+            background: #3498db;
             color: white;
             border: none;
-            border-radius: 8px;
             cursor: pointer;
-            font-size: 1.1rem;
             font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+            letter-spacing: 0.5px;
         }
-        
-        .btn:hover {
-            background-color: var(--secondary-color);
+
+        button:hover {
+            background: #2980b9;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        
-        .btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .btn-accent {
-            background-color: var(--accent-color);
-        }
-        
-        .btn-accent:hover {
-            background-color: #ff5252;
-        }
-        
-        .result-section {
-            display: none;
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        .result-section.active {
-            display: block;
-        }
-        
-        .outline-container {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        
-        .outline-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 8px;
-        }
-        
-        .outline-item {
-            margin-bottom: 10px;
-            padding-left: 20px;
-            position: relative;
-        }
-        
-        .outline-item.main {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--dark-color);
-            margin-top: 15px;
-            padding-left: 0;
-        }
-        
-        .outline-item.main:before {
-            content: "•";
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            position: absolute;
-            left: -5px;
-        }
-        
-        .outline-item.sub {
-            padding-left: 30px;
-            color: #555;
-        }
-        
-        .outline-item.detail {
-            padding-left: 50px;
-            color: #777;
-            font-size: 0.95rem;
-        }
-        
-        .action-buttons {
+
+        .input-row {
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 10px;
+            margin: 10px 0;
         }
-        
-        .status-message {
+
+        .input-row select, .input-row input {
+            flex: 1;
+        }
+
+        .shape-preview {
+            text-align: center;
             margin: 15px 0;
-            padding: 12px;
+            padding: 15px;
+            background: #ecf0f1;
             border-radius: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .point-list {
+            margin-top: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .point-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .point-item:last-child {
+            border-bottom: none;
+        }
+
+        .success-message {
+            background: #2ecc71;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
             display: none;
-            font-size: 0.95rem;
-            text-align: center;
-        }
-        
-        .status-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .status-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .status-info {
-            background-color: #e7f3ff;
-            color: #004085;
-            border: 1px solid #b8daff;
-        }
-        
-        .status-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        
-        .progress-container {
-            margin: 15px 0;
-            display: none;
-        }
-        
-        .progress-bar {
-            height: 6px;
-            background-color: #eee;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-        
-        .progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            width: 0%;
-            transition: width 0.4s;
-        }
-        
-        .progress-text {
-            font-size: 0.9rem;
-            color: #666;
-            text-align: center;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #6c757d;
-            background-color: #f8f9fa;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                border-radius: 10px;
-            }
-            
-            header {
-                padding: 20px 15px;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .main-content {
-                padding: 15px;
-            }
-            
-            .mode-selector {
-                flex-direction: column;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .outline-container {
-                max-height: 400px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>AI Mind Map Outline Generator</h1>
-            <p class="app-description">Tích hợp AI thực sự để phân tích và tạo dàn ý sơ đồ tư duy</p>
+            <h1>🔄 Hỗ trợ Hình học Không gian</h1>
+            <div class="subtitle">Công cụ dựng hình và minh họa 3D dành cho giáo viên</div>
         </header>
-        
+
         <div class="main-content">
-            <div class="input-section">
-                <div class="mode-selector">
-                    <button class="mode-btn active" data-mode="text">
-                        <i class="fas fa-font"></i> Chế độ văn bản
-                    </button>
-                    <button class="mode-btn" data-mode="image">
-                        <i class="fas fa-image"></i> Chế độ hình ảnh
-                    </button>
-                </div>
-                
-                <div class="api-config">
-                    <label for="apiUrl"><i class="fas fa-link"></i> Netlify Function URL (tự động điền):</label>
-                    <input type="text" id="apiUrl" class="api-url-input" placeholder="Đang tải URL từ Netlify...">
-                    <p style="font-size: 0.8rem; margin-top: 5px; color: #666;">
-                        URL này trỏ đến Netlify Function của bạn. Nếu cần thay đổi, hãy chỉnh sửa thủ công.
-                    </p>
-                </div>
-                
-                <div class="input-area active" id="text-input-area">
-                    <textarea class="text-input" id="textInput" placeholder="Nhập văn bản của bạn vào đây... Ví dụ: Sơ đồ tư duy là công cụ trực quan giúp tổ chức thông tin. Nó bắt đầu từ ý tưởng trung tâm, sau đó phát triển các nhánh ý tưởng phụ. Mỗi nhánh có thể có các ý con chi tiết hơn. Sơ đồ tư duy giúp kích thích tư duy sáng tạo và cải thiện trí nhớ."></textarea>
-                </div>
-                
-                <div class="input-area" id="image-input-area">
-                    <div class="image-upload-area" id="imageUploadArea">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p class="upload-text">Nhấn để chọn hình ảnh (tối đa 3 ảnh)</p>
-                        <button class="btn">
-                            <i class="fas fa-folder-open"></i> Chọn ảnh
-                        </button>
-                        <input type="file" id="fileInput" accept="image/*" style="display: none;" multiple>
-                    </div>
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <!-- Hình dạng cơ bản -->
+                <div class="control-group">
+                    <div class="control-title">📐 Chọn hình dạng cơ bản</div>
+                    <select id="shapeType">
+                        <option value="">-- Chọn hình dạng --</option>
+                        <option value="tetrahedron">Tứ diện (S.ABC)</option>
+                        <option value="upright_prism">Lăng trụ đứng (ABC.A'B'C')</option>
+                        <option value="rectangular_box">Hình hộp chữ nhật</option>
+                        <option value="cube">Hình lập phương</option>
+                        <option value="pyramid">Hình chóp (S.ABCD)</option>
+                    </select>
                     
-                    <div class="image-preview-container" id="imagePreviewContainer">
-                        <!-- Ảnh xem trước sẽ hiển thị ở đây -->
+                    <div class="control-title">🔷 Dạng đáy đặc biệt</div>
+                    <select id="baseType">
+                        <option value="">-- Chọn dạng đáy --</option>
+                        <option value="square">Hình vuông</option>
+                        <option value="rectangle">Hình chữ nhật</option>
+                        <option value="rhombus">Hình thoi</option>
+                        <option value="right_triangle">Tam giác vuông</option>
+                        <option value="equilateral_triangle">Tam giác đều</option>
+                        <option value="isosceles_triangle">Tam giác cân</option>
+                    </select>
+                    
+                    <button id="createShape">🚀 Tạo hình</button>
+                    
+                    <div class="shape-preview" id="shapePreview">
+                        Chưa có hình nào được tạo
                     </div>
                 </div>
-                
-                <div class="generate-btn-container">
-                    <button class="btn" id="generateBtn">
-                        <i class="fas fa-brain"></i> Phân tích AI & Tạo Dàn Ý
-                    </button>
-                </div>
-                
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar">
-                        <div class="progress" id="progress"></div>
+
+                <!-- Thay đổi tên điểm và độ dài -->
+                <div class="control-group">
+                    <div class="control-title">✏️ Thay đổi điểm và độ dài</div>
+                    <div id="pointList" class="point-list">
+                        <!-- Danh sách điểm sẽ được thêm vào đây -->
                     </div>
-                    <div class="progress-text" id="progressText">Đang phân tích nội dung...</div>
+                    <input type="text" id="pointName" placeholder="Tên điểm (ví dụ: A)">
+                    <input type="number" id="edgeLength" placeholder="Độ dài cạnh" step="0.1" min="0.1">
+                    <button id="updatePoint">🔄 Cập nhật điểm</button>
                 </div>
-                
-                <div id="statusMessage" class="status-message"></div>
+
+                <!-- Thêm điểm đặc biệt -->
+                <div class="control-group">
+                    <div class="control-title">⭐ Thêm điểm đặc biệt</div>
+                    <div class="input-row">
+                        <input type="text" id="specialPointName" placeholder="Tên điểm mới">
+                        <select id="pointType">
+                            <option value="midpoint">Trung điểm</option>
+                            <option value="centroid">Trọng tâm</option>
+                            <option value="foot_perpendicular">Chân đường vuông góc</option>
+                        </select>
+                    </div>
+                    <input type="text" id="pointReference" placeholder="Chọn điểm/đường/tam giác">
+                    <button id="addSpecialPoint">➕ Thêm điểm</button>
+                </div>
+
+                <!-- Thêm đường thẳng đặc biệt -->
+                <div class="control-group">
+                    <div class="control-title">📏 Thêm đường thẳng đặc biệt</div>
+                    <select id="lineType">
+                        <option value="altitude">Đường cao</option>
+                        <option value="median">Đường trung tuyến</option>
+                        <option value="perpendicular_bisector">Đường trung trực</option>
+                        <option value="angle_bisector">Đường phân giác</option>
+                        <option value="diagonal">Đường chéo</option>
+                    </select>
+                    <input type="text" id="lineReference" placeholder="Tham chiếu (ví dụ: AH ⊥ BC)">
+                    <button id="addSpecialLine">➕ Thêm đường thẳng</button>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    Thao tác thành công!
+                </div>
             </div>
-            
-            <div class="result-section" id="resultSection">
-                <h2 class="outline-title">Dàn Ý Sơ Đồ Tư Duy được tạo bởi AI</h2>
-                <p>Dưới đây là dàn ý được AI phân tích từ nội dung của bạn. Bạn có thể sử dụng dàn ý này để xây dựng sơ đồ tư duy chi tiết.</p>
-                
-                <div class="outline-container" id="outlineContainer">
-                    <!-- Dàn ý sẽ được hiển thị ở đây -->
-                    <div class="empty-message">
-                        <i class="fas fa-project-diagram"></i>
-                        <p>Chưa có dàn ý. Hãy nhập nội dung và nhấn "Phân tích AI & Tạo Dàn Ý"</p>
-                    </div>
-                </div>
-                
-                <div class="action-buttons">
-                    <button class="btn" id="copyOutlineBtn" disabled>
-                        <i class="fas fa-copy"></i> Sao chép Dàn Ý
-                    </button>
-                    <button class="btn btn-accent" id="downloadOutlineBtn" disabled>
-                        <i class="fas fa-download"></i> Tải xuống Dàn Ý
-                    </button>
+
+            <!-- 3D Viewer -->
+            <div class="viewer-container">
+                <div id="viewer3d"></div>
+                <div class="coordinate-system">
+                    Hệ trục tọa độ: Oxyz
                 </div>
             </div>
         </div>
-        
-        <footer>
-            <p>© 2023 AI Mind Map Outline Generator | Tích hợp OpenAI API thông qua Netlify Functions</p>
-        </footer>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Các phần tử DOM
-            const modeBtns = document.querySelectorAll('.mode-btn');
-            const textInputArea = document.getElementById('text-input-area');
-            const imageInputArea = document.getElementById('image-input-area');
-            const textInput = document.getElementById('textInput');
-            const fileInput = document.getElementById('fileInput');
-            const apiUrlInput = document.getElementById('apiUrl');
-            const imageUploadArea = document.getElementById('imageUploadArea');
-            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-            const generateBtn = document.getElementById('generateBtn');
-            const progressContainer = document.getElementById('progressContainer');
-            const progress = document.getElementById('progress');
-            const progressText = document.getElementById('progressText');
-            const statusMessage = document.getElementById('statusMessage');
-            const resultSection = document.getElementById('resultSection');
-            const outlineContainer = document.getElementById('outlineContainer');
-            const copyOutlineBtn = document.getElementById('copyOutlineBtn');
-            const downloadOutlineBtn = document.getElementById('downloadOutlineBtn');
+        // Khởi tạo Three.js scene
+        let scene, camera, renderer;
+        
+        function initThreeJS() {
+            // Tạo scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
             
-            // Biến toàn cục
-            let currentMode = 'text';
-            let uploadedImages = [];
-            let outlineData = null;
+            // Tạo camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 10;
+            camera.position.y = 5;
+            camera.position.x = 5;
             
-            // Tự động xác định Netlify Function URL
-            function detectNetlifyFunctionUrl() {
-                // Lấy URL hiện tại
-                const currentUrl = window.location.href;
-                
-                // Nếu đang chạy trên Netlify, tạo URL function
-                if (currentUrl.includes('netlify.app')) {
-                    const baseUrl = currentUrl.split('/').slice(0, 3).join('/');
-                    return `${baseUrl}/.netlify/functions/analyze-mindmap`;
-                }
-                
-                // Nếu đang chạy local, sử dụng local function (nếu có)
-                if (currentUrl.includes('localhost') || currentUrl.includes('127.0.0.1')) {
-                    return 'http://localhost:8888/.netlify/functions/analyze-mindmap';
-                }
-                
-                // Trường hợp không xác định, để người dùng nhập thủ công
-                return '';
+            // Tạo renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(document.getElementById('viewer3d').clientWidth, document.getElementById('viewer3d').clientHeight);
+            document.getElementById('viewer3d').appendChild(renderer.domElement);
+            
+            // Thêm ánh sáng
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 20, 15);
+            scene.add(directionalLight);
+            
+            // Thêm trục tọa độ
+            const axesHelper = new THREE.AxesHelper(5);
+            scene.add(axesHelper);
+            
+            // Xử lý resize window
+            window.addEventListener('resize', onWindowResize);
+            
+            // Bắt đầu animation loop
+            animate();
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('viewer3d');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        
+        // Xử lý sự kiện cho các nút
+        document.getElementById('createShape').addEventListener('click', createShape);
+        document.getElementById('updatePoint').addEventListener('click', updatePoint);
+        document.getElementById('addSpecialPoint').addEventListener('click', addSpecialPoint);
+        document.getElementById('addSpecialLine').addEventListener('click', addSpecialLine);
+        
+        // Biến lưu trữ hình hiện tại
+        let currentShape = null;
+        
+        function createShape() {
+            const shapeType = document.getElementById('shapeType').value;
+            const baseType = document.getElementById('baseType').value;
+            
+            if (!shapeType) {
+                alert('Vui lòng chọn hình dạng cơ bản!');
+                return;
             }
             
-            // Khởi tạo API URL
-            const detectedUrl = detectNetlifyFunctionUrl();
-            if (detectedUrl) {
-                apiUrlInput.value = detectedUrl;
-                apiUrlInput.disabled = true; // Không cho chỉnh sửa nếu tự động phát hiện
-                showStatus('Đã tự động phát hiện Netlify Function URL!', 'success');
-            } else {
-                showStatus('Vui lòng nhập Netlify Function URL thủ công', 'warning');
+            // Xóa hình cũ nếu có
+            if (currentShape) {
+                scene.remove(currentShape);
             }
             
-            // Xử lý chuyển đổi chế độ
-            modeBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const mode = this.getAttribute('data-mode');
-                    
-                    // Cập nhật trạng thái nút
-                    modeBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Ẩn tất cả các khu vực nhập liệu
-                    document.querySelectorAll('.input-area').forEach(area => {
-                        area.classList.remove('active');
-                    });
-                    
-                    // Hiển thị khu vực nhập liệu tương ứng
-                    if (mode === 'text') {
-                        textInputArea.classList.add('active');
-                        currentMode = 'text';
-                    } else {
-                        imageInputArea.classList.add('active');
-                        currentMode = 'image';
-                    }
-                });
+            // Tạo hình mới dựa trên lựa chọn
+            let geometry;
+            let material = new THREE.MeshPhongMaterial({ 
+                color: 0x3498db, 
+                transparent: true, 
+                opacity: 0.8,
+                wireframe: false 
             });
             
-            // Xử lý tải lên ảnh
-            imageUploadArea.addEventListener('click', function() {
-                fileInput.click();
-            });
-            
-            fileInput.addEventListener('change', function() {
-                if (!this.files.length) return;
-                
-                const files = Array.from(this.files);
-                
-                // Kiểm tra số lượng ảnh
-                if (uploadedImages.length + files.length > 3) {
-                    showStatus('Bạn chỉ có thể tải lên tối đa 3 ảnh!', 'error');
-                    return;
-                }
-                
-                // Xử lý từng file
-                files.forEach(file => {
-                    // Kiểm tra xem có phải là file ảnh không
-                    if (!file.type.match('image.*')) {
-                        showStatus('Vui lòng chọn file ảnh (JPEG, PNG, GIF)!', 'error');
-                        return;
-                    }
-                    
-                    // Kiểm tra kích thước file (giới hạn 5MB)
-                    if (file.size > 5 * 1024 * 1024) {
-                        showStatus(`Ảnh "${file.name}" quá lớn. Vui lòng chọn ảnh nhỏ hơn 5MB.`, 'error');
-                        return;
-                    }
-                    
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        // Thêm ảnh vào mảng
-                        uploadedImages.push({
-                            name: file.name,
-                            data: e.target.result
-                        });
-                        
-                        // Hiển thị ảnh xem trước
-                        displayImagePreview();
-                    };
-                    
-                    reader.readAsDataURL(file);
-                });
-                
-                // Reset input file để cho phép chọn lại cùng file
-                this.value = '';
-            });
-            
-            // Hiển thị ảnh xem trước
-            function displayImagePreview() {
-                imagePreviewContainer.innerHTML = '';
-                
-                uploadedImages.forEach((image, index) => {
-                    const preview = document.createElement('div');
-                    preview.className = 'image-preview';
-                    
-                    preview.innerHTML = `
-                        <img src="${image.data}" alt="${image.name}">
-                        <button class="remove-image" data-index="${index}">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    
-                    imagePreviewContainer.appendChild(preview);
-                });
-                
-                // Thêm sự kiện xóa ảnh
-                document.querySelectorAll('.remove-image').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const index = parseInt(this.getAttribute('data-index'));
-                        uploadedImages.splice(index, 1);
-                        displayImagePreview();
-                    });
-                });
+            switch(shapeType) {
+                case 'tetrahedron':
+                    geometry = new THREE.ConeGeometry(2, 4, 3);
+                    break;
+                case 'upright_prism':
+                    geometry = new THREE.CylinderGeometry(1.5, 1.5, 3, 4);
+                    break;
+                case 'rectangular_box':
+                    geometry = new THREE.BoxGeometry(4, 2, 3);
+                    break;
+                case 'cube':
+                    geometry = new THREE.BoxGeometry(3, 3, 3);
+                    break;
+                case 'pyramid':
+                    geometry = new THREE.ConeGeometry(2, 4, 4);
+                    break;
+                default:
+                    geometry = new THREE.BoxGeometry(2, 2, 2);
             }
             
-            // Xử lý phân tích và tạo dàn ý với AI thực sự
-            generateBtn.addEventListener('click', async function() {
-                // Kiểm tra API URL
-                const apiUrl = apiUrlInput.value.trim();
-                if (!apiUrl) {
-                    showStatus('Vui lòng nhập Netlify Function URL', 'error');
-                    return;
-                }
-                
-                // Hiển thị tiến trình
-                progressContainer.style.display = 'block';
-                progress.style.width = '10%';
-                progressText.textContent = 'Đang phân tích nội dung...';
-                
-                // Vô hiệu hóa nút trong quá trình xử lý
-                generateBtn.disabled = true;
-                
-                try {
-                    let content = '';
-                    
-                    if (currentMode === 'text') {
-                        content = textInput.value.trim();
-                        if (!content) {
-                            throw new Error('Vui lòng nhập nội dung văn bản');
-                        }
-                        
-                        // Cập nhật tiến trình
-                        progress.style.width = '30%';
-                        progressText.textContent = 'Đang gửi yêu cầu đến AI...';
-                        
-                        // Gọi API thông qua Netlify Function
-                        outlineData = await analyzeTextWithAI(content, apiUrl);
-                    } else {
-                        if (uploadedImages.length === 0) {
-                            throw new Error('Vui lòng tải lên ít nhất một hình ảnh');
-                        }
-                        
-                        // Cập nhật tiến trình
-                        progress.style.width = '20%';
-                        progressText.textContent = 'Đang trích xuất văn bản từ ảnh...';
-                        
-                        // Trích xuất văn bản từ ảnh bằng Tesseract.js
-                        const extractedText = await extractTextFromImages(uploadedImages);
-                        
-                        // Cập nhật tiến trình
-                        progress.style.width = '50%';
-                        progressText.textContent = 'Đang phân tích văn bản với AI...';
-                        
-                        // Gọi API thông qua Netlify Function
-                        outlineData = await analyzeTextWithAI(extractedText, apiUrl);
-                    }
-                    
-                    // Cập nhật tiến trình
-                    progress.style.width = '100%';
-                    progressText.textContent = 'Hoàn thành!';
-                    
-                    // Hiển thị kết quả
-                    renderOutline();
-                    resultSection.classList.add('active');
-                    
-                    // Kích hoạt các nút chức năng
-                    copyOutlineBtn.disabled = false;
-                    downloadOutlineBtn.disabled = false;
-                    
-                    // Cuộn đến kết quả
-                    resultSection.scrollIntoView({ behavior: 'smooth' });
-                    
-                    showStatus('Đã tạo dàn ý thành công với AI!', 'success');
-                    
-                } catch (error) {
-                    console.error('Lỗi khi phân tích với AI:', error);
-                    showStatus('Lỗi: ' + error.message, 'error');
-                } finally {
-                    // Ẩn tiến trình và kích hoạt lại nút
-                    setTimeout(() => {
-                        progressContainer.style.display = 'none';
-                        generateBtn.disabled = false;
-                    }, 1000);
-                }
-            });
+            currentShape = new THREE.Mesh(geometry, material);
+            scene.add(currentShape);
             
-            // Trích xuất văn bản từ hình ảnh bằng Tesseract.js
-            async function extractTextFromImages(images) {
-                let allText = '';
-                
-                for (let i = 0; i < images.length; i++) {
-                    try {
-                        // Cập nhật tiến trình cho từng ảnh
-                        progress.style.width = `${20 + (i * 30 / images.length)}%`;
-                        progressText.textContent = `Đang trích xuất văn bản từ ảnh ${i+1}/${images.length}...`;
-                        
-                        const result = await Tesseract.recognize(
-                            images[i].data,
-                            'vie+eng', // Hỗ trợ tiếng Việt và tiếng Anh
-                            { logger: m => console.log(m) }
-                        );
-                        
-                        allText += result.data.text + '\n\n';
-                    } catch (error) {
-                        console.error(`Lỗi khi trích xuất văn bản từ ảnh ${i+1}:`, error);
-                        throw new Error(`Không thể trích xuất văn bản từ ảnh ${i+1}`);
-                    }
-                }
-                
-                if (!allText.trim()) {
-                    throw new Error('Không tìm thấy văn bản trong hình ảnh');
-                }
-                
-                return allText;
+            // Cập nhật preview
+            const shapeNames = {
+                'tetrahedron': 'Tứ diện S.ABC',
+                'upright_prism': 'Lăng trụ đứng ABC.A\'B\'C\'',
+                'rectangular_box': 'Hình hộp chữ nhật',
+                'cube': 'Hình lập phương',
+                'pyramid': 'Hình chóp S.ABCD'
+            };
+            
+            const baseNames = {
+                'square': ' (đáy hình vuông)',
+                'rectangle': ' (đáy hình chữ nhật)',
+                'rhombus': ' (đáy hình thoi)',
+                'right_triangle': ' (đáy tam giác vuông)',
+                'equilateral_triangle': ' (đáy tam giác đều)',
+                'isosceles_triangle': ' (đáy tam giác cân)',
+                '': ''
+            };
+            
+            document.getElementById('shapePreview').textContent = 
+                shapeNames[shapeType] + (baseNames[baseType] || '');
+            
+            // Cập nhật danh sách điểm
+            updatePointList(shapeType);
+            
+            showSuccessMessage('Đã tạo hình thành công!');
+        }
+        
+        function updatePointList(shapeType) {
+            const pointList = document.getElementById('pointList');
+            pointList.innerHTML = '';
+            
+            let points = [];
+            
+            switch(shapeType) {
+                case 'tetrahedron':
+                    points = ['A', 'B', 'C', 'S'];
+                    break;
+                case 'upright_prism':
+                    points = ['A', 'B', 'C', 'A\'', 'B\'', 'C\''];
+                    break;
+                case 'rectangular_box':
+                    points = ['A', 'B', 'C', 'D', 'A\'', 'B\'', 'C\'', 'D\''];
+                    break;
+                case 'cube':
+                    points = ['A', 'B', 'C', 'D', 'A\'', 'B\'', 'C\'', 'D\''];
+                    break;
+                case 'pyramid':
+                    points = ['A', 'B', 'C', 'D', 'S'];
+                    break;
             }
             
-            // Phân tích văn bản với AI thông qua Netlify Function
-            async function analyzeTextWithAI(text, apiUrl) {
-                const prompt = `
-                Hãy phân tích văn bản sau và tạo dàn ý cho một sơ đồ tư duy. Dàn ý nên có cấu trúc phân cấp rõ ràng với:
-                1. Chủ đề trung tâm (ngắn gọn, xúc tích)
-                2. Các nhánh chính (3-5 nhánh)
-                3. Các ý phụ dưới mỗi nhánh (2-4 ý mỗi nhánh)
-                
-                Văn bản cần phân tích:
-                "${text}"
-                
-                Hãy trả về kết quả dưới dạng JSON với cấu trúc:
-                {
-                    "centralTopic": "Chủ đề trung tâm",
-                    "mainBranches": [
-                        {
-                            "title": "Tên nhánh chính",
-                            "subTopics": ["Ý phụ 1", "Ý phụ 2", ...]
-                        },
-                        ...
-                    ]
-                }
+            points.forEach(point => {
+                const pointItem = document.createElement('div');
+                pointItem.className = 'point-item';
+                pointItem.innerHTML = `
+                    <span>Điểm ${point}</span>
+                    <span>Độ dài: 2.0</span>
                 `;
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        text: prompt
-                    })
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Lỗi API: ${errorData.error?.message || 'Không thể kết nối đến AI'}`);
-                }
-                
-                const data = await response.json();
-                
-                // Xử lý phản hồi từ AI
-                if (data.choices && data.choices[0] && data.choices[0].message) {
-                    const aiResponse = data.choices[0].message.content;
-                    
-                    // Trích xuất JSON từ phản hồi
-                    try {
-                        const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-                        if (jsonMatch) {
-                            return JSON.parse(jsonMatch[0]);
-                        } else {
-                            return createFallbackOutline(text);
-                        }
-                    } catch (error) {
-                        console.error('Lỗi khi parse JSON từ AI:', error);
-                        return createFallbackOutline(text);
-                    }
-                } else {
-                    throw new Error('Phản hồi từ AI không hợp lệ');
-                }
-            }
-            
-            // Tạo dàn ý fallback nếu AI không trả về kết quả đúng định dạng
-            function createFallbackOutline(text) {
-                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-                
-                return {
-                    centralTopic: sentences.length > 0 ? sentences[0].trim() : "Chủ đề chính",
-                    mainBranches: [
-                        {
-                            title: "Khái niệm và đặc điểm",
-                            subTopics: [
-                                sentences.length > 1 ? sentences[1].trim() : "Định nghĩa cơ bản",
-                                sentences.length > 2 ? sentences[2].trim() : "Đặc điểm nổi bật"
-                            ]
-                        },
-                        {
-                            title: "Ứng dụng và lợi ích",
-                            subTopics: [
-                                sentences.length > 3 ? sentences[3].trim() : "Ứng dụng thực tế",
-                                sentences.length > 4 ? sentences[4].trim() : "Lợi ích mang lại"
-                            ]
-                        },
-                        {
-                            title: "Phương pháp và kỹ thuật",
-                            subTopics: [
-                                sentences.length > 5 ? sentences[5].trim() : "Cách thực hiện",
-                                sentences.length > 6 ? sentences[6].trim() : "Mẹo và kỹ thuật"
-                            ]
-                        }
-                    ]
-                };
-            }
-            
-            // Hiển thị dàn ý
-            function renderOutline() {
-                if (!outlineData) return;
-                
-                outlineContainer.innerHTML = '';
-                
-                // Thêm chủ đề trung tâm
-                const centralItem = document.createElement('div');
-                centralItem.className = 'outline-item main';
-                centralItem.textContent = outlineData.centralTopic;
-                outlineContainer.appendChild(centralItem);
-                
-                // Thêm các nhánh chính
-                outlineData.mainBranches.forEach(branch => {
-                    const branchItem = document.createElement('div');
-                    branchItem.className = 'outline-item main';
-                    branchItem.textContent = branch.title;
-                    outlineContainer.appendChild(branchItem);
-                    
-                    // Thêm các ý phụ
-                    branch.subTopics.forEach(subTopic => {
-                        const subItem = document.createElement('div');
-                        subItem.className = 'outline-item sub';
-                        subItem.textContent = subTopic;
-                        outlineContainer.appendChild(subItem);
-                    });
-                });
-                
-                // Thêm ghi chú
-                const noteItem = document.createElement('div');
-                noteItem.className = 'outline-item detail';
-                noteItem.textContent = "※ Dàn ý được tạo tự động bởi AI. Bạn có thể chỉnh sửa để phù hợp hơn với nhu cầu.";
-                noteItem.style.fontStyle = 'italic';
-                noteItem.style.marginTop = '15px';
-                outlineContainer.appendChild(noteItem);
-            }
-            
-            // Xử lý sao chép dàn ý
-            copyOutlineBtn.addEventListener('click', function() {
-                if (!outlineData) return;
-                
-                // Tạo văn bản từ dàn ý
-                let text = `DÀN Ý SƠ ĐỒ TƯ DUY - TẠO BỞI AI\n\n`;
-                text += `Chủ đề trung tâm: ${outlineData.centralTopic}\n\n`;
-                
-                outlineData.mainBranches.forEach((branch, index) => {
-                    text += `${index + 1}. ${branch.title}\n`;
-                    branch.subTopics.forEach((subTopic, subIndex) => {
-                        text += `   ${subIndex + 1}. ${subTopic}\n`;
-                    });
-                    text += '\n';
-                });
-                
-                text += `---\nTạo ngày: ${new Date().toLocaleDateString('vi-VN')}`;
-                
-                // Sao chép vào clipboard
-                navigator.clipboard.writeText(text).then(() => {
-                    showStatus('Đã sao chép dàn ý vào clipboard!', 'success');
-                }).catch(err => {
-                    // Fallback cho trình duyệt không hỗ trợ clipboard API
-                    const textArea = document.createElement('textarea');
-                    textArea.value = text;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    showStatus('Đã sao chép dàn ý vào clipboard!', 'success');
-                });
+                pointList.appendChild(pointItem);
             });
+        }
+        
+        function updatePoint() {
+            const pointName = document.getElementById('pointName').value;
+            const edgeLength = document.getElementById('edgeLength').value;
             
-            // Xử lý tải xuống dàn ý
-            downloadOutlineBtn.addEventListener('click', function() {
-                if (!outlineData) return;
-                
-                // Tạo văn bản từ dàn ý
-                let text = `DÀN Ý SƠ ĐỒ TƯ DUY - TẠO BỞI AI\n\n`;
-                text += `Chủ đề trung tâm: ${outlineData.centralTopic}\n\n`;
-                
-                outlineData.mainBranches.forEach((branch, index) => {
-                    text += `${index + 1}. ${branch.title}\n`;
-                    branch.subTopics.forEach((subTopic, subIndex) => {
-                        text += `   ${subIndex + 1}. ${subTopic}\n`;
-                    });
-                    text += '\n';
-                });
-                
-                text += `---\nTạo ngày: ${new Date().toLocaleDateString('vi-VN')}\n`;
-                text += `Ứng dụng: AI Mind Map Outline Generator`;
-                
-                // Tạo file và tải xuống
-                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'dan-y-so-do-tu-duy.txt';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                showStatus('Đã tải xuống dàn ý thành công!', 'success');
-            });
-            
-            // Hiển thị thông báo trạng thái
-            function showStatus(message, type) {
-                statusMessage.textContent = message;
-                statusMessage.className = 'status-message';
-                statusMessage.classList.add(`status-${type}`);
-                statusMessage.style.display = 'block';
-                
-                // Tự động ẩn thông báo sau 5 giây (trừ lỗi)
-                if (type !== 'error' && type !== 'warning') {
-                    setTimeout(() => {
-                        statusMessage.style.display = 'none';
-                    }, 5000);
-                }
+            if (!pointName || !edgeLength) {
+                alert('Vui lòng nhập đầy đủ tên điểm và độ dài!');
+                return;
             }
-        });
+            
+            showSuccessMessage(`Đã cập nhật điểm ${pointName} với độ dài ${edgeLength}`);
+            
+            // Reset form
+            document.getElementById('pointName').value = '';
+            document.getElementById('edgeLength').value = '';
+        }
+        
+        function addSpecialPoint() {
+            const pointName = document.getElementById('specialPointName').value;
+            const pointType = document.getElementById('pointType').value;
+            const reference = document.getElementById('pointReference').value;
+            
+            if (!pointName) {
+                alert('Vui lòng nhập tên điểm mới!');
+                return;
+            }
+            
+            const pointTypeNames = {
+                'midpoint': 'trung điểm',
+                'centroid': 'trọng tâm',
+                'foot_perpendicular': 'chân đường vuông góc'
+            };
+            
+            showSuccessMessage(`Đã thêm điểm ${pointName} là ${pointTypeNames[pointType]} của ${reference}`);
+            
+            // Reset form
+            document.getElementById('specialPointName').value = '';
+            document.getElementById('pointReference').value = '';
+        }
+        
+        function addSpecialLine() {
+            const lineType = document.getElementById('lineType').value;
+            const reference = document.getElementById('lineReference').value;
+            
+            if (!reference) {
+                alert('Vui lòng nhập tham chiếu cho đường thẳng!');
+                return;
+            }
+            
+            const lineTypeNames = {
+                'altitude': 'đường cao',
+                'median': 'đường trung tuyến',
+                'perpendicular_bisector': 'đường trung trực',
+                'angle_bisector': 'đường phân giác',
+                'diagonal': 'đường chéo'
+            };
+            
+            showSuccessMessage(`Đã thêm ${lineTypeNames[lineType]}: ${reference}`);
+            
+            // Reset form
+            document.getElementById('lineReference').value = '';
+        }
+        
+        function showSuccessMessage(message) {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = message;
+            successMsg.style.display = 'block';
+            
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Khởi tạo ứng dụng khi trang load xong
+        window.onload = function() {
+            initThreeJS();
+        };
     </script>
 </body>
 </html>
