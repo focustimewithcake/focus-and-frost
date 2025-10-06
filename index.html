@@ -3,107 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ứng dụng Học Hình Học Không Gian</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+    <title>Học Hình Học Không Gian 3D</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="lib/three.min.js"></script>
+    <script src="lib/OrbitControls.js"></script>
 </head>
 <body>
+    <header>
+        <div class="header-content">
+            <h1>🎯 Học Hình Học Không Gian 3D</h1>
+            <button id="reset-btn" class="btn btn-secondary">Reset / Làm mới</button>
+        </div>
+    </header>
+
     <div class="container">
-        <header>
-            <h1>Ứng dụng Học Hình Học Không Gian</h1>
-        </header>
-
-        <div class="content">
-            <div class="control-panel">
-                <h2>Tạo Hình Cơ Bản</h2>
-                
-                <div class="form-group">
-                    <label for="shapeType">Loại hình:</label>
-                    <select id="shapeType">
-                        <option value="tetrahedron">Tứ diện</option>
-                        <option value="prism">Lăng trụ đứng</option>
-                        <option value="cuboid">Hình hộp chữ nhật</option>
-                        <option value="cube">Hình lập phương</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="baseType">Dạng đáy:</label>
-                    <select id="baseType">
-                        <option value="equilateral">Tam giác đều</option>
-                        <option value="right">Tam giác vuông</option>
-                        <option value="square">Hình vuông</option>
-                        <option value="rectangle">Hình chữ nhật</option>
-                        <option value="rhombus">Hình thoi</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="size">Kích thước:</label>
-                    <input type="number" id="size" min="1" max="10" value="3">
-                </div>
-
-                <button id="createShape" class="btn-primary">Tạo Hình</button>
-                <button id="resetScene" class="btn-secondary">Reset</button>
-
-                <div class="separator"></div>
-
-                <h2>Thêm Điểm Đặc Biệt</h2>
-                
-                <div class="form-group">
-                    <label for="pointName">Tên điểm:</label>
-                    <input type="text" id="pointName" placeholder="H, M, G...">
-                </div>
-
-                <div class="form-group">
-                    <label for="pointType">Loại điểm:</label>
-                    <select id="pointType">
-                        <option value="none">Không có</option>
-                        <option value="midpoint">Trung điểm</option>
-                        <option value="centroid">Trọng tâm</option>
-                        <option value="foot">Chân đường cao</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="pointParams">
-                    <!-- Tham số sẽ được thêm động ở đây -->
-                </div>
-
-                <button id="addPoint" class="btn-primary">Thêm Điểm</button>
-
-                <div class="separator"></div>
-
-                <h2>Vẽ Đường Đặc Biệt</h2>
-                
-                <div class="form-group">
-                    <label for="lineType">Loại đường:</label>
-                    <select id="lineType">
-                        <option value="altitude">Đường cao</option>
-                        <option value="median">Trung tuyến</option>
-                        <option value="bisector">Đường phân giác</option>
-                        <option value="perpendicular">Trung trực</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="lineParams">
-                    <!-- Tham số sẽ được thêm động ở đây -->
-                </div>
-
-                <button id="addLine" class="btn-primary">Vẽ Đường</button>
+        <!-- Cột bên trái - Controls -->
+        <div class="left-panel">
+            <div class="control-group">
+                <label for="shape-type">Chọn loại hình</label>
+                <select id="shape-type">
+                    <option value="tetrahedron">Tứ diện</option>
+                    <option value="prism">Lăng trụ đứng</option>
+                    <option value="cuboid">Hình hộp chữ nhật</option>
+                    <option value="cube">Hình lập phương</option>
+                </select>
             </div>
 
-            <div class="canvas-container">
-                <div id="scene-container"></div>
-                <div class="coordinates-info">
-                    <h3>Thông tin tọa độ</h3>
-                    <div id="coordinates"></div>
-                </div>
+            <div class="control-group">
+                <label for="base-type">Chọn dạng đáy</label>
+                <select id="base-type">
+                    <option value="square">Hình vuông</option>
+                    <option value="rectangle">Hình chữ nhật</option>
+                    <option value="rhombus">Hình thoi</option>
+                    <option value="equilateral">Tam giác đều</option>
+                    <option value="right">Tam giác vuông</option>
+                </select>
             </div>
+
+            <div class="control-group">
+                <label for="side-a">Cạnh a</label>
+                <input type="number" id="side-a" min="0.1" step="0.1" value="2">
+            </div>
+
+            <div class="control-group">
+                <label for="side-b">Cạnh b (nếu có)</label>
+                <input type="number" id="side-b" min="0.1" step="0.1" value="2">
+            </div>
+
+            <div class="control-group">
+                <label for="height">Chiều cao h</label>
+                <input type="number" id="height" min="0.1" step="0.1" value="2">
+            </div>
+
+            <button id="generate-btn" class="btn btn-primary">Tạo mô hình</button>
+        </div>
+
+        <!-- Vùng chính giữa - Canvas 3D -->
+        <div class="main-canvas">
+            <div id="canvas3d"></div>
         </div>
     </div>
 
-    <script src="geometry.js"></script>
-    <script src="main.js"></script>
+    <!-- Panel điều khiển dưới cùng -->
+    <div class="bottom-panel">
+        <div class="point-controls">
+            <div class="input-group">
+                <label for="point-name">Tên điểm</label>
+                <input type="text" id="point-name" placeholder="A, B, C, M...">
+            </div>
+
+            <div class="input-group">
+                <label for="point-type">Loại điểm</label>
+                <select id="point-type">
+                    <option value="none">None</option>
+                    <option value="midpoint">Trung điểm</option>
+                    <option value="centroid">Trọng tâm</option>
+                    <option value="foot">Chân đường vuông góc</option>
+                    <option value="intersection">Giao điểm</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="point-link">Liên kết</label>
+                <input type="text" id="point-link" placeholder="AB, ABC...">
+            </div>
+
+            <div class="input-group">
+                <label for="command">Lệnh quan hệ</label>
+                <input type="text" id="command" placeholder="AH là đường cao của tam giác ABC">
+            </div>
+
+            <button id="confirm-btn" class="btn btn-primary">Xác nhận / Thêm</button>
+        </div>
+
+        <div id="status-message" class="status-message"></div>
+    </div>
+
+    <script src="js/geometry.js"></script>
+    <script src="js/threejs-renderer.js"></script>
+    <script src="js/ui-handler.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
