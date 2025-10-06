@@ -3,64 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Học Hình Học Không Gian 3D</title>
+    <title>Hình Học Không Gian 3D</title>
     <link rel="stylesheet" href="css/style.css">
-    <script src="lib/three.min.js"></script>
-    <script src="lib/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/controls/OrbitControls.js"></script>
 </head>
 <body>
     <header>
         <div class="header-content">
-            <h1>🎯 Học Hình Học Không Gian 3D</h1>
-            <button id="reset-btn" class="btn btn-secondary">Reset / Làm mới</button>
+            <h1>📐 Hình Học Không Gian 3D</h1>
+            <div class="header-actions">
+                <button id="export-btn" class="btn btn-secondary">Export</button>
+                <button id="reset-btn" class="btn btn-secondary">Reset</button>
+            </div>
         </div>
     </header>
 
     <div class="container">
         <!-- Cột bên trái - Controls -->
         <div class="left-panel">
+            <h3>Thiết lập hình khối</h3>
+            
             <div class="control-group">
-                <label for="shape-type">Chọn loại hình</label>
+                <label for="shape-type">Loại hình</label>
                 <select id="shape-type">
+                    <option value="cube">Lập phương</option>
+                    <option value="cuboid">Hộp chữ nhật</option>
                     <option value="tetrahedron">Tứ diện</option>
-                    <option value="prism">Lăng trụ đứng</option>
-                    <option value="cuboid">Hình hộp chữ nhật</option>
-                    <option value="cube">Hình lập phương</option>
+                    <option value="prism">Lăng trụ</option>
                 </select>
             </div>
 
             <div class="control-group">
-                <label for="base-type">Chọn dạng đáy</label>
+                <label for="base-type">Đáy</label>
                 <select id="base-type">
-                    <option value="square">Hình vuông</option>
-                    <option value="rectangle">Hình chữ nhật</option>
-                    <option value="rhombus">Hình thoi</option>
-                    <option value="equilateral">Tam giác đều</option>
-                    <option value="right">Tam giác vuông</option>
+                    <option value="square">Vuông</option>
+                    <option value="rectangle">Chữ nhật</option>
+                    <option value="triangle">Tam giác</option>
                 </select>
             </div>
 
-            <div class="control-group">
-                <label for="side-a">Cạnh a</label>
-                <input type="number" id="side-a" min="0.1" step="0.1" value="2">
+            <div class="dimension-controls">
+                <div class="control-group">
+                    <label for="side-a">Cạnh a</label>
+                    <input type="number" id="side-a" min="0.1" step="0.1" value="2">
+                </div>
+
+                <div class="control-group" id="side-b-group">
+                    <label for="side-b">Cạnh b</label>
+                    <input type="number" id="side-b" min="0.1" step="0.1" value="2">
+                </div>
+
+                <div class="control-group">
+                    <label for="height">Chiều cao</label>
+                    <input type="number" id="height" min="0.1" step="0.1" value="2">
+                </div>
             </div>
 
-            <div class="control-group">
-                <label for="side-b">Cạnh b (nếu có)</label>
-                <input type="number" id="side-b" min="0.1" step="0.1" value="2">
-            </div>
+            <button id="generate-btn" class="btn btn-primary">Tạo hình</button>
 
-            <div class="control-group">
-                <label for="height">Chiều cao h</label>
-                <input type="number" id="height" min="0.1" step="0.1" value="2">
+            <div class="quick-actions">
+                <h4>Thao tác nhanh</h4>
+                <button class="quick-btn" data-action="midpoint">Trung điểm</button>
+                <button class="quick-btn" data-action="centroid">Trọng tâm</button>
+                <button class="quick-btn" data-action="perpendicular">Vuông góc</button>
             </div>
-
-            <button id="generate-btn" class="btn btn-primary">Tạo mô hình</button>
         </div>
 
         <!-- Vùng chính giữa - Canvas 3D -->
         <div class="main-canvas">
             <div id="canvas3d"></div>
+            <div class="coordinate-display" id="coord-display">
+                O(0, 0, 0)
+            </div>
+            <div class="quick-toolbar">
+                <button class="quick-btn" id="toggle-grid">Lưới: Bật</button>
+                <button class="quick-btn" id="toggle-labels">Nhãn: Bật</button>
+                <button class="quick-btn" id="toggle-axes">Trục: Bật</button>
+            </div>
         </div>
     </div>
 
@@ -68,32 +88,16 @@
     <div class="bottom-panel">
         <div class="point-controls">
             <div class="input-group">
-                <label for="point-name">Tên điểm</label>
-                <input type="text" id="point-name" placeholder="A, B, C, M...">
+                <label for="point-name">Điểm mới</label>
+                <input type="text" id="point-name" placeholder="Nhập tên điểm...">
             </div>
 
             <div class="input-group">
-                <label for="point-type">Loại điểm</label>
-                <select id="point-type">
-                    <option value="none">None</option>
-                    <option value="midpoint">Trung điểm</option>
-                    <option value="centroid">Trọng tâm</option>
-                    <option value="foot">Chân đường vuông góc</option>
-                    <option value="intersection">Giao điểm</option>
-                </select>
+                <label for="command">Quan hệ hình học</label>
+                <input type="text" id="command" placeholder="VD: M là trung điểm AB, AH ⟂ BC...">
             </div>
 
-            <div class="input-group">
-                <label for="point-link">Liên kết</label>
-                <input type="text" id="point-link" placeholder="AB, ABC...">
-            </div>
-
-            <div class="input-group">
-                <label for="command">Lệnh quan hệ</label>
-                <input type="text" id="command" placeholder="AH là đường cao của tam giác ABC">
-            </div>
-
-            <button id="confirm-btn" class="btn btn-primary">Xác nhận / Thêm</button>
+            <button id="confirm-btn" class="btn btn-primary">Thêm</button>
         </div>
 
         <div id="status-message" class="status-message"></div>
