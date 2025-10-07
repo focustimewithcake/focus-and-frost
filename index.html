@@ -349,17 +349,6 @@
             line-height: 1.4;
         }
 
-        .point-label {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-            pointer-events: none;
-            transform: translate(-50%, -100%);
-            border: 1px solid #eee;
-        }
-
         .point-input-form {
             position: absolute;
             bottom: 100px;
@@ -721,9 +710,39 @@
         });
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
-        // Trục Oxyz
+        // Trục Oxyz với nhãn
         const axesHelper = new THREE.AxesHelper(3);
         scene.add(axesHelper);
+        
+        // Thêm nhãn cho trục
+        function createAxisLabel(text, position, color) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 64;
+            canvas.height = 32;
+            
+            context.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            context.fillStyle = color;
+            context.font = 'bold 24px Arial';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(text, canvas.width / 2, canvas.height / 2);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(material);
+            sprite.position.copy(position);
+            sprite.scale.set(1, 0.5, 1);
+            
+            return sprite;
+        }
+        
+        // Thêm nhãn X, Y, Z
+        scene.add(createAxisLabel('X', new THREE.Vector3(3.5, 0, 0), '#ff0000'));
+        scene.add(createAxisLabel('Y', new THREE.Vector3(0, 3.5, 0), '#00ff00'));
+        scene.add(createAxisLabel('Z', new THREE.Vector3(0, 0, 3.5), '#0000ff'));
 
         // Mặt phẳng tọa độ
         const gridHelper = new THREE.GridHelper(10, 10);
@@ -1232,12 +1251,13 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.1,
+                    opacity: 0.2,
                     side: THREE.DoubleSide
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
                 plane.userData = { type: 'plane', index: i };
+                plane.visible = true; // Đảm bảo mặt phẳng hiển thị
                 scene.add(plane);
                 planeObjects.push(plane);
             }
@@ -1275,12 +1295,13 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.1,
+                    opacity: 0.2,
                     side: THREE.DoubleSide
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
                 plane.userData = { type: 'plane', index: i };
+                plane.visible = true; // Đảm bảo mặt phẳng hiển thị
                 scene.add(plane);
                 planeObjects.push(plane);
             }
@@ -1319,12 +1340,13 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.1,
+                    opacity: 0.2,
                     side: THREE.DoubleSide
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
                 plane.userData = { type: 'plane', index: i, name: planeNames[i] };
+                plane.visible = true; // Đảm bảo mặt phẳng hiển thị
                 scene.add(plane);
                 planeObjects.push(plane);
             }
@@ -1373,12 +1395,13 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.1,
+                    opacity: 0.2,
                     side: THREE.DoubleSide
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
                 plane.userData = { type: 'plane', index: i, name: planeNames[i] };
+                plane.visible = true; // Đảm bảo mặt phẳng hiển thị
                 scene.add(plane);
                 planeObjects.push(plane);
             }
@@ -1427,12 +1450,13 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.1,
+                    opacity: 0.2,
                     side: THREE.DoubleSide
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
                 plane.userData = { type: 'plane', index: i, name: planeNames[i] };
+                plane.visible = true; // Đảm bảo mặt phẳng hiển thị
                 scene.add(plane);
                 planeObjects.push(plane);
             }
@@ -1461,18 +1485,24 @@
             });
         }
 
-        // Hàm tạo nhãn cho điểm
+        // Hàm tạo nhãn cho điểm - với kích thước phù hợp
         function createPointLabel(name, position) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
-            canvas.width = 64;
-            canvas.height = 32;
             
-            context.fillStyle = 'white';
+            // Tính toán kích thước canvas dựa trên kích thước hình
+            const modelSize = currentModel ? getModelSize() : 1;
+            const fontSize = Math.max(12, Math.min(20, 16 / modelSize));
+            const canvasSize = Math.max(32, Math.min(64, 48 / modelSize));
+            
+            canvas.width = canvasSize;
+            canvas.height = canvasSize / 2;
+            
+            context.fillStyle = 'rgba(255, 255, 255, 0.8)';
             context.fillRect(0, 0, canvas.width, canvas.height);
             
             context.fillStyle = 'black';
-            context.font = 'bold 20px Arial';
+            context.font = `bold ${fontSize}px Arial`;
             context.textAlign = 'center';
             context.textBaseline = 'middle';
             context.fillText(name, canvas.width / 2, canvas.height / 2);
@@ -1481,11 +1511,23 @@
             const material = new THREE.SpriteMaterial({ map: texture });
             const sprite = new THREE.Sprite(material);
             sprite.position.copy(position);
-            sprite.position.y += 0.2; // Đặt nhãn cao hơn điểm một chút
-            sprite.scale.set(1, 0.5, 1);
+            sprite.position.y += 0.15; // Đặt nhãn cao hơn điểm một chút
+            sprite.scale.set(0.8, 0.4, 1); // Kích thước nhãn nhỏ hơn
             sprite.userData = { type: 'label', name: name };
             
             return sprite;
+        }
+
+        // Hàm tính kích thước của mô hình
+        function getModelSize() {
+            if (!currentModel) return 1;
+            
+            const box = new THREE.Box3().setFromObject(currentModel);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            
+            // Trả về kích thước lớn nhất
+            return Math.max(size.x, size.y, size.z);
         }
 
         // Hàm xóa mô hình hiện tại
@@ -1557,7 +1599,7 @@
             }
             
             if (currentModel) {
-                currentModel.userData = { type: 'model', movable: true };
+                currentModel.userData = { type: 'model', movable: true, shapeType: shapeType };
                 scene.add(currentModel);
             }
         }
@@ -2108,12 +2150,12 @@
             // Bỏ chọn mặt phẳng cũ
             planeObjects.forEach(p => {
                 p.material.color.set(0xffffff);
-                p.material.opacity = 0.1;
+                p.material.opacity = 0.2;
             });
             
             // Chọn mặt phẳng mới
             plane.material.color.set(0x3A86FF);
-            plane.material.opacity = 0.3;
+            plane.material.opacity = 0.4;
             selectedPlane = plane;
             
             // Hiển thị các công cụ phụ
