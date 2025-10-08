@@ -109,9 +109,11 @@
             transform: translateY(-2px);
         }
 
-        .tool-button i {
-            font-size: 20px;
+        .tool-button img {
+            width: 24px;
+            height: 24px;
             margin-bottom: 5px;
+            object-fit: contain;
         }
 
         .tool-button span {
@@ -380,19 +382,29 @@
             margin-top: 15px;
         }
 
-        .length-input {
+        .edge-edit-form {
             position: absolute;
             background-color: rgba(255, 255, 255, 0.95);
-            padding: 10px;
-            border-radius: 6px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             display: none;
             z-index: 100;
+            min-width: 250px;
         }
 
-        .length-input input {
-            width: 80px;
-            margin-right: 5px;
+        .edge-edit-form h3 {
+            color: #3A86FF;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .edge-edit-form .form-row {
+            margin-bottom: 10px;
+        }
+
+        .edge-edit-form .action-buttons {
+            margin-top: 15px;
         }
 
         @media (max-width: 768px) {
@@ -408,8 +420,9 @@
                 height: 60px;
             }
             
-            .tool-button i {
-                font-size: 18px;
+            .tool-button img {
+                width: 20px;
+                height: 20px;
             }
             
             .tool-button span {
@@ -433,6 +446,11 @@
             }
             
             .point-input-form {
+                width: 90%;
+                min-width: unset;
+            }
+            
+            .edge-edit-form {
                 width: 90%;
                 min-width: unset;
             }
@@ -463,7 +481,7 @@
     <div id="app">
         <header>
             <h1>Công cụ Vẽ Hình Không Gian 3D</h1>
-            <p>Nhấp đúp vào hình khối để di chuyển, nhấp vào đỉnh/điểm để xem tọa độ, nhấp vào đoạn thẳng để thay đổi độ dài</p>
+            <p>Nhấp đúp vào hình khối để di chuyển, nhấp vào đỉnh/điểm để xem tọa độ, nhấp vào cạnh để thay đổi độ dài/góc</p>
         </header>
         
         <div class="main-container">
@@ -478,7 +496,7 @@
                         <li>Nhấp vào mặt phẳng để chọn</li>
                         <li>Nhấp đúp để di chuyển hình khối</li>
                         <li>Nhấp vào điểm để xem tọa độ</li>
-                        <li>Nhấp vào đoạn thẳng để thay đổi độ dài</li>
+                        <li>Nhấp vào cạnh để thay đổi độ dài/góc</li>
                         <li>Dùng chuột để xoay và phóng to</li>
                     </ul>
                 </div>
@@ -517,9 +535,24 @@
                     </div>
                 </div>
                 
-                <div class="length-input" id="lengthInput">
-                    <input type="number" id="lengthValue" placeholder="Độ dài" step="0.1" min="0.1">
-                    <button id="confirmLength">OK</button>
+                <div class="edge-edit-form" id="edgeEditForm">
+                    <h3>Chỉnh sửa cạnh</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edgeLength">Độ dài:</label>
+                            <input type="number" id="edgeLength" step="0.1" min="0.1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edgeAngle">Góc (độ):</label>
+                            <input type="number" id="edgeAngle" step="1" min="0" max="360">
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="secondary-button" id="cancelEdgeEdit">Hủy</button>
+                        <button class="primary-button" id="confirmEdgeEdit">Áp dụng</button>
+                    </div>
                 </div>
                 
                 <div class="toolbar">
@@ -558,19 +591,19 @@
             <div class="shape-grid">
                 <button class="shape-option" data-shape="tetrahedron">
                     <img src="https123" alt="Tứ diện thường">
-                    <span>Tứ diện thường</span>
+                    <span>Tứ diện S.ABC</span>
                 </button>
                 <button class="shape-option" data-shape="tetrahedronRight">
                     <img src="https123" alt="Tứ diện SABC (ABC vuông cân tại A)">
-                    <span>Tứ diện SABC (ABC vuông cân tại A)</span>
+                    <span>Tứ diện S.ABC (ABC vuông cân tại A)</span>
                 </button>
                 <button class="shape-option" data-shape="tetrahedronRightA">
                     <img src="https123" alt="Tứ diện SABC (ABC vuông tại A)">
-                    <span>Tứ diện SABC (ABC vuông tại A)</span>
+                    <span>Tứ diện S.ABC (ABC vuông tại A)</span>
                 </button>
                 <button class="shape-option" data-shape="tetrahedronIsosceles">
                     <img src="https123" alt="Tứ diện SABC (ABC cân tại A)">
-                    <span>Tứ diện SABC (ABC cân tại A)</span>
+                    <span>Tứ diện S.ABC (ABC cân tại A)</span>
                 </button>
                 <button class="shape-option" data-shape="cube">
                     <img src="https123" alt="Hình lập phương">
@@ -914,17 +947,16 @@
             return cuboid;
         }
 
-        // Hàm tạo tứ diện đều
+        // Hàm tạo tứ diện S.ABC (A, B, C nằm trong mặt phẳng OXY, S nằm trên trục OZ)
         function createTetrahedron() {
             const geometry = new THREE.BufferGeometry();
             
-            // Tọa độ các đỉnh của tứ diện đều
-            const height = FIXED_LENGTH * Math.sqrt(2/3);
+            // Tọa độ các đỉnh của tứ diện - A, B, C trong mặt phẳng OXY, S trên trục OZ
             const vertices = new Float32Array([
-                0, 0, 0,           // A
-                FIXED_LENGTH, 0, 0,           // B
-                FIXED_LENGTH/2, FIXED_LENGTH * Math.sqrt(3)/2, 0,  // C
-                FIXED_LENGTH/2, FIXED_LENGTH * Math.sqrt(3)/6, height  // D (S)
+                0, 0, 0,           // A - gốc tọa độ
+                FIXED_LENGTH, 0, 0,           // B - trên trục OX
+                0, FIXED_LENGTH, 0,           // C - trên trục OY
+                0, 0, FIXED_LENGTH            // S - trên trục OZ
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -932,9 +964,9 @@
             // Tạo các mặt
             const indices = [
                 0, 1, 2,  // Mặt đáy ABC
-                0, 3, 1,  // Mặt ABD
-                1, 3, 2,  // Mặt BCD
-                2, 3, 0   // Mặt CAD
+                0, 3, 1,  // Mặt ABS
+                1, 3, 2,  // Mặt BCS
+                2, 3, 0   // Mặt CAS
             ];
             
             geometry.setIndex(indices);
@@ -950,8 +982,8 @@
             // Thêm các điểm đỉnh
             points['A'] = new THREE.Vector3(0, 0, 0);
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
-            points['C'] = new THREE.Vector3(FIXED_LENGTH/2, FIXED_LENGTH * Math.sqrt(3)/2, 0);
-            points['S'] = new THREE.Vector3(FIXED_LENGTH/2, FIXED_LENGTH * Math.sqrt(3)/6, height);
+            points['C'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
+            points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
             
             // Tạo các cạnh
             const tetraEdges = [
@@ -971,128 +1003,26 @@
             return new THREE.Mesh(geometry, material);
         }
 
-        // Hàm tạo tứ diện SABC (ABC vuông cân tại A)
+        // Hàm tạo tứ diện S.ABC (ABC vuông cân tại A)
         function createTetrahedronRight() {
-            const geometry = new THREE.BufferGeometry();
-            
-            // Tọa độ các đỉnh
-            const vertices = new Float32Array([
-                0, 0, 0,           // A
-                FIXED_LENGTH, 0, 0,           // B
-                0, FIXED_LENGTH, 0,           // C
-                0, 0, FIXED_LENGTH            // S
-            ]);
-            
-            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-            
-            // Tạo các mặt
-            const indices = [
-                0, 1, 2,  // Mặt đáy ABC
-                0, 3, 1,  // Mặt ABS
-                1, 3, 2,  // Mặt BCS
-                2, 3, 0   // Mặt CAS
-            ];
-            
-            geometry.setIndex(indices);
-            geometry.computeVertexNormals();
-            
-            const material = new THREE.MeshBasicMaterial({ 
-                color: 0x3A86FF, 
-                wireframe: false,
-                transparent: true,
-                opacity: 0.7
-            });
-            
-            // Thêm các điểm đỉnh
-            points['A'] = new THREE.Vector3(0, 0, 0);
-            points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
-            points['C'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
-            points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
-            
-            // Tạo các cạnh
-            const tetraEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy
-                ['A', 'S'], ['B', 'S'], ['C', 'S']  // Cạnh bên
-            ];
-            const edges = createEdges(tetraEdges);
-            scene.add(edges);
-            edgeObjects.push(edges);
-            
-            // Tạo các điểm hiển thị
-            createPointSpheres();
-            
-            // Tạo các mặt phẳng
-            createPlanesForTetrahedron();
-            
-            return new THREE.Mesh(geometry, material);
+            return createTetrahedron(); // Sử dụng cùng cấu trúc với tứ diện thường
         }
 
-        // Hàm tạo tứ diện SABC (ABC vuông tại A)
+        // Hàm tạo tứ diện S.ABC (ABC vuông tại A)
         function createTetrahedronRightA() {
-            const geometry = new THREE.BufferGeometry();
-            
-            // Tọa độ các đỉnh
-            const vertices = new Float32Array([
-                0, 0, 0,           // A
-                FIXED_LENGTH, 0, 0,           // B
-                0, FIXED_LENGTH, 0,           // C
-                0, 0, FIXED_LENGTH            // S
-            ]);
-            
-            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-            
-            // Tạo các mặt
-            const indices = [
-                0, 1, 2,  // Mặt đáy ABC
-                0, 3, 1,  // Mặt ABS
-                1, 3, 2,  // Mặt BCS
-                2, 3, 0   // Mặt CAS
-            ];
-            
-            geometry.setIndex(indices);
-            geometry.computeVertexNormals();
-            
-            const material = new THREE.MeshBasicMaterial({ 
-                color: 0x3A86FF, 
-                wireframe: false,
-                transparent: true,
-                opacity: 0.7
-            });
-            
-            // Thêm các điểm đỉnh
-            points['A'] = new THREE.Vector3(0, 0, 0);
-            points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
-            points['C'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
-            points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
-            
-            // Tạo các cạnh
-            const tetraEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy
-                ['A', 'S'], ['B', 'S'], ['C', 'S']  // Cạnh bên
-            ];
-            const edges = createEdges(tetraEdges);
-            scene.add(edges);
-            edgeObjects.push(edges);
-            
-            // Tạo các điểm hiển thị
-            createPointSpheres();
-            
-            // Tạo các mặt phẳng
-            createPlanesForTetrahedron();
-            
-            return new THREE.Mesh(geometry, material);
+            return createTetrahedron(); // Sử dụng cùng cấu trúc với tứ diện thường
         }
 
-        // Hàm tạo tứ diện SABC (ABC cân tại A)
+        // Hàm tạo tứ diện S.ABC (ABC cân tại A)
         function createTetrahedronIsosceles() {
             const geometry = new THREE.BufferGeometry();
             
-            // Tọa độ các đỉnh
+            // Tọa độ các đỉnh - tam giác ABC cân tại A, S trên trục OZ
             const vertices = new Float32Array([
-                0, 0, 0,           // A
-                FIXED_LENGTH, 0, 0,           // B
-                FIXED_LENGTH/2, FIXED_LENGTH, 0,         // C
-                0, 0, FIXED_LENGTH            // S
+                0, 0, 0,           // A - gốc tọa độ
+                FIXED_LENGTH, 0, 0,           // B - trên trục OX
+                FIXED_LENGTH/2, FIXED_LENGTH, 0,         // C - cân tại A
+                0, 0, FIXED_LENGTH            // S - trên trục OZ
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -1102,7 +1032,7 @@
                 0, 1, 2,  // Mặt đáy ABC
                 0, 3, 1,  // Mặt ABS
                 1, 3, 2,  // Mặt BCS
-                2, 3, 0   // Mặt CAD
+                2, 3, 0   // Mặt CAS
             ];
             
             geometry.setIndex(indices);
@@ -1143,14 +1073,14 @@
         function createTriangularPrism() {
             const geometry = new THREE.BufferGeometry();
             
-            // Tọa độ các đỉnh
+            // Tọa độ các đỉnh - đáy tam giác trong OXY
             const height = FIXED_LENGTH * Math.sqrt(3) / 2;
             const vertices = new Float32Array([
-                // Đáy dưới
+                // Đáy dưới - trong OXY
                 0, 0, 0,
                 FIXED_LENGTH, 0, 0,
                 FIXED_LENGTH/2, height, 0,
-                // Đáy trên
+                // Đáy trên - dịch lên theo OZ
                 0, 0, FIXED_LENGTH,
                 FIXED_LENGTH, 0, FIXED_LENGTH,
                 FIXED_LENGTH/2, height, FIXED_LENGTH
@@ -1252,14 +1182,14 @@
         function createPyramid() {
             const geometry = new THREE.BufferGeometry();
             
-            // Tọa độ các đỉnh
+            // Tọa độ các đỉnh - đáy trong OXY, đỉnh S trên trục OZ
             const vertices = new Float32Array([
-                // Đáy
+                // Đáy - trong OXY
                 -FIXED_LENGTH/2, -FIXED_LENGTH/2, 0,
                 FIXED_LENGTH/2, -FIXED_LENGTH/2, 0,
                 FIXED_LENGTH/2, FIXED_LENGTH/2, 0,
                 -FIXED_LENGTH/2, FIXED_LENGTH/2, 0,
-                // Đỉnh
+                // Đỉnh - trên trục OZ
                 0, 0, FIXED_LENGTH
             ]);
             
@@ -1314,14 +1244,14 @@
         function createTriangularPyramid() {
             const geometry = new THREE.BufferGeometry();
             
-            // Tọa độ các đỉnh
+            // Tọa độ các đỉnh - đáy tam giác trong OXY, đỉnh S trên trục OZ
             const height = FIXED_LENGTH * Math.sqrt(3) / 2;
             const vertices = new Float32Array([
-                // Đáy
+                // Đáy - trong OXY
                 0, 0, 0,
                 FIXED_LENGTH, 0, 0,
                 FIXED_LENGTH/2, height, 0,
-                // Đỉnh
+                // Đỉnh - trên trục OZ
                 FIXED_LENGTH/2, height/3, FIXED_LENGTH
             ]);
             
@@ -1756,8 +1686,8 @@
             }
         }
 
-        // Hàm thay đổi độ dài đoạn thẳng
-        function changeEdgeLength(edge, newLength) {
+        // Hàm thay đổi độ dài và góc của cạnh
+        function changeEdge(edge, newLength, newAngle) {
             const point1 = points[edge[0]];
             const point2 = points[edge[1]];
             
@@ -1767,12 +1697,30 @@
             }
             
             const currentLength = point1.distanceTo(point2);
-            const ratio = newLength / currentLength;
+            const lengthRatio = newLength / currentLength;
             
             // Tính vector từ điểm giữa đến từng điểm
             const midPoint = new THREE.Vector3().addVectors(point1, point2).multiplyScalar(0.5);
-            const vec1 = new THREE.Vector3().subVectors(point1, midPoint).multiplyScalar(ratio);
-            const vec2 = new THREE.Vector3().subVectors(point2, midPoint).multiplyScalar(ratio);
+            const vec1 = new THREE.Vector3().subVectors(point1, midPoint).multiplyScalar(lengthRatio);
+            const vec2 = new THREE.Vector3().subVectors(point2, midPoint).multiplyScalar(lengthRatio);
+            
+            // Áp dụng góc xoay (nếu có)
+            if (newAngle !== undefined && newAngle !== null) {
+                const angleRad = THREE.MathUtils.degToRad(newAngle);
+                
+                // Tạo trục xoay vuông góc với vector cạnh
+                const edgeVector = new THREE.Vector3().subVectors(point2, point1).normalize();
+                let rotationAxis = new THREE.Vector3(0, 1, 0); // Mặc định là trục Y
+                
+                // Nếu vector cạnh song song với trục Y, dùng trục X
+                if (Math.abs(edgeVector.y) > 0.9) {
+                    rotationAxis = new THREE.Vector3(1, 0, 0);
+                }
+                
+                // Áp dụng phép xoay
+                vec1.applyAxisAngle(rotationAxis, angleRad);
+                vec2.applyAxisAngle(rotationAxis, angleRad);
+            }
             
             // Cập nhật vị trí các điểm
             point1.copy(midPoint).add(vec1);
@@ -1862,6 +1810,34 @@
             } else if (shapeType === 'quadrangularPrism') {
                 createPlanesForCuboid(currentModel);
             }
+        }
+
+        // Hàm hiển thị form chỉnh sửa cạnh
+        function showEdgeEditForm(edge, position) {
+            const point1 = points[edge[0]];
+            const point2 = points[edge[1]];
+            
+            if (!point1 || !point2) return;
+            
+            const length = point1.distanceTo(point2);
+            const canvasRect = canvas.getBoundingClientRect();
+            const edgeEditForm = document.getElementById('edgeEditForm');
+            
+            edgeEditForm.style.display = 'block';
+            edgeEditForm.style.left = (position.x * canvasRect.width / 2 + canvasRect.width / 2 - 125) + 'px';
+            edgeEditForm.style.top = (-position.y * canvasRect.height / 2 + canvasRect.height / 2 - 100) + 'px';
+            
+            document.getElementById('edgeLength').value = length.toFixed(2);
+            document.getElementById('edgeAngle').value = 0;
+            
+            // Lưu thông tin cạnh được chọn
+            selectedEdge = edge;
+        }
+
+        // Hàm ẩn form chỉnh sửa cạnh
+        function hideEdgeEditForm() {
+            document.getElementById('edgeEditForm').style.display = 'none';
+            selectedEdge = null;
         }
 
         // Hàm thêm điểm đặc biệt
@@ -2283,7 +2259,32 @@
                 return;
             }
             
-            // Kiểm tra xem có click vào đường thẳng không
+            // Kiểm tra xem có click vào đường thẳng không (cạnh của hình khối)
+            const edgeIntersects = raycaster.intersectObjects(edgeObjects);
+            
+            if (edgeIntersects.length > 0) {
+                const edge = edgeIntersects[0].object;
+                
+                if (activeTool === 'erase') {
+                    // Không cho phép xóa cạnh của hình khối
+                    return;
+                }
+                
+                // Tìm cạnh tương ứng
+                const edgePoints = findEdgeByGeometry(edge.geometry);
+                if (edgePoints) {
+                    const midpoint = new THREE.Vector3().addVectors(edgePoints[0], edgePoints[1]).multiplyScalar(0.5);
+                    showEdgeEditForm(edgePoints, midpoint);
+                    
+                    const length = edgePoints[0].distanceTo(edgePoints[1]);
+                    document.getElementById('infoText').textContent = 
+                        `Cạnh: Độ dài = ${length.toFixed(2)}`;
+                    document.getElementById('infoPanel').style.display = 'block';
+                }
+                return;
+            }
+            
+            // Kiểm tra xem có click vào đường thẳng tự do không
             const lineIntersects = raycaster.intersectObjects(lineObjects);
             
             if (lineIntersects.length > 0) {
@@ -2294,26 +2295,7 @@
                     return;
                 }
                 
-                const points = line.userData.points;
-                const length = points[0].distanceTo(points[1]);
-                
-                // Hiển thị form nhập độ dài mới
-                const midpoint = new THREE.Vector3().addVectors(points[0], points[1]).multiplyScalar(0.5);
-                const canvasRect = canvas.getBoundingClientRect();
-                const lengthInput = document.getElementById('lengthInput');
-                
-                lengthInput.style.display = 'block';
-                lengthInput.style.left = (midpoint.x * canvasRect.width / 2 + canvasRect.width / 2 - 50) + 'px';
-                lengthInput.style.top = (-midpoint.y * canvasRect.height / 2 + canvasRect.height / 2 - 20) + 'px';
-                
-                document.getElementById('lengthValue').value = length.toFixed(2);
-                
-                // Lưu thông tin đoạn thẳng được chọn
-                selectedEdge = findEdgeByPoints(points[0], points[1]);
-                
-                document.getElementById('infoText').textContent = 
-                    `Đoạn thẳng: Độ dài = ${length.toFixed(2)}`;
-                document.getElementById('infoPanel').style.display = 'block';
+                // Xử lý đường thẳng tự do (nếu có)
                 return;
             }
             
@@ -2328,9 +2310,8 @@
                 return;
             }
             
-            // Ẩn form nhập độ dài nếu click ra ngoài
-            document.getElementById('lengthInput').style.display = 'none';
-            selectedEdge = null;
+            // Ẩn form chỉnh sửa cạnh nếu click ra ngoài
+            hideEdgeEditForm();
             
             // Kiểm tra xem có click vào mô hình không (double tap để di chuyển)
             if (currentModel) {
@@ -2398,6 +2379,15 @@
                 
                 document.getElementById('infoPanel').style.display = 'none';
             }
+        }
+
+        // Hàm tìm cạnh dựa trên geometry
+        function findEdgeByGeometry(geometry) {
+            const positions = geometry.attributes.position.array;
+            const point1 = new THREE.Vector3(positions[0], positions[1], positions[2]);
+            const point2 = new THREE.Vector3(positions[3], positions[4], positions[5]);
+            
+            return findEdgeByPoints(point1, point2);
         }
 
         // Hàm tìm cạnh dựa trên hai điểm
@@ -2508,9 +2498,10 @@
             this.classList.add('active');
         });
 
-        // Xác nhận thay đổi độ dài
-        document.getElementById('confirmLength').addEventListener('click', function() {
-            const newLength = parseFloat(document.getElementById('lengthValue').value);
+        // Xác nhận chỉnh sửa cạnh
+        document.getElementById('confirmEdgeEdit').addEventListener('click', function() {
+            const newLength = parseFloat(document.getElementById('edgeLength').value);
+            const newAngle = parseFloat(document.getElementById('edgeAngle').value);
             
             if (isNaN(newLength) || newLength <= 0) {
                 alert('Vui lòng nhập độ dài hợp lệ!');
@@ -2518,11 +2509,14 @@
             }
             
             if (selectedEdge) {
-                changeEdgeLength(selectedEdge, newLength);
+                changeEdge(selectedEdge, newLength, isNaN(newAngle) ? 0 : newAngle);
             }
             
-            document.getElementById('lengthInput').style.display = 'none';
+            hideEdgeEditForm();
         });
+
+        // Hủy chỉnh sửa cạnh
+        document.getElementById('cancelEdgeEdit').addEventListener('click', hideEdgeEditForm);
 
         // Đóng modal khi nhấn nút đóng
         document.querySelectorAll('.close-button').forEach(button => {
