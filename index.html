@@ -796,6 +796,7 @@
         const pointObjects = [];
         const lineObjects = [];
         const planeObjects = [];
+        const edgeObjects = []; // Lưu các cạnh của hình khối
         let isMovingModel = false;
         let selectedModel = null;
         let activeTool = null;
@@ -809,6 +810,27 @@
 
         // Độ dài cố định cho tất cả các hình
         const FIXED_LENGTH = 1;
+
+        // Hàm tạo các cạnh cho hình khối
+        function createEdges(edgeList) {
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            
+            edgeList.forEach(edge => {
+                const point1 = points[edge[0]];
+                const point2 = points[edge[1]];
+                vertices.push(point1.x, point1.y, point1.z);
+                vertices.push(point2.x, point2.y, point2.z);
+            });
+            
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            const material = new THREE.LineBasicMaterial({ 
+                color: 0x000000, // Màu đen cho các cạnh
+                linewidth: 2
+            });
+            const lineSegments = new THREE.LineSegments(geometry, material);
+            return lineSegments;
+        }
 
         // Hàm tạo hình lập phương
         function createCube() {
@@ -832,7 +854,17 @@
             points['G'] = new THREE.Vector3(half, half, half);
             points['H'] = new THREE.Vector3(-half, half, half);
             
-            // Tạo các điểm hiển thị
+            // Tạo các cạnh
+            const cubeEdges = [
+                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Đáy dưới
+                ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'], // Đáy trên
+                ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']  // Cạnh bên
+            ];
+            const edges = createEdges(cubeEdges);
+            scene.add(edges);
+            edgeObjects.push(edges);
+            
+            // Tạo các điểm hiển thị (hình tròn đầu mút)
             createPointSpheres();
             
             // Tạo các mặt phẳng
@@ -862,6 +894,16 @@
             points['F'] = new THREE.Vector3(half, half, -half);
             points['G'] = new THREE.Vector3(half, half, half);
             points['H'] = new THREE.Vector3(-half, half, half);
+            
+            // Tạo các cạnh
+            const cuboidEdges = [
+                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Đáy dưới
+                ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'], // Đáy trên
+                ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']  // Cạnh bên
+            ];
+            const edges = createEdges(cuboidEdges);
+            scene.add(edges);
+            edgeObjects.push(edges);
             
             // Tạo các điểm hiển thị
             createPointSpheres();
@@ -911,6 +953,15 @@
             points['C'] = new THREE.Vector3(FIXED_LENGTH/2, FIXED_LENGTH * Math.sqrt(3)/2, 0);
             points['S'] = new THREE.Vector3(FIXED_LENGTH/2, FIXED_LENGTH * Math.sqrt(3)/6, height);
             
+            // Tạo các cạnh
+            const tetraEdges = [
+                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy
+                ['A', 'S'], ['B', 'S'], ['C', 'S']  // Cạnh bên
+            ];
+            const edges = createEdges(tetraEdges);
+            scene.add(edges);
+            edgeObjects.push(edges);
+            
             // Tạo các điểm hiển thị
             createPointSpheres();
             
@@ -957,6 +1008,15 @@
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
             points['C'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
             points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
+            
+            // Tạo các cạnh
+            const tetraEdges = [
+                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy
+                ['A', 'S'], ['B', 'S'], ['C', 'S']  // Cạnh bên
+            ];
+            const edges = createEdges(tetraEdges);
+            scene.add(edges);
+            edgeObjects.push(edges);
             
             // Tạo các điểm hiển thị
             createPointSpheres();
@@ -1005,6 +1065,15 @@
             points['C'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
             points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
             
+            // Tạo các cạnh
+            const tetraEdges = [
+                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy
+                ['A', 'S'], ['B', 'S'], ['C', 'S']  // Cạnh bên
+            ];
+            const edges = createEdges(tetraEdges);
+            scene.add(edges);
+            edgeObjects.push(edges);
+            
             // Tạo các điểm hiển thị
             createPointSpheres();
             
@@ -1051,6 +1120,15 @@
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
             points['C'] = new THREE.Vector3(FIXED_LENGTH/2, FIXED_LENGTH, 0);
             points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
+            
+            // Tạo các cạnh
+            const tetraEdges = [
+                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy
+                ['A', 'S'], ['B', 'S'], ['C', 'S']  // Cạnh bên
+            ];
+            const edges = createEdges(tetraEdges);
+            scene.add(edges);
+            edgeObjects.push(edges);
             
             // Tạo các điểm hiển thị
             createPointSpheres();
@@ -1110,6 +1188,16 @@
             points['E'] = new THREE.Vector3(FIXED_LENGTH, 0, FIXED_LENGTH);
             points['F'] = new THREE.Vector3(FIXED_LENGTH/2, height, FIXED_LENGTH);
             
+            // Tạo các cạnh
+            const prismEdges = [
+                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy dưới
+                ['D', 'E'], ['E', 'F'], ['F', 'D'], // Đáy trên
+                ['A', 'D'], ['B', 'E'], ['C', 'F']  // Cạnh bên
+            ];
+            const edges = createEdges(prismEdges);
+            scene.add(edges);
+            edgeObjects.push(edges);
+            
             // Tạo các điểm hiển thị
             createPointSpheres();
             
@@ -1140,6 +1228,16 @@
             points['F'] = new THREE.Vector3(half, half, -half);
             points['G'] = new THREE.Vector3(half, half, half);
             points['H'] = new THREE.Vector3(-half, half, half);
+            
+            // Tạo các cạnh
+            const prismEdges = [
+                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Đáy dưới
+                ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'], // Đáy trên
+                ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']  // Cạnh bên
+            ];
+            const edges = createEdges(prismEdges);
+            scene.add(edges);
+            edgeObjects.push(edges);
             
             // Tạo các điểm hiển thị
             createPointSpheres();
@@ -1194,6 +1292,15 @@
             points['D'] = new THREE.Vector3(-FIXED_LENGTH/2, FIXED_LENGTH/2, 0);
             points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
             
+            // Tạo các cạnh
+            const pyramidEdges = [
+                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Đáy
+                ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']  // Cạnh bên
+            ];
+            const edges = createEdges(pyramidEdges);
+            scene.add(edges);
+            edgeObjects.push(edges);
+            
             // Tạo các điểm hiển thị
             createPointSpheres();
             
@@ -1243,6 +1350,15 @@
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
             points['C'] = new THREE.Vector3(FIXED_LENGTH/2, height, 0);
             points['S'] = new THREE.Vector3(FIXED_LENGTH/2, height/3, FIXED_LENGTH);
+            
+            // Tạo các cạnh
+            const tetraEdges = [
+                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy
+                ['A', 'S'], ['B', 'S'], ['C', 'S']  // Cạnh bên
+            ];
+            const edges = createEdges(tetraEdges);
+            scene.add(edges);
+            edgeObjects.push(edges);
             
             // Tạo các điểm hiển thị
             createPointSpheres();
@@ -1496,35 +1612,35 @@
             }
         }
 
-        // Hàm tạo các điểm hiển thị
+        // Hàm tạo các điểm hiển thị (hình tròn đầu mút)
         function createPointSpheres() {
             // Xóa các điểm cũ
             pointObjects.forEach(obj => scene.remove(obj));
             pointObjects.length = 0;
             
-            // Tạo các điểm mới
+            // Tạo các điểm mới - hình tròn màu đen
             Object.keys(points).forEach(key => {
                 const pointGeometry = new THREE.SphereGeometry(0.05, 16, 16);
-                const pointMaterial = new THREE.MeshBasicMaterial({ color: 0xFFD700 });
+                const pointMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Màu đen
                 const pointMesh = new THREE.Mesh(pointGeometry, pointMaterial);
                 pointMesh.position.copy(points[key]);
                 pointMesh.userData = { type: 'point', name: key, position: points[key] };
                 scene.add(pointMesh);
                 pointObjects.push(pointMesh);
                 
-                // Thêm nhãn cho điểm
+                // Thêm nhãn cho điểm - chỉ chữ không nền
                 const label = createPointLabel(key, points[key]);
                 scene.add(label);
                 pointObjects.push(label);
             });
         }
 
-        // Hàm tạo nhãn cho điểm
+        // Hàm tạo nhãn cho điểm - chỉ chữ không nền
         function createPointLabel(name, position) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             
-            // Tính toán kích thước canvas dựa trên kích thước hình
+            // Tính toán kích thước canvas
             const modelSize = currentModel ? getModelSize() : 1;
             const fontSize = Math.max(12, Math.min(20, 16 / modelSize));
             const canvasSize = Math.max(32, Math.min(64, 48 / modelSize));
@@ -1532,17 +1648,18 @@
             canvas.width = canvasSize;
             canvas.height = canvasSize / 2;
             
-            context.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            
-            context.fillStyle = 'black';
+            // KHÔNG vẽ nền - chỉ chữ
+            context.fillStyle = 'black'; // Chữ màu đen
             context.font = `bold ${fontSize}px Arial`;
             context.textAlign = 'center';
             context.textBaseline = 'middle';
             context.fillText(name, canvas.width / 2, canvas.height / 2);
             
             const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ map: texture });
+            const material = new THREE.SpriteMaterial({ 
+                map: texture,
+                transparent: true // Cho phép trong suốt
+            });
             const sprite = new THREE.Sprite(material);
             sprite.position.copy(position);
             sprite.position.y += 0.15;
@@ -1570,14 +1687,16 @@
                 currentModel = null;
             }
             
-            // Xóa các điểm và đường đã thêm
+            // Xóa các điểm, đường và cạnh đã thêm
             pointObjects.forEach(obj => scene.remove(obj));
             lineObjects.forEach(obj => scene.remove(obj));
             planeObjects.forEach(obj => scene.remove(obj));
+            edgeObjects.forEach(obj => scene.remove(obj));
             
             pointObjects.length = 0;
             lineObjects.length = 0;
             planeObjects.length = 0;
+            edgeObjects.length = 0;
             lines.length = 0;
             
             // Giữ lại các điểm gốc của mô hình
@@ -1665,7 +1784,63 @@
             // Cập nhật lại các mặt phẳng
             updatePlanes();
             
+            // Cập nhật lại các cạnh
+            updateEdges();
+            
             return true;
+        }
+
+        // Hàm cập nhật các cạnh
+        function updateEdges() {
+            // Xóa các cạnh cũ
+            edgeObjects.forEach(obj => scene.remove(obj));
+            edgeObjects.length = 0;
+            
+            if (!currentModel) return;
+            
+            const shapeType = currentModel.userData.shapeType;
+            let edges;
+            
+            // Tạo lại các cạnh dựa trên loại hình
+            switch(shapeType) {
+                case 'cube':
+                case 'cuboid':
+                case 'quadrangularPrism':
+                    edges = createEdges([
+                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
+                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
+                    ]);
+                    break;
+                case 'tetrahedron':
+                case 'tetrahedronRight':
+                case 'tetrahedronRightA':
+                case 'tetrahedronIsosceles':
+                case 'triangularPyramid':
+                    edges = createEdges([
+                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                        ['A', 'S'], ['B', 'S'], ['C', 'S']
+                    ]);
+                    break;
+                case 'triangularPrism':
+                    edges = createEdges([
+                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                        ['D', 'E'], ['E', 'F'], ['F', 'D'],
+                        ['A', 'D'], ['B', 'E'], ['C', 'F']
+                    ]);
+                    break;
+                case 'pyramid':
+                    edges = createEdges([
+                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                        ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
+                    ]);
+                    break;
+            }
+            
+            if (edges) {
+                scene.add(edges);
+                edgeObjects.push(edges);
+            }
         }
 
         // Hàm cập nhật các mặt phẳng
@@ -1747,7 +1922,7 @@
                 points[pointName] = newPoint;
                 
                 const pointGeometry = new THREE.SphereGeometry(0.05, 16, 16);
-                const pointMaterial = new THREE.MeshBasicMaterial({ color: 0xFFD700 });
+                const pointMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Màu đen
                 const pointMesh = new THREE.Mesh(pointGeometry, pointMaterial);
                 pointMesh.position.copy(newPoint);
                 pointMesh.userData = { type: 'point', name: pointName, position: newPoint };
@@ -1768,7 +1943,7 @@
         function addLine(lineType, options) {
             let point1 = null;
             let point2 = null;
-            let lineColor = 0x000000;
+            let lineColor = 0x000000; // Màu đen mặc định
             
             switch(lineType) {
                 case 'segment':
