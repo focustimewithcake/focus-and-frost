@@ -407,6 +407,78 @@
             margin-top: 15px;
         }
 
+        /* View Rotation Gizmo Styles */
+        .view-gizmo {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .view-gizmo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .view-gizmo.active {
+            background-color: rgba(58, 134, 255, 0.2);
+            box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.5);
+        }
+
+        .view-gizmo svg {
+            width: 60px;
+            height: 60px;
+        }
+
+        .view-gizmo .axis-x {
+            stroke: #ff0000;
+            stroke-width: 2;
+        }
+
+        .view-gizmo .axis-y {
+            stroke: #00ff00;
+            stroke-width: 2;
+        }
+
+        .view-gizmo .axis-z {
+            stroke: #0000ff;
+            stroke-width: 2;
+        }
+
+        .view-gizmo .label {
+            font-size: 10px;
+            font-weight: bold;
+            text-anchor: middle;
+        }
+
+        .view-gizmo .label-x {
+            fill: #ff0000;
+        }
+
+        .view-gizmo .label-y {
+            fill: #00ff00;
+        }
+
+        .view-gizmo .label-z {
+            fill: #0000ff;
+        }
+
+        /* Selection Highlight */
+        .selected-mesh {
+            outline: 2px solid #FF6B6B;
+            outline-offset: 2px;
+        }
+
         @media (max-width: 768px) {
             .toolbar {
                 flex-wrap: wrap;
@@ -454,6 +526,18 @@
                 width: 90%;
                 min-width: unset;
             }
+            
+            .view-gizmo {
+                width: 60px;
+                height: 60px;
+                bottom: 10px;
+                left: 10px;
+            }
+            
+            .view-gizmo svg {
+                width: 45px;
+                height: 45px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -488,6 +572,23 @@
             <section>
                 <canvas id="sceneCanvas"></canvas>
                 
+                <!-- View Rotation Gizmo -->
+                <div class="view-gizmo" id="viewGizmo" title="Nhấp để bật/tắt trục xoay góc nhìn">
+                    <svg viewBox="0 0 100 100">
+                        <!-- X Axis (Red) -->
+                        <line x1="50" y1="50" x2="80" y2="50" class="axis-x"/>
+                        <text x="85" y="50" class="label label-x">X</text>
+                        
+                        <!-- Y Axis (Green) -->
+                        <line x1="50" y1="50" x2="50" y2="20" class="axis-y"/>
+                        <text x="50" y="15" class="label label-y">Y</text>
+                        
+                        <!-- Z Axis (Blue) -->
+                        <line x1="50" y1="50" x2="65" y2="65" class="axis-z"/>
+                        <text x="70" y="70" class="label label-z">Z</text>
+                    </svg>
+                </div>
+                
                 <div class="tutorial">
                     <h3>Hướng dẫn sử dụng</h3>
                     <ul>
@@ -498,6 +599,7 @@
                         <li>Nhấp vào điểm để xem tọa độ</li>
                         <li>Nhấp vào cạnh để thay đổi độ dài/góc</li>
                         <li>Dùng chuột để xoay và phóng to</li>
+                        <li>Nhấp vào biểu tượng góc trái để xoay góc nhìn</li>
                     </ul>
                 </div>
                 
@@ -1045,6 +1147,248 @@
 
         // Độ dài cố định cho tất cả các hình
         const FIXED_LENGTH = 1;
+
+        // === BIẾN MỚI CHO TÍNH NĂNG XOAY GÓC NHÌN VÀ XOAY HÌNH KHỐI ===
+        let viewGizmoActive = false;
+        let viewGizmo = null;
+        let selectedMesh = null;
+        let isRotatingMesh = false;
+        let isDraggingMesh = false;
+        let isScalingMesh = false;
+        let originalMousePosition = new THREE.Vector2();
+        let originalMeshPosition = new THREE.Vector3();
+        let originalMeshRotation = new THREE.Euler();
+        let originalMeshScale = new THREE.Vector3();
+
+        // Hàm tạo View Rotation Gizmo
+        function createViewRotationGizmo() {
+            const gizmoGroup = new THREE.Group();
+            
+            // Tạo các trục
+            const axisLength = 1.5;
+            const axisRadius = 0.02;
+            
+            // Trục X (Đỏ)
+            const xGeometry = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, 8);
+            const xMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const xAxis = new THREE.Mesh(xGeometry, xMaterial);
+            xAxis.rotation.z = Math.PI / 2;
+            xAxis.position.x = axisLength / 2;
+            gizmoGroup.add(xAxis);
+            
+            // Trục Y (Xanh lá)
+            const yGeometry = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, 8);
+            const yMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const yAxis = new THREE.Mesh(yGeometry, yMaterial);
+            yAxis.position.y = axisLength / 2;
+            gizmoGroup.add(yAxis);
+            
+            // Trục Z (Xanh dương)
+            const zGeometry = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, 8);
+            const zMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+            const zAxis = new THREE.Mesh(zGeometry, zMaterial);
+            zAxis.rotation.x = Math.PI / 2;
+            zAxis.position.z = axisLength / 2;
+            gizmoGroup.add(zAxis);
+            
+            // Thêm các mũi tên
+            const arrowSize = 0.1;
+            
+            // Mũi tên X
+            const xArrow = new THREE.ConeGeometry(arrowSize, arrowSize * 2, 8);
+            const xArrowMesh = new THREE.Mesh(xArrow, xMaterial);
+            xArrowMesh.position.x = axisLength;
+            xArrowMesh.rotation.z = -Math.PI / 2;
+            gizmoGroup.add(xArrowMesh);
+            
+            // Mũi tên Y
+            const yArrow = new THREE.ConeGeometry(arrowSize, arrowSize * 2, 8);
+            const yArrowMesh = new THREE.Mesh(yArrow, yMaterial);
+            yArrowMesh.position.y = axisLength;
+            gizmoGroup.add(yArrowMesh);
+            
+            // Mũi tên Z
+            const zArrow = new THREE.ConeGeometry(arrowSize, arrowSize * 2, 8);
+            const zArrowMesh = new THREE.Mesh(zArrow, zMaterial);
+            zArrowMesh.position.z = axisLength;
+            zArrowMesh.rotation.x = Math.PI / 2;
+            gizmoGroup.add(zArrowMesh);
+            
+            // Thêm nhãn
+            const labelDistance = axisLength + 0.3;
+            
+            const xLabel = createAxisLabel('X', new THREE.Vector3(labelDistance, 0, 0), '#ff0000');
+            gizmoGroup.add(xLabel);
+            
+            const yLabel = createAxisLabel('Y', new THREE.Vector3(0, labelDistance, 0), '#00ff00');
+            gizmoGroup.add(yLabel);
+            
+            const zLabel = createAxisLabel('Z', new THREE.Vector3(0, 0, labelDistance), '#0000ff');
+            gizmoGroup.add(zLabel);
+            
+            gizmoGroup.position.set(0, 0, 0);
+            gizmoGroup.visible = false;
+            gizmoGroup.name = 'viewGizmo';
+            
+            return gizmoGroup;
+        }
+
+        // Hàm bật/tắt View Rotation Gizmo
+        function toggleViewGizmo() {
+            viewGizmoActive = !viewGizmoActive;
+            viewGizmo.visible = viewGizmoActive;
+            
+            const gizmoElement = document.getElementById('viewGizmo');
+            if (viewGizmoActive) {
+                gizmoElement.classList.add('active');
+                document.getElementById('infoText').textContent = 'Trục xoay góc nhìn đã bật. Kéo các trục để xoay camera.';
+            } else {
+                gizmoElement.classList.remove('active');
+                document.getElementById('infoText').textContent = 'Trục xoay góc nhìn đã tắt.';
+            }
+            document.getElementById('infoPanel').style.display = 'block';
+        }
+
+        // Hàm chọn hình khối
+        function selectMesh(mesh) {
+            // Bỏ chọn hình cũ
+            if (selectedMesh) {
+                selectedMesh.userData.isSelected = false;
+                // Xóa highlight
+                if (selectedMesh.userData.originalMaterial) {
+                    selectedMesh.material = selectedMesh.userData.originalMaterial;
+                }
+            }
+            
+            // Chọn hình mới
+            selectedMesh = mesh;
+            selectedMesh.userData.isSelected = true;
+            
+            // Lưu material gốc và thêm highlight
+            if (!selectedMesh.userData.originalMaterial) {
+                selectedMesh.userData.originalMaterial = selectedMesh.material.clone();
+            }
+            
+            // Tạo material highlight (màu vàng với độ trong suốt)
+            const highlightMaterial = selectedMesh.material.clone();
+            highlightMaterial.emissive = new THREE.Color(0xffff00);
+            highlightMaterial.emissiveIntensity = 0.3;
+            selectedMesh.material = highlightMaterial;
+            
+            document.getElementById('infoText').textContent = `Đã chọn hình khối. Có thể di chuyển, xoay, phóng to/thu nhỏ.`;
+            document.getElementById('infoPanel').style.display = 'block';
+        }
+
+        // Hàm bỏ chọn hình khối
+        function deselectMesh() {
+            if (selectedMesh) {
+                selectedMesh.userData.isSelected = false;
+                
+                // Khôi phục material gốc
+                if (selectedMesh.userData.originalMaterial) {
+                    selectedMesh.material = selectedMesh.userData.originalMaterial;
+                }
+                
+                selectedMesh = null;
+                
+                document.getElementById('infoText').textContent = 'Đã bỏ chọn hình khối.';
+                document.getElementById('infoPanel').style.display = 'block';
+                
+                // Ẩn thông báo sau 2 giây
+                setTimeout(() => {
+                    document.getElementById('infoPanel').style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // Hàm di chuyển hình khối
+        function moveMesh(mouse) {
+            if (!selectedMesh) return;
+            
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+            
+            // Tạo mặt phẳng tại vị trí hiện tại của hình khối
+            const plane = new THREE.Plane();
+            const normal = camera.getWorldDirection(new THREE.Vector3());
+            plane.setFromNormalAndCoplanarPoint(normal, selectedMesh.position);
+            
+            const intersectionPoint = new THREE.Vector3();
+            if (raycaster.ray.intersectPlane(plane, intersectionPoint)) {
+                selectedMesh.position.copy(intersectionPoint);
+                
+                // Cập nhật các điểm của hình khối
+                updateMeshPoints(selectedMesh, intersectionPoint.sub(originalMeshPosition));
+            }
+        }
+
+        // Hàm xoay hình khối
+        function rotateMesh(mouseDelta) {
+            if (!selectedMesh) return;
+            
+            const sensitivity = 0.01;
+            selectedMesh.rotation.y += mouseDelta.x * sensitivity;
+            selectedMesh.rotation.x += mouseDelta.y * sensitivity;
+        }
+
+        // Hàm phóng to/thu nhỏ hình khối
+        function scaleMesh(delta) {
+            if (!selectedMesh) return;
+            
+            const scaleFactor = 1 + delta * 0.1;
+            selectedMesh.scale.multiplyScalar(scaleFactor);
+            
+            // Giới hạn kích thước tối thiểu và tối đa
+            const minScale = 0.1;
+            const maxScale = 5.0;
+            selectedMesh.scale.clampScalar(minScale, maxScale);
+        }
+
+        // Hàm cập nhật các điểm của hình khối khi di chuyển
+        function updateMeshPoints(mesh, offset) {
+            if (!mesh.userData.shapeType) return;
+            
+            // Cập nhật tất cả các điểm thuộc về hình khối này
+            Object.keys(points).forEach(key => {
+                if (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'S', 'O1', 'O2'].includes(key)) {
+                    points[key].add(offset);
+                }
+            });
+            
+            // Cập nhật lại các điểm hiển thị
+            createPointSpheres();
+            
+            // Cập nhật lại các mặt phẳng
+            updatePlanes();
+            
+            // Cập nhật lại các cạnh
+            updateEdges();
+        }
+
+        // Hàm reset hình khối về vị trí và kích thước gốc
+        function resetMesh() {
+            if (!selectedMesh) return;
+            
+            selectedMesh.position.set(0, 0, 0);
+            selectedMesh.rotation.set(0, 0, 0);
+            selectedMesh.scale.set(1, 1, 1);
+            
+            // Reset các điểm về vị trí gốc (cần implement tùy theo loại hình)
+            resetMeshPoints(selectedMesh.userData.shapeType);
+            
+            document.getElementById('infoText').textContent = 'Đã reset hình khối về vị trí và kích thước gốc.';
+            document.getElementById('infoPanel').style.display = 'block';
+        }
+
+        // Hàm reset các điểm của hình khối (cần implement chi tiết cho từng loại hình)
+        function resetMeshPoints(shapeType) {
+            // Xóa các điểm hiện tại
+            pointObjects.forEach(obj => scene.remove(obj));
+            pointObjects.length = 0;
+            
+            // Tạo lại hình khối để reset các điểm
+            createNewModel(shapeType);
+        }
 
         // Hàm tạo các cạnh cho hình khối
         function createEdges(edgeList) {
@@ -2631,6 +2975,25 @@
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(mouse, camera);
             
+            // === XỬ LÝ DOUBLE CLICK ĐỂ CHỌN HÌNH KHỐI ===
+            if (event.type === 'click' || event.type === 'dblclick') {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTapTime;
+                
+                if (tapLength < doubleTapDelay && tapLength > 0) {
+                    // Double click detected - chọn hình khối
+                    const modelIntersects = raycaster.intersectObject(currentModel);
+                    
+                    if (modelIntersects.length > 0) {
+                        selectMesh(currentModel);
+                        lastTapTime = 0;
+                        return;
+                    }
+                } else {
+                    lastTapTime = currentTime;
+                }
+            }
+            
             // Kiểm tra xem có click vào điểm không
             const pointIntersects = raycaster.intersectObjects(pointObjects.filter(obj => obj.userData.type === 'point'));
             
@@ -2727,72 +3090,96 @@
             // Ẩn form chỉnh sửa cạnh nếu click ra ngoài
             hideEdgeEditForm();
             
-            // Kiểm tra xem có click vào mô hình không (double tap để di chuyển)
-            if (currentModel) {
-                const modelIntersects = raycaster.intersectObject(currentModel);
-                
-                if (modelIntersects.length > 0) {
-                    // Xử lý double tap trên mobile
-                    const currentTime = new Date().getTime();
-                    const tapLength = currentTime - lastTapTime;
-                    
-                    if (tapLength < doubleTapDelay && tapLength > 0) {
-                        // Double tap detected - di chuyển mô hình
-                        isMovingModel = true;
-                        selectedModel = currentModel;
-                        
-                        const plane = new THREE.Plane();
-                        plane.setFromNormalAndCoplanarPoint(camera.getWorldDirection(new THREE.Vector3()), selectedModel.position);
-                        
-                        selectedModel.userData.originalPosition = selectedModel.position.clone();
-                        
-                        document.getElementById('infoText').textContent = 
-                            'Đang di chuyển mô hình. Nhấp vào vị trí mới để đặt mô hình.';
-                        document.getElementById('infoPanel').style.display = 'block';
-                        
-                        lastTapTime = 0;
-                    } else {
-                        lastTapTime = currentTime;
-                    }
+            // Bỏ chọn hình khối nếu click ra ngoài
+            if (selectedMesh && (event.type === 'click' || event.type === 'dblclick')) {
+                deselectMesh();
+            }
+        }
+
+        // Hàm xử lý sự kiện mouse down
+        function onMouseDown(event) {
+            // Chỉ xử lý nếu đang chọn hình khối
+            if (!selectedMesh) return;
+            
+            let clientX, clientY;
+            
+            if (event.type.includes('touch')) {
+                if (event.touches.length > 0) {
+                    clientX = event.touches[0].clientX;
+                    clientY = event.touches[0].clientY;
+                } else {
+                    return;
                 }
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
             }
             
-            // Nếu đang trong chế độ di chuyển mô hình, xử lý việc đặt mô hình
-            if (isMovingModel) {
-                const plane = new THREE.Plane();
-                plane.setFromNormalAndCoplanarPoint(camera.getWorldDirection(new THREE.Vector3()), selectedModel.userData.originalPosition);
-                
-                const intersectionPoint = new THREE.Vector3();
-                raycaster.ray.intersectPlane(plane, intersectionPoint);
-                
-                selectedModel.position.copy(intersectionPoint);
-                
-                Object.keys(points).forEach(key => {
-                    if (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'S', 'O1', 'O2'].includes(key)) {
-                        const offset = intersectionPoint.sub(selectedModel.userData.originalPosition);
-                        points[key].add(offset);
-                    }
-                });
-                
-                createPointSpheres();
-                
-                if (currentModel.userData.shapeType === 'cube') {
-                    createPlanesForCube(currentModel);
-                } else if (currentModel.userData.shapeType === 'cuboid') {
-                    createPlanesForCuboid(currentModel);
-                } else if (currentModel.userData.shapeType === 'tetrahedron') {
-                    createPlanesForTetrahedron();
-                } else if (currentModel.userData.shapeType === 'triangularPrism') {
-                    createPlanesForTriangularPrism();
-                } else if (currentModel.userData.shapeType === 'pyramid') {
-                    createPlanesForPyramid();
-                }
-                
-                isMovingModel = false;
-                selectedModel = null;
-                
-                document.getElementById('infoPanel').style.display = 'none';
+            const mouse = new THREE.Vector2();
+            mouse.x = (clientX / canvas.clientWidth) * 2 - 1;
+            mouse.y = - (clientY / canvas.clientHeight) * 2 + 1;
+            
+            originalMousePosition.copy(mouse);
+            originalMeshPosition.copy(selectedMesh.position);
+            originalMeshRotation.copy(selectedMesh.rotation);
+            originalMeshScale.copy(selectedMesh.scale);
+            
+            // Kiểm tra xem có nhấn Alt để xoay không
+            if (event.altKey) {
+                isRotatingMesh = true;
+            } else {
+                isDraggingMesh = true;
             }
+        }
+
+        // Hàm xử lý sự kiện mouse move
+        function onMouseMove(event) {
+            if (!selectedMesh) return;
+            
+            let clientX, clientY;
+            
+            if (event.type.includes('touch')) {
+                if (event.touches.length > 0) {
+                    clientX = event.touches[0].clientX;
+                    clientY = event.touches[0].clientY;
+                } else {
+                    return;
+                }
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
+            
+            const mouse = new THREE.Vector2();
+            mouse.x = (clientX / canvas.clientWidth) * 2 - 1;
+            mouse.y = - (clientY / canvas.clientHeight) * 2 + 1;
+            
+            if (isDraggingMesh) {
+                moveMesh(mouse);
+            } else if (isRotatingMesh) {
+                const mouseDelta = new THREE.Vector2(
+                    mouse.x - originalMousePosition.x,
+                    mouse.y - originalMousePosition.y
+                );
+                rotateMesh(mouseDelta);
+                originalMousePosition.copy(mouse);
+            }
+        }
+
+        // Hàm xử lý sự kiện mouse up
+        function onMouseUp() {
+            isDraggingMesh = false;
+            isRotatingMesh = false;
+            isScalingMesh = false;
+        }
+
+        // Hàm xử lý sự kiện scroll (phóng to/thu nhỏ hình khối)
+        function onWheel(event) {
+            if (!selectedMesh) return;
+            
+            event.preventDefault();
+            const delta = Math.sign(event.deltaY);
+            scaleMesh(delta);
         }
 
         // Hàm tìm cạnh dựa trên geometry
@@ -2883,6 +3270,10 @@
             document.getElementById('pointInputForm').style.display = 'none';
         }
 
+        // === KHỞI TẠO VIEW ROTATION GIZMO ===
+        viewGizmo = createViewRotationGizmo();
+        scene.add(viewGizmo);
+
         // Gán sự kiện
         document.getElementById('createShapeTool').addEventListener('click', showShapeModal);
         document.getElementById('addPointByCoordTool').addEventListener('click', function() {
@@ -2923,6 +3314,9 @@
             document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
         });
+
+        // Sự kiện cho View Rotation Gizmo
+        document.getElementById('viewGizmo').addEventListener('click', toggleViewGizmo);
 
         // Xác nhận chỉnh sửa cạnh
         document.getElementById('confirmEdgeEdit').addEventListener('click', function() {
@@ -3231,14 +3625,45 @@
             });
         });
 
+        // === THÊM SỰ KIỆN BÀN PHÍM ===
+        document.addEventListener('keydown', function(event) {
+            // Reset góc nhìn khi nhấn R (chỉ khi không có hình khối được chọn)
+            if (event.key === 'r' || event.key === 'R') {
+                if (selectedMesh) {
+                    // Nếu có hình khối được chọn, reset hình khối
+                    resetMesh();
+                } else {
+                    // Nếu không có hình khối được chọn, reset camera
+                    controls.reset();
+                }
+            }
+            
+            // Bỏ chọn hình khối khi nhấn ESC
+            if (event.key === 'Escape') {
+                deselectMesh();
+            }
+        });
+
         window.addEventListener('resize', onWindowResize);
         
         // Thêm sự kiện cho cả mouse và touch
         canvas.addEventListener('click', onPointerEvent, false);
+        canvas.addEventListener('dblclick', onPointerEvent, false);
         canvas.addEventListener('touchstart', onPointerEvent, false);
         canvas.addEventListener('touchend', function(e) {
             e.preventDefault();
         }, false);
+        
+        // Thêm sự kiện cho việc di chuyển và xoay hình khối
+        canvas.addEventListener('mousedown', onMouseDown, false);
+        canvas.addEventListener('mousemove', onMouseMove, false);
+        canvas.addEventListener('mouseup', onMouseUp, false);
+        canvas.addEventListener('wheel', onWheel, false);
+        
+        // Sự kiện touch cho mobile
+        canvas.addEventListener('touchstart', onMouseDown, false);
+        canvas.addEventListener('touchmove', onMouseMove, false);
+        canvas.addEventListener('touchend', onMouseUp, false);
 
         // Khởi tạo trạng thái ban đầu
         document.querySelector('.shape-option').click();
@@ -3246,6 +3671,12 @@
         // Hàm animate
         function animate() {
             requestAnimationFrame(animate);
+            
+            // Cập nhật View Rotation Gizmo để luôn hướng về camera
+            if (viewGizmoActive) {
+                viewGizmo.quaternion.copy(camera.quaternion);
+            }
+            
             controls.update();
             renderer.render(scene, camera);
         }
