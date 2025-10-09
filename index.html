@@ -479,6 +479,70 @@
             outline-offset: 2px;
         }
 
+        /* Calculation Panel */
+        .calculation-panel {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            display: none;
+            backdrop-filter: blur(5px);
+            border-left: 4px solid #3A86FF;
+        }
+
+        .calculation-panel h3 {
+            color: #3A86FF;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .calculation-panel .point-selection {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .calculation-panel .point-button {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f8f9fa;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .calculation-panel .point-button.active {
+            background: #3A86FF;
+            color: white;
+            border-color: #3A86FF;
+        }
+
+        .calculation-panel .result {
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .toolbar {
                 flex-wrap: wrap;
@@ -537,6 +601,10 @@
             .view-gizmo svg {
                 width: 45px;
                 height: 45px;
+            }
+            
+            .calculation-panel {
+                max-width: 250px;
             }
         }
 
@@ -606,6 +674,26 @@
                 <div id="infoPanel">
                     <h3>Thông tin</h3>
                     <p id="infoText">Nhấp vào một điểm để xem tọa độ</p>
+                </div>
+                
+                <!-- Calculation Panel -->
+                <div class="calculation-panel" id="calculationPanel">
+                    <h3>Tính toán</h3>
+                    <div class="point-selection">
+                        <div class="point-button" id="selectPoint1">Điểm 1: <span id="point1Name">Chưa chọn</span></div>
+                        <div class="point-button" id="selectPoint2">Điểm 2: <span id="point2Name">Chưa chọn</span></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="calculationType">Loại tính toán:</label>
+                        <select id="calculationType">
+                            <option value="distance">Khoảng cách</option>
+                            <option value="midpoint">Trung điểm</option>
+                            <option value="vector">Tọa độ vector</option>
+                        </select>
+                    </div>
+                    <button class="primary-button" id="calculateButton" style="width: 100%;">Tính toán</button>
+                    <div class="result" id="calculationResult">Kết quả sẽ hiển thị ở đây</div>
+                    <button class="secondary-button" id="closeCalculation" style="width: 100%; margin-top: 10px;">Đóng</button>
                 </div>
                 
                 <div class="point-input-form" id="pointInputForm">
@@ -690,7 +778,14 @@
                         <img src="https123" alt="Tẩy">
                         <span>Tẩy</span>
                     </button>
+                    <button class="tool-button" id="resetTool" title="Reset mô hình">
+                        <img src="https123" alt="Reset">
+                        <span>Reset</span>
+                    </button>
                 </div>
+
+                <!-- Tooltip -->
+                <div class="tooltip" id="tooltip"></div>
             </section>
         </div>
     </div>
@@ -839,101 +934,6 @@
             <div class="action-buttons">
                 <button class="secondary-button" id="cancelVector">Hủy</button>
                 <button class="primary-button" id="confirmVector">Vẽ vector</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal tính toán -->
-    <div class="modal" id="calculateModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Tính toán</h2>
-                <button class="close-button">&times;</button>
-            </div>
-            <div class="form-group">
-                <label for="calcType">Loại tính toán:</label>
-                <select id="calcType">
-                    <option value="vectorCoords">Tọa độ vector</option>
-                    <option value="vectorLength">Độ dài vector</option>
-                    <option value="distance">Khoảng cách hai điểm</option>
-                    <option value="midpoint">Trung điểm</option>
-                </select>
-            </div>
-            <div class="form-group" id="calcVectorCoords">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="calcStartPoint">Điểm đầu:</label>
-                        <select id="calcStartPoint">
-                            <!-- Các điểm sẽ được thêm động -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="calcEndPoint">Điểm cuối:</label>
-                        <select id="calcEndPoint">
-                            <!-- Các điểm sẽ được thêm động -->
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Kết quả:</label>
-                    <div id="vectorCoordsResult" style="padding: 10px; background: #f5f5f5; border-radius: 4px; margin-top: 5px;"></div>
-                </div>
-            </div>
-            <div class="form-group" id="calcVectorLength" style="display: none;">
-                <div class="form-group">
-                    <label for="calcVector">Chọn vector:</label>
-                    <select id="calcVector">
-                        <!-- Các vector sẽ được thêm động -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Kết quả:</label>
-                    <div id="vectorLengthResult" style="padding: 10px; background: #f5f5f5; border-radius: 4px; margin-top: 5px;"></div>
-                </div>
-            </div>
-            <div class="form-group" id="calcDistance" style="display: none;">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="calcPoint1">Điểm 1:</label>
-                        <select id="calcPoint1">
-                            <!-- Các điểm sẽ được thêm động -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="calcPoint2">Điểm 2:</label>
-                        <select id="calcPoint2">
-                            <!-- Các điểm sẽ được thêm động -->
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Kết quả:</label>
-                    <div id="distanceResult" style="padding: 10px; background: #f5f5f5; border-radius: 4px; margin-top: 5px;"></div>
-                </div>
-            </div>
-            <div class="form-group" id="calcMidpoint" style="display: none;">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="calcMidpoint1">Điểm 1:</label>
-                        <select id="calcMidpoint1">
-                            <!-- Các điểm sẽ được thêm động -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="calcMidpoint2">Điểm 2:</label>
-                        <select id="calcMidpoint2">
-                            <!-- Các điểm sẽ được thêm động -->
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Kết quả:</label>
-                    <div id="midpointResult" style="padding: 10px; background: #f5f5f5; border-radius: 4px; margin-top: 5px;"></div>
-                </div>
-            </div>
-            <div class="action-buttons">
-                <button class="secondary-button" id="cancelCalculate">Hủy</button>
-                <button class="primary-button" id="confirmCalculate">Tính toán</button>
             </div>
         </div>
     </div>
@@ -1101,9 +1101,9 @@
         scene.add(createAxisLabel('Y', new THREE.Vector3(0, 3.5, 0), '#00ff00'));
         scene.add(createAxisLabel('Z', new THREE.Vector3(0, 0, 3.5), '#0000ff'));
 
-        // Mặt phẳng tọa độ OXY (z=0)
+        // Mặt phẳng tọa độ OXY (z=0) - SỬA LẠI ĐỂ NẰM NGANG
         const gridHelper = new THREE.GridHelper(10, 10);
-        gridHelper.rotation.x = Math.PI / 2; // Xoay để nằm trong mặt phẳng OXY
+        // KHÔNG xoay gridHelper - để nó nằm ngang theo mặt phẳng XZ
         scene.add(gridHelper);
 
         // Ánh sáng
@@ -1159,6 +1159,12 @@
         let originalMeshPosition = new THREE.Vector3();
         let originalMeshRotation = new THREE.Euler();
         let originalMeshScale = new THREE.Vector3();
+
+        // === BIẾN MỚI CHO TÍNH NĂNG TÍNH TOÁN ===
+        let calculationMode = false;
+        let selectedPoint1 = null;
+        let selectedPoint2 = null;
+        let hoveredObject = null;
 
         // Hàm tạo View Rotation Gizmo
         function createViewRotationGizmo() {
@@ -1390,6 +1396,118 @@
             createNewModel(shapeType);
         }
 
+        // Hàm bật/tắt chế độ tính toán
+        function toggleCalculationMode() {
+            calculationMode = !calculationMode;
+            
+            if (calculationMode) {
+                document.getElementById('calculationPanel').style.display = 'block';
+                document.getElementById('calculateTool').classList.add('active');
+                document.getElementById('infoText').textContent = 'Chế độ tính toán đã bật. Chọn điểm 1 và điểm 2.';
+            } else {
+                document.getElementById('calculationPanel').style.display = 'none';
+                document.getElementById('calculateTool').classList.remove('active');
+                selectedPoint1 = null;
+                selectedPoint2 = null;
+                document.getElementById('point1Name').textContent = 'Chưa chọn';
+                document.getElementById('point2Name').textContent = 'Chưa chọn';
+                document.getElementById('calculationResult').textContent = 'Kết quả sẽ hiển thị ở đây';
+            }
+            document.getElementById('infoPanel').style.display = 'block';
+        }
+
+        // Hàm chọn điểm cho tính toán
+        function selectPointForCalculation(pointName, pointNumber) {
+            if (!calculationMode) return;
+            
+            const point = points[pointName];
+            if (!point) return;
+            
+            if (pointNumber === 1) {
+                selectedPoint1 = pointName;
+                document.getElementById('point1Name').textContent = pointName;
+                document.getElementById('selectPoint1').classList.add('active');
+            } else {
+                selectedPoint2 = pointName;
+                document.getElementById('point2Name').textContent = pointName;
+                document.getElementById('selectPoint2').classList.add('active');
+            }
+            
+            document.getElementById('infoText').textContent = `Đã chọn điểm ${pointName} cho vị trí ${pointNumber}.`;
+            document.getElementById('infoPanel').style.display = 'block';
+        }
+
+        // Hàm tính toán kết quả
+        function calculateResult() {
+            if (!selectedPoint1 || !selectedPoint2) {
+                document.getElementById('calculationResult').textContent = 'Vui lòng chọn đủ 2 điểm';
+                return;
+            }
+            
+            const point1 = points[selectedPoint1];
+            const point2 = points[selectedPoint2];
+            const calculationType = document.getElementById('calculationType').value;
+            
+            let result = '';
+            
+            switch(calculationType) {
+                case 'distance':
+                    const distance = point1.distanceTo(point2);
+                    result = `Khoảng cách ${selectedPoint1}${selectedPoint2} = ${distance.toFixed(2)}`;
+                    break;
+                    
+                case 'midpoint':
+                    const midpoint = new THREE.Vector3();
+                    midpoint.addVectors(point1, point2).multiplyScalar(0.5);
+                    result = `Trung điểm M = (${midpoint.x.toFixed(2)}, ${midpoint.y.toFixed(2)}, ${midpoint.z.toFixed(2)})`;
+                    break;
+                    
+                case 'vector':
+                    const vector = new THREE.Vector3().subVectors(point2, point1);
+                    result = `Vector ${selectedPoint1}${selectedPoint2} = (${vector.x.toFixed(2)}, ${vector.y.toFixed(2)}, ${vector.z.toFixed(2)})`;
+                    break;
+            }
+            
+            document.getElementById('calculationResult').textContent = result;
+        }
+
+        // Hàm hiển thị tooltip
+        function showTooltip(content, x, y) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.textContent = content;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+            tooltip.style.display = 'block';
+        }
+
+        // Hàm ẩn tooltip
+        function hideTooltip() {
+            document.getElementById('tooltip').style.display = 'none';
+        }
+
+        // Hàm highlight object khi hover
+        function highlightObject(object) {
+            if (!object || object === hoveredObject) return;
+            
+            // Bỏ highlight object cũ
+            if (hoveredObject && hoveredObject.userData.originalMaterial) {
+                hoveredObject.material = hoveredObject.userData.originalMaterial;
+            }
+            
+            // Highlight object mới
+            hoveredObject = object;
+            if (hoveredObject && !hoveredObject.userData.isSelected) {
+                if (!hoveredObject.userData.originalMaterial) {
+                    hoveredObject.userData.originalMaterial = hoveredObject.material.clone();
+                }
+                
+                const highlightMaterial = hoveredObject.material.clone();
+                highlightMaterial.emissive = new THREE.Color(0x4444ff);
+                highlightMaterial.emissiveIntensity = 0.2;
+                hoveredObject.material = highlightMaterial;
+            }
+        }
+
         // Hàm tạo các cạnh cho hình khối
         function createEdges(edgeList) {
             const geometry = new THREE.BufferGeometry();
@@ -1434,16 +1552,16 @@
             });
             const cube = new THREE.Mesh(geometry, material);
             
-            // Thêm các điểm đỉnh
+            // Thêm các điểm đỉnh - SỬA LẠI ĐỂ PHÙ HỢP VỚI MẶT PHẲNG NẰM NGANG
             const half = FIXED_LENGTH / 2;
-            points['A'] = new THREE.Vector3(-half, -half, -half);
-            points['B'] = new THREE.Vector3(half, -half, -half);
-            points['C'] = new THREE.Vector3(half, -half, half);
-            points['D'] = new THREE.Vector3(-half, -half, half);
-            points['E'] = new THREE.Vector3(-half, half, -half);
-            points['F'] = new THREE.Vector3(half, half, -half);
-            points['G'] = new THREE.Vector3(half, half, half);
-            points['H'] = new THREE.Vector3(-half, half, half);
+            points['A'] = new THREE.Vector3(-half, 0, -half);
+            points['B'] = new THREE.Vector3(half, 0, -half);
+            points['C'] = new THREE.Vector3(half, 0, half);
+            points['D'] = new THREE.Vector3(-half, 0, half);
+            points['E'] = new THREE.Vector3(-half, FIXED_LENGTH, -half);
+            points['F'] = new THREE.Vector3(half, FIXED_LENGTH, -half);
+            points['G'] = new THREE.Vector3(half, FIXED_LENGTH, half);
+            points['H'] = new THREE.Vector3(-half, FIXED_LENGTH, half);
             
             // Tạo các cạnh
             const cubeEdges = [
@@ -1475,16 +1593,16 @@
             });
             const cuboid = new THREE.Mesh(geometry, material);
             
-            // Thêm các điểm đỉnh
+            // Thêm các điểm đỉnh - SỬA LẠI ĐỂ PHÙ HỢP VỚI MẶT PHẲNG NẰM NGANG
             const half = FIXED_LENGTH / 2;
-            points['A'] = new THREE.Vector3(-half, -half, -half);
-            points['B'] = new THREE.Vector3(half, -half, -half);
-            points['C'] = new THREE.Vector3(half, -half, half);
-            points['D'] = new THREE.Vector3(-half, -half, half);
-            points['E'] = new THREE.Vector3(-half, half, -half);
-            points['F'] = new THREE.Vector3(half, half, -half);
-            points['G'] = new THREE.Vector3(half, half, half);
-            points['H'] = new THREE.Vector3(-half, half, half);
+            points['A'] = new THREE.Vector3(-half, 0, -half);
+            points['B'] = new THREE.Vector3(half, 0, -half);
+            points['C'] = new THREE.Vector3(half, 0, half);
+            points['D'] = new THREE.Vector3(-half, 0, half);
+            points['E'] = new THREE.Vector3(-half, FIXED_LENGTH, -half);
+            points['F'] = new THREE.Vector3(half, FIXED_LENGTH, -half);
+            points['G'] = new THREE.Vector3(half, FIXED_LENGTH, half);
+            points['H'] = new THREE.Vector3(-half, FIXED_LENGTH, half);
             
             // Tạo các cạnh
             const cuboidEdges = [
@@ -1513,8 +1631,8 @@
             const vertices = new Float32Array([
                 0, 0, 0,           // A - gốc tọa độ
                 FIXED_LENGTH, 0, 0,           // B - trên trục OX
-                0, FIXED_LENGTH, 0,           // C - trên trục OY
-                0, 0, FIXED_LENGTH            // S - trên trục OZ
+                0, 0, FIXED_LENGTH,           // C - trên trục OZ
+                0, FIXED_LENGTH, 0            // S - trên trục OY
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -1537,11 +1655,11 @@
                 opacity: 0.7
             });
             
-            // Thêm các điểm đỉnh
+            // Thêm các điểm đỉnh - SỬA LẠI ĐỂ PHÙ HỢP VỚI MẶT PHẲNG NẰM NGANG
             points['A'] = new THREE.Vector3(0, 0, 0);
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
-            points['C'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
-            points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
+            points['C'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
+            points['S'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
             
             // Tạo các cạnh
             const tetraEdges = [
@@ -1579,8 +1697,8 @@
             const vertices = new Float32Array([
                 0, 0, 0,           // A - gốc tọa độ
                 FIXED_LENGTH, 0, 0,           // B - trên trục OX
-                FIXED_LENGTH/2, FIXED_LENGTH, 0,         // C - cân tại A
-                0, 0, FIXED_LENGTH            // S - trên trục OZ
+                FIXED_LENGTH/2, 0, FIXED_LENGTH,         // C - cân tại A
+                0, FIXED_LENGTH, 0            // S - trên trục OY
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -1603,11 +1721,11 @@
                 opacity: 0.7
             });
             
-            // Thêm các điểm đỉnh
+            // Thêm các điểm đỉnh - SỬA LẠI ĐỂ PHÙ HỢP VỚI MẶT PHẲNG NẰM NGANG
             points['A'] = new THREE.Vector3(0, 0, 0);
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
-            points['C'] = new THREE.Vector3(FIXED_LENGTH/2, FIXED_LENGTH, 0);
-            points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
+            points['C'] = new THREE.Vector3(FIXED_LENGTH/2, 0, FIXED_LENGTH);
+            points['S'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
             
             // Tạo các cạnh
             const tetraEdges = [
@@ -1637,11 +1755,11 @@
                 // Đáy dưới - trong OXY
                 0, 0, 0,
                 FIXED_LENGTH, 0, 0,
-                FIXED_LENGTH/2, height, 0,
-                // Đáy trên - dịch lên theo OZ
-                0, 0, FIXED_LENGTH,
-                FIXED_LENGTH, 0, FIXED_LENGTH,
-                FIXED_LENGTH/2, height, FIXED_LENGTH
+                FIXED_LENGTH/2, 0, height,
+                // Đáy trên - dịch lên theo OY
+                0, FIXED_LENGTH, 0,
+                FIXED_LENGTH, FIXED_LENGTH, 0,
+                FIXED_LENGTH/2, FIXED_LENGTH, height
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -1668,13 +1786,13 @@
                 opacity: 0.7
             });
             
-            // Thêm các điểm đỉnh
+            // Thêm các điểm đỉnh - SỬA LẠI ĐỂ PHÙ HỢP VỚI MẶT PHẲNG NẰM NGANG
             points['A'] = new THREE.Vector3(0, 0, 0);
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
-            points['C'] = new THREE.Vector3(FIXED_LENGTH/2, height, 0);
-            points['D'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
-            points['E'] = new THREE.Vector3(FIXED_LENGTH, 0, FIXED_LENGTH);
-            points['F'] = new THREE.Vector3(FIXED_LENGTH/2, height, FIXED_LENGTH);
+            points['C'] = new THREE.Vector3(FIXED_LENGTH/2, 0, height);
+            points['D'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
+            points['E'] = new THREE.Vector3(FIXED_LENGTH, FIXED_LENGTH, 0);
+            points['F'] = new THREE.Vector3(FIXED_LENGTH/2, FIXED_LENGTH, height);
             
             // Tạo các cạnh
             const prismEdges = [
@@ -1706,16 +1824,16 @@
             });
             const prism = new THREE.Mesh(geometry, material);
             
-            // Thêm các điểm đỉnh
+            // Thêm các điểm đỉnh - SỬA LẠI ĐỂ PHÙ HỢP VỚI MẶT PHẲNG NẰM NGANG
             const half = FIXED_LENGTH / 2;
-            points['A'] = new THREE.Vector3(-half, -half, -half);
-            points['B'] = new THREE.Vector3(half, -half, -half);
-            points['C'] = new THREE.Vector3(half, -half, half);
-            points['D'] = new THREE.Vector3(-half, -half, half);
-            points['E'] = new THREE.Vector3(-half, half, -half);
-            points['F'] = new THREE.Vector3(half, half, -half);
-            points['G'] = new THREE.Vector3(half, half, half);
-            points['H'] = new THREE.Vector3(-half, half, half);
+            points['A'] = new THREE.Vector3(-half, 0, -half);
+            points['B'] = new THREE.Vector3(half, 0, -half);
+            points['C'] = new THREE.Vector3(half, 0, half);
+            points['D'] = new THREE.Vector3(-half, 0, half);
+            points['E'] = new THREE.Vector3(-half, FIXED_LENGTH, -half);
+            points['F'] = new THREE.Vector3(half, FIXED_LENGTH, -half);
+            points['G'] = new THREE.Vector3(half, FIXED_LENGTH, half);
+            points['H'] = new THREE.Vector3(-half, FIXED_LENGTH, half);
             
             // Tạo các cạnh
             const prismEdges = [
@@ -1743,12 +1861,12 @@
             // Tọa độ các đỉnh - đáy trong OXY, đỉnh S trên trục OZ
             const vertices = new Float32Array([
                 // Đáy - trong OXY
-                -FIXED_LENGTH/2, -FIXED_LENGTH/2, 0,
-                FIXED_LENGTH/2, -FIXED_LENGTH/2, 0,
-                FIXED_LENGTH/2, FIXED_LENGTH/2, 0,
-                -FIXED_LENGTH/2, FIXED_LENGTH/2, 0,
-                // Đỉnh - trên trục OZ
-                0, 0, FIXED_LENGTH
+                -FIXED_LENGTH/2, 0, -FIXED_LENGTH/2,
+                FIXED_LENGTH/2, 0, -FIXED_LENGTH/2,
+                FIXED_LENGTH/2, 0, FIXED_LENGTH/2,
+                -FIXED_LENGTH/2, 0, FIXED_LENGTH/2,
+                // Đỉnh - trên trục OY
+                0, FIXED_LENGTH, 0
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -1773,12 +1891,12 @@
                 opacity: 0.7
             });
             
-            // Thêm các điểm đỉnh
-            points['A'] = new THREE.Vector3(-FIXED_LENGTH/2, -FIXED_LENGTH/2, 0);
-            points['B'] = new THREE.Vector3(FIXED_LENGTH/2, -FIXED_LENGTH/2, 0);
-            points['C'] = new THREE.Vector3(FIXED_LENGTH/2, FIXED_LENGTH/2, 0);
-            points['D'] = new THREE.Vector3(-FIXED_LENGTH/2, FIXED_LENGTH/2, 0);
-            points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
+            // Thêm các điểm đỉnh - SỬA LẠI ĐỂ PHÙ HỢP VỚI MẶT PHẲNG NẰM NGANG
+            points['A'] = new THREE.Vector3(-FIXED_LENGTH/2, 0, -FIXED_LENGTH/2);
+            points['B'] = new THREE.Vector3(FIXED_LENGTH/2, 0, -FIXED_LENGTH/2);
+            points['C'] = new THREE.Vector3(FIXED_LENGTH/2, 0, FIXED_LENGTH/2);
+            points['D'] = new THREE.Vector3(-FIXED_LENGTH/2, 0, FIXED_LENGTH/2);
+            points['S'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
             
             // Tạo các cạnh
             const pyramidEdges = [
@@ -1808,9 +1926,9 @@
                 // Đáy - trong OXY
                 0, 0, 0,
                 FIXED_LENGTH, 0, 0,
-                FIXED_LENGTH/2, height, 0,
-                // Đỉnh - trên trục OZ
-                FIXED_LENGTH/2, height/3, FIXED_LENGTH
+                FIXED_LENGTH/2, 0, height,
+                // Đỉnh - trên trục OY
+                FIXED_LENGTH/2, FIXED_LENGTH, height/3
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -1833,11 +1951,11 @@
                 opacity: 0.7
             });
             
-            // Thêm các điểm đỉnh
+            // Thêm các điểm đỉnh - SỬA LẠI ĐỂ PHÙ HỢP VỚI MẶT PHẲNG NẰM NGANG
             points['A'] = new THREE.Vector3(0, 0, 0);
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
-            points['C'] = new THREE.Vector3(FIXED_LENGTH/2, height, 0);
-            points['S'] = new THREE.Vector3(FIXED_LENGTH/2, height/3, FIXED_LENGTH);
+            points['C'] = new THREE.Vector3(FIXED_LENGTH/2, 0, height);
+            points['S'] = new THREE.Vector3(FIXED_LENGTH/2, FIXED_LENGTH, height/3);
             
             // Tạo các cạnh
             const tetraEdges = [
@@ -1863,7 +1981,7 @@
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
-            // Tạo các mặt phẳng mới
+            // Tạo các mặt phẳng mới với raycast enabled
             const positions = cube.geometry.attributes.position.array;
             const indices = cube.geometry.index.array;
             
@@ -1894,7 +2012,7 @@
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-                plane.userData = { type: 'plane', index: i };
+                plane.userData = { type: 'plane', index: i, selectable: true };
                 plane.visible = true;
                 scene.add(plane);
                 planeObjects.push(plane);
@@ -1907,7 +2025,7 @@
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
-            // Tạo các mặt phẳng mới
+            // Tạo các mặt phẳng mới với raycast enabled
             const positions = cuboid.geometry.attributes.position.array;
             const indices = cuboid.geometry.index.array;
             
@@ -1938,7 +2056,7 @@
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-                plane.userData = { type: 'plane', index: i };
+                plane.userData = { type: 'plane', index: i, selectable: true };
                 plane.visible = true;
                 scene.add(plane);
                 planeObjects.push(plane);
@@ -1951,7 +2069,7 @@
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
-            // Tạo 4 mặt phẳng
+            // Tạo 4 mặt phẳng với raycast enabled
             const planeNames = ['ABC', 'SAB', 'SBC', 'SCA'];
             
             for (let i = 0; i < 4; i++) {
@@ -1983,7 +2101,7 @@
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-                plane.userData = { type: 'plane', index: i, name: planeNames[i] };
+                plane.userData = { type: 'plane', index: i, name: planeNames[i], selectable: true };
                 plane.visible = true;
                 scene.add(plane);
                 planeObjects.push(plane);
@@ -1996,7 +2114,7 @@
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
-            // Tạo 5 mặt phẳng
+            // Tạo 5 mặt phẳng với raycast enabled
             const planeNames = ['ABC', 'DEF', 'ABED', 'BCFE', 'CADF'];
             
             for (let i = 0; i < 5; i++) {
@@ -2038,7 +2156,7 @@
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-                plane.userData = { type: 'plane', index: i, name: planeNames[i] };
+                plane.userData = { type: 'plane', index: i, name: planeNames[i], selectable: true };
                 plane.visible = true;
                 scene.add(plane);
                 planeObjects.push(plane);
@@ -2051,7 +2169,7 @@
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
-            // Tạo 5 mặt phẳng
+            // Tạo 5 mặt phẳng với raycast enabled
             const planeNames = ['ABCD', 'SAB', 'SBC', 'SCD', 'SDA'];
             
             for (let i = 0; i < 5; i++) {
@@ -2093,26 +2211,30 @@
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-                plane.userData = { type: 'plane', index: i, name: planeNames[i] };
+                plane.userData = { type: 'plane', index: i, name: planeNames[i], selectable: true };
                 plane.visible = true;
                 scene.add(plane);
                 planeObjects.push(plane);
             }
         }
 
-        // Hàm tạo các điểm hiển thị (hình tròn đầu mút)
+        // Hàm tạo các điểm hiển thị (hình tròn đầu mút) với raycast enabled
         function createPointSpheres() {
             // Xóa các điểm cũ
             pointObjects.forEach(obj => scene.remove(obj));
             pointObjects.length = 0;
             
-            // Tạo các điểm mới - hình tròn màu đen
+            // Tạo các điểm mới - hình tròn màu đen với raycast enabled
             Object.keys(points).forEach(key => {
-                const pointGeometry = new THREE.SphereGeometry(0.05, 16, 16);
-                const pointMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Màu đen
+                const pointGeometry = new THREE.SphereGeometry(0.08, 16, 16); // Tăng kích thước để dễ click
+                const pointMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0x000000,
+                    transparent: true,
+                    opacity: 0.8
+                });
                 const pointMesh = new THREE.Mesh(pointGeometry, pointMaterial);
                 pointMesh.position.copy(points[key]);
-                pointMesh.userData = { type: 'point', name: key, position: points[key] };
+                pointMesh.userData = { type: 'point', name: key, position: points[key], selectable: true };
                 scene.add(pointMesh);
                 pointObjects.push(pointMesh);
                 
@@ -2246,9 +2368,41 @@
             }
             
             if (currentModel) {
-                currentModel.userData = { type: 'model', movable: true, shapeType: shapeType };
+                currentModel.userData = { type: 'model', movable: true, shapeType: shapeType, selectable: true };
                 scene.add(currentModel);
+                
+                // Lưu vào localStorage
+                saveToLocalStorage();
             }
+        }
+
+        // Hàm lưu vào localStorage
+        function saveToLocalStorage() {
+            const sceneData = {
+                currentShape: currentModel ? currentModel.userData.shapeType : null,
+                points: points,
+                // Có thể thêm các dữ liệu khác cần lưu
+            };
+            localStorage.setItem('3dGeometryScene', JSON.stringify(sceneData));
+        }
+
+        // Hàm tải từ localStorage
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('3dGeometryScene');
+            if (savedData) {
+                const sceneData = JSON.parse(savedData);
+                if (sceneData.currentShape) {
+                    createNewModel(sceneData.currentShape);
+                }
+            }
+        }
+
+        // Hàm reset toàn bộ scene
+        function resetScene() {
+            clearCurrentModel();
+            localStorage.removeItem('3dGeometryScene');
+            document.getElementById('infoText').textContent = 'Đã reset toàn bộ scene.';
+            document.getElementById('infoPanel').style.display = 'block';
         }
 
         // Hàm thay đổi độ dài và góc của cạnh
@@ -2414,11 +2568,15 @@
             
             points[name] = new THREE.Vector3(x, y, z);
             
-            const pointGeometry = new THREE.SphereGeometry(0.05, 16, 16);
-            const pointMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const pointGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+            const pointMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x000000,
+                transparent: true,
+                opacity: 0.8
+            });
             const pointMesh = new THREE.Mesh(pointGeometry, pointMaterial);
             pointMesh.position.copy(points[name]);
-            pointMesh.userData = { type: 'point', name: name, position: points[name] };
+            pointMesh.userData = { type: 'point', name: name, position: points[name], selectable: true };
             scene.add(pointMesh);
             pointObjects.push(pointMesh);
             
@@ -2587,11 +2745,15 @@
             if (newPoint) {
                 points[pointName] = newPoint;
                 
-                const pointGeometry = new THREE.SphereGeometry(0.05, 16, 16);
-                const pointMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Màu đen
+                const pointGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+                const pointMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0x000000,
+                    transparent: true,
+                    opacity: 0.8
+                });
                 const pointMesh = new THREE.Mesh(pointGeometry, pointMaterial);
                 pointMesh.position.copy(newPoint);
-                pointMesh.userData = { type: 'point', name: pointName, position: newPoint };
+                pointMesh.userData = { type: 'point', name: pointName, position: newPoint, selectable: true };
                 scene.add(pointMesh);
                 pointObjects.push(pointMesh);
                 
@@ -2975,42 +3137,90 @@
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(mouse, camera);
             
-            // === XỬ LÝ DOUBLE CLICK ĐỂ CHỌN HÌNH KHỐI ===
+            // Tìm tất cả các object có thể chọn được
+            const selectableObjects = [
+                ...pointObjects.filter(obj => obj.userData.selectable),
+                ...planeObjects.filter(obj => obj.userData.selectable),
+                currentModel ? [currentModel] : []
+            ].flat();
+            
+            const intersects = raycaster.intersectObjects(selectableObjects, true);
+            
+            // Xử lý hover effect
+            if (intersects.length > 0) {
+                const object = intersects[0].object;
+                highlightObject(object);
+                
+                // Hiển thị tooltip
+                let tooltipContent = '';
+                if (object.userData.type === 'point') {
+                    tooltipContent = `Điểm ${object.userData.name}`;
+                } else if (object.userData.type === 'plane') {
+                    tooltipContent = `Mặt phẳng ${object.userData.name || '#' + object.userData.index}`;
+                } else if (object.userData.type === 'model') {
+                    tooltipContent = 'Hình khối';
+                }
+                
+                showTooltip(tooltipContent, clientX + 10, clientY - 10);
+            } else {
+                highlightObject(null);
+                hideTooltip();
+            }
+            
+            // Xử lý click
             if (event.type === 'click' || event.type === 'dblclick') {
                 const currentTime = new Date().getTime();
                 const tapLength = currentTime - lastTapTime;
                 
                 if (tapLength < doubleTapDelay && tapLength > 0) {
                     // Double click detected - chọn hình khối
-                    const modelIntersects = raycaster.intersectObject(currentModel);
-                    
-                    if (modelIntersects.length > 0) {
-                        selectMesh(currentModel);
-                        lastTapTime = 0;
-                        return;
+                    if (intersects.length > 0) {
+                        const object = intersects[0].object;
+                        if (object.userData.type === 'model') {
+                            selectMesh(object);
+                            lastTapTime = 0;
+                            return;
+                        }
                     }
                 } else {
+                    // Single click
+                    if (intersects.length > 0) {
+                        const object = intersects[0].object;
+                        
+                        if (calculationMode && object.userData.type === 'point') {
+                            // Chọn điểm cho tính toán
+                            if (!selectedPoint1) {
+                                selectPointForCalculation(object.userData.name, 1);
+                            } else if (!selectedPoint2) {
+                                selectPointForCalculation(object.userData.name, 2);
+                            }
+                            return;
+                        }
+                        
+                        if (object.userData.type === 'point') {
+                            const pointName = object.userData.name;
+                            const position = object.userData.position;
+                            
+                            if (activeTool === 'erase') {
+                                eraseObject(object);
+                                return;
+                            }
+                            
+                            document.getElementById('infoText').textContent = 
+                                `Điểm ${pointName}: (${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${position.z.toFixed(2)})`;
+                            document.getElementById('infoPanel').style.display = 'block';
+                            return;
+                        }
+                        
+                        if (object.userData.type === 'plane') {
+                            // Chọn mặt phẳng
+                            selectPlane(object);
+                            return;
+                        }
+                    }
+                    
                     lastTapTime = currentTime;
                 }
-            }
-            
-            // Kiểm tra xem có click vào điểm không
-            const pointIntersects = raycaster.intersectObjects(pointObjects.filter(obj => obj.userData.type === 'point'));
-            
-            if (pointIntersects.length > 0) {
-                const point = pointIntersects[0].object;
-                const pointName = point.userData.name;
-                const position = point.userData.position;
-                
-                if (activeTool === 'erase') {
-                    eraseObject(point);
-                    return;
-                }
-                
-                document.getElementById('infoText').textContent = 
-                    `Điểm ${pointName}: (${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${position.z.toFixed(2)})`;
-                document.getElementById('infoPanel').style.display = 'block';
-                return;
             }
             
             // Kiểm tra xem có click vào đường thẳng không (cạnh của hình khối)
@@ -3073,17 +3283,6 @@
                 }
                 
                 // Xử lý đường thẳng tự do (nếu có)
-                return;
-            }
-            
-            // Kiểm tra xem có click vào mặt phẳng không
-            const planeIntersects = raycaster.intersectObjects(planeObjects);
-            
-            if (planeIntersects.length > 0) {
-                const plane = planeIntersects[0].object;
-                
-                // Chọn mặt phẳng
-                selectPlane(plane);
                 return;
             }
             
@@ -3283,11 +3482,7 @@
             document.getElementById('vectorModal').style.display = 'flex';
             updatePointDropdowns();
         });
-        document.getElementById('calculateTool').addEventListener('click', function() {
-            document.getElementById('calculateModal').style.display = 'flex';
-            updatePointDropdowns();
-            updateVectorDropdowns();
-        });
+        document.getElementById('calculateTool').addEventListener('click', toggleCalculationMode);
         document.getElementById('addPointTool').addEventListener('click', showPointInputForm);
         document.getElementById('addLineTool').addEventListener('click', function() {
             if (!selectedPlane) {
@@ -3315,8 +3510,14 @@
             this.classList.add('active');
         });
 
+        document.getElementById('resetTool').addEventListener('click', resetScene);
+
         // Sự kiện cho View Rotation Gizmo
         document.getElementById('viewGizmo').addEventListener('click', toggleViewGizmo);
+
+        // Sự kiện cho Calculation Panel
+        document.getElementById('calculateButton').addEventListener('click', calculateResult);
+        document.getElementById('closeCalculation').addEventListener('click', toggleCalculationMode);
 
         // Xác nhận chỉnh sửa cạnh
         document.getElementById('confirmEdgeEdit').addEventListener('click', function() {
@@ -3404,56 +3605,6 @@
         // Hủy vẽ vector
         document.getElementById('cancelVector').addEventListener('click', function() {
             document.getElementById('vectorModal').style.display = 'none';
-        });
-
-        // Xác nhận tính toán
-        document.getElementById('confirmCalculate').addEventListener('click', function() {
-            const calcType = document.getElementById('calcType').value;
-            let result = null;
-            
-            switch(calcType) {
-                case 'vectorCoords':
-                    const startPoint = document.getElementById('calcStartPoint').value;
-                    const endPoint = document.getElementById('calcEndPoint').value;
-                    result = calculateGeometry('vectorCoords', { start: startPoint, end: endPoint });
-                    if (result) {
-                        document.getElementById('vectorCoordsResult').textContent = 
-                            `(${result.x.toFixed(2)}, ${result.y.toFixed(2)}, ${result.z.toFixed(2)})`;
-                    }
-                    break;
-                    
-                case 'vectorLength':
-                    const vectorName = document.getElementById('calcVector').value;
-                    result = calculateGeometry('vectorLength', { vector: vectorName });
-                    if (result) {
-                        document.getElementById('vectorLengthResult').textContent = result.toFixed(2);
-                    }
-                    break;
-                    
-                case 'distance':
-                    const point1 = document.getElementById('calcPoint1').value;
-                    const point2 = document.getElementById('calcPoint2').value;
-                    result = calculateGeometry('distance', { point1: point1, point2: point2 });
-                    if (result) {
-                        document.getElementById('distanceResult').textContent = result.toFixed(2);
-                    }
-                    break;
-                    
-                case 'midpoint':
-                    const midpoint1 = document.getElementById('calcMidpoint1').value;
-                    const midpoint2 = document.getElementById('calcMidpoint2').value;
-                    result = calculateGeometry('midpoint', { point1: midpoint1, point2: midpoint2 });
-                    if (result) {
-                        document.getElementById('midpointResult').textContent = 
-                            `(${result.x.toFixed(2)}, ${result.y.toFixed(2)}, ${result.z.toFixed(2)})`;
-                    }
-                    break;
-            }
-        });
-
-        // Hủy tính toán
-        document.getElementById('cancelCalculate').addEventListener('click', function() {
-            document.getElementById('calculateModal').style.display = 'none';
         });
 
         // Đóng modal khi nhấn nút đóng
@@ -3597,16 +3748,6 @@
             document.getElementById('vectorFromCoords').style.display = vectorType === 'fromCoords' ? 'block' : 'none';
         });
 
-        // Cập nhật giao diện khi thay đổi loại tính toán
-        document.getElementById('calcType').addEventListener('change', function() {
-            const calcType = this.value;
-            
-            document.getElementById('calcVectorCoords').style.display = calcType === 'vectorCoords' ? 'block' : 'none';
-            document.getElementById('calcVectorLength').style.display = calcType === 'vectorLength' ? 'block' : 'none';
-            document.getElementById('calcDistance').style.display = calcType === 'distance' ? 'block' : 'none';
-            document.getElementById('calcMidpoint').style.display = calcType === 'midpoint' ? 'block' : 'none';
-        });
-
         // Cập nhật giao diện khi thay đổi loại đường
         document.getElementById('lineType').addEventListener('change', function() {
             const lineType = this.value;
@@ -3641,6 +3782,7 @@
             // Bỏ chọn hình khối khi nhấn ESC
             if (event.key === 'Escape') {
                 deselectMesh();
+                toggleCalculationMode();
             }
         });
 
@@ -3649,6 +3791,7 @@
         // Thêm sự kiện cho cả mouse và touch
         canvas.addEventListener('click', onPointerEvent, false);
         canvas.addEventListener('dblclick', onPointerEvent, false);
+        canvas.addEventListener('mousemove', onPointerEvent, false);
         canvas.addEventListener('touchstart', onPointerEvent, false);
         canvas.addEventListener('touchend', function(e) {
             e.preventDefault();
@@ -3667,6 +3810,9 @@
 
         // Khởi tạo trạng thái ban đầu
         document.querySelector('.shape-option').click();
+
+        // Tải dữ liệu từ localStorage
+        loadFromLocalStorage();
 
         // Hàm animate
         function animate() {
