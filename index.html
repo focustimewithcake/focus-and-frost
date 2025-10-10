@@ -1329,7 +1329,7 @@
         let renamingPoint = null;
 
         // === BIẾN MỚI CHO GÓC NHÌN ===
-        let currentView = 'default'; // 'default' hoặc 'oxy'
+        let currentView = 'default'; // 'default', 'oxy', 'ozx', 'oyz'
 
         // Hàm tạo View Rotation Gizmo
         function createViewRotationGizmo() {
@@ -2086,6 +2086,22 @@
                 controls.update();
                 
                 document.getElementById('infoText').textContent = 'Góc nhìn OXY (từ trên xuống)';
+            } else if (viewType === 'ozx') {
+                // Góc nhìn OZX (trực diện)
+                camera.position.set(0, 0, 10);
+                camera.lookAt(0, 0, 0);
+                controls.target.set(0, 0, 0);
+                controls.update();
+                
+                document.getElementById('infoText').textContent = 'Góc nhìn OZX (trực diện)';
+            } else if (viewType === 'oyz') {
+                // Góc nhìn OYZ (bên hông)
+                camera.position.set(10, 0, 0);
+                camera.lookAt(0, 0, 0);
+                controls.target.set(0, 0, 0);
+                controls.update();
+                
+                document.getElementById('infoText').textContent = 'Góc nhìn OYZ (bên hông)';
             } else {
                 // Góc nhìn mặc định
                 camera.position.set(5, 5, 5);
@@ -4104,16 +4120,13 @@
             // Chuyển đổi giữa các góc nhìn
             if (currentView === 'default') {
                 changeView('oxy');
+            } else if (currentView === 'oxy') {
+                changeView('ozx');
+            } else if (currentView === 'ozx') {
+                changeView('oyz');
             } else {
                 changeView('default');
             }
-        });
-
-        // Sự kiện cho nút đóng panel bên
-        document.querySelectorAll('.close-side-panel').forEach(button => {
-            button.addEventListener('click', function() {
-                hideSidePanels();
-            });
         });
 
         // Xác nhận chỉnh sửa cạnh
