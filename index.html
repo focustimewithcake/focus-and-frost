@@ -36,6 +36,29 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .header-button:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         header h1 {
@@ -479,6 +502,95 @@
             outline-offset: 2px;
         }
 
+        /* Bounding box for selected mesh */
+        .bounding-box {
+            border: 2px dashed #FF6B6B;
+            position: absolute;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Rotation control */
+        .rotation-control {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #3A86FF;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            z-index: 200;
+            display: none;
+        }
+
+        /* Side panels */
+        .side-panel {
+            position: absolute;
+            top: 80px;
+            width: 300px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            padding: 15px;
+            backdrop-filter: blur(5px);
+            z-index: 50;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            display: none;
+        }
+
+        .left-panel {
+            left: 15px;
+        }
+
+        .right-panel {
+            right: 15px;
+        }
+
+        .side-panel h3 {
+            color: #3A86FF;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .side-panel .close-side-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        /* Point rename form */
+        .point-rename-form {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 100;
+            min-width: 200px;
+        }
+
+        .point-rename-form h3 {
+            color: #3A86FF;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .point-rename-form .action-buttons {
+            margin-top: 15px;
+        }
+
         @media (max-width: 768px) {
             .toolbar {
                 flex-wrap: wrap;
@@ -538,6 +650,12 @@
                 width: 45px;
                 height: 45px;
             }
+
+            .side-panel {
+                width: 90%;
+                left: 5%;
+                right: 5%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -558,14 +676,32 @@
                 width: 55px;
                 height: 55px;
             }
+
+            header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div id="app">
         <header>
-            <h1>Công cụ Vẽ Hình Không Gian 3D</h1>
-            <p>Nhấp đúp vào hình khối để di chuyển, nhấp vào đỉnh/điểm để xem tọa độ, nhấp vào cạnh để thay đổi độ dài/góc</p>
+            <div class="header-controls">
+                <button class="header-button" id="backButton">Quay lại</button>
+            </div>
+            <div class="header-title">
+                <h1>Công cụ Vẽ Hình Không Gian 3D</h1>
+                <p>Nhấp đúp vào hình khối để di chuyển, nhấp vào đỉnh/điểm để xem tọa độ, nhấp vào cạnh để thay đổi độ dài/góc</p>
+            </div>
+            <div class="header-controls">
+                <button class="header-button" id="viewButton">Góc nhìn</button>
+            </div>
         </header>
         
         <div class="main-container">
@@ -588,6 +724,12 @@
                         <text x="70" y="70" class="label label-z">Z</text>
                     </svg>
                 </div>
+                
+                <!-- Bounding box for selected mesh -->
+                <div class="bounding-box" id="boundingBox"></div>
+                
+                <!-- Rotation control for selected mesh -->
+                <div class="rotation-control" id="rotationControl">↻</div>
                 
                 <div class="tutorial">
                     <h3>Hướng dẫn sử dụng</h3>
@@ -657,40 +799,61 @@
                         <button class="primary-button" id="confirmEdgeEdit">Áp dụng</button>
                     </div>
                 </div>
+
+                <div class="point-rename-form" id="pointRenameForm">
+                    <h3>Đổi tên điểm</h3>
+                    <div class="form-group">
+                        <label for="renamePointName">Tên mới:</label>
+                        <input type="text" id="renamePointName" placeholder="Nhập tên mới" maxlength="2">
+                    </div>
+                    <div class="action-buttons">
+                        <button class="secondary-button" id="cancelRename">Hủy</button>
+                        <button class="primary-button" id="confirmRename">Xác nhận</button>
+                    </div>
+                </div>
                 
                 <div class="toolbar">
                     <button class="tool-button" id="createShapeTool" title="Tạo hình khối">
-                        <img src="https123" alt="Tạo hình">
                         <span>Tạo hình</span>
                     </button>
                     <button class="tool-button" id="addPointByCoordTool" title="Đặt điểm theo tọa độ">
-                        <img src="https123" alt="Đặt điểm">
                         <span>Đặt điểm</span>
                     </button>
                     <button class="tool-button" id="drawVectorTool" title="Vẽ vector">
-                        <img src="https123" alt="Vẽ vector">
                         <span>Vẽ vector</span>
                     </button>
                     <button class="tool-button" id="calculateTool" title="Tính toán">
-                        <img src="https123" alt="Tính toán">
                         <span>Tính</span>
                     </button>
                     <button class="tool-button hidden" id="addPointTool" title="Thêm điểm đặc biệt">
-                        <img src="https123" alt="Thêm điểm">
                         <span>Thêm điểm</span>
                     </button>
                     <button class="tool-button hidden" id="addLineTool" title="Tạo đường thẳng">
-                        <img src="https123" alt="Tạo đường">
                         <span>Tạo đường</span>
                     </button>
                     <button class="tool-button hidden" id="connectTool" title="Nối điểm">
-                        <img src="https123" alt="Nối đoạn">
                         <span>Nối đoạn</span>
                     </button>
                     <button class="tool-button" id="eraseTool" title="Xóa điểm/đường">
-                        <img src="https123" alt="Tẩy">
                         <span>Tẩy</span>
                     </button>
+                </div>
+
+                <!-- Side panels -->
+                <div class="side-panel left-panel" id="leftPanel">
+                    <button class="close-side-panel">&times;</button>
+                    <h3>Công cụ</h3>
+                    <div class="side-panel-content" id="leftPanelContent">
+                        <!-- Content will be dynamically filled -->
+                    </div>
+                </div>
+
+                <div class="side-panel right-panel" id="rightPanel">
+                    <button class="close-side-panel">&times;</button>
+                    <h3>Thông tin</h3>
+                    <div class="side-panel-content" id="rightPanelContent">
+                        <!-- Content will be dynamically filled -->
+                    </div>
                 </div>
             </section>
         </div>
@@ -705,43 +868,33 @@
             </div>
             <div class="shape-grid">
                 <button class="shape-option" data-shape="tetrahedron">
-                    <img src="https123" alt="Tứ diện thường">
                     <span>Tứ diện S.ABC</span>
                 </button>
                 <button class="shape-option" data-shape="tetrahedronRight">
-                    <img src="https123" alt="Tứ diện SABC (ABC vuông cân tại A)">
                     <span>Tứ diện S.ABC (ABC vuông cân tại A)</span>
                 </button>
                 <button class="shape-option" data-shape="tetrahedronRightA">
-                    <img src="https123" alt="Tứ diện SABC (ABC vuông tại A)">
                     <span>Tứ diện S.ABC (ABC vuông tại A)</span>
                 </button>
                 <button class="shape-option" data-shape="tetrahedronIsosceles">
-                    <img src="https123" alt="Tứ diện SABC (ABC cân tại A)">
                     <span>Tứ diện S.ABC (ABC cân tại A)</span>
                 </button>
                 <button class="shape-option" data-shape="cube">
-                    <img src="https123" alt="Hình lập phương">
                     <span>Hình lập phương</span>
                 </button>
                 <button class="shape-option" data-shape="cuboid">
-                    <img src="https123" alt="Hình hộp chữ nhật">
                     <span>Hình hộp chữ nhật</span>
                 </button>
                 <button class="shape-option" data-shape="triangularPrism">
-                    <img src="https123" alt="Lăng trụ đứng tam giác">
                     <span>Lăng trụ đứng tam giác</span>
                 </button>
                 <button class="shape-option" data-shape="quadrangularPrism">
-                    <img src="https123" alt="Lăng trụ đứng tứ giác">
                     <span>Lăng trụ đứng tứ giác</span>
                 </button>
                 <button class="shape-option" data-shape="pyramid">
-                    <img src="https123" alt="Chóp tứ giác đều">
                     <span>Chóp tứ giác đều</span>
                 </button>
                 <button class="shape-option" data-shape="triangularPyramid">
-                    <img src="https123" alt="Chóp tam giác đều">
                     <span>Chóp tam giác đều</span>
                 </button>
             </div>
@@ -818,7 +971,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="vectorX">Thành phần X:</label>
-                        <input type="number" id="vectorX" step="0.1" value="1">
+                        <input type="number" id="vectorX" step="0.1" value="0">
                     </div>
                     <div class="form-group">
                         <label for="vectorY">Thành phần Y:</label>
@@ -826,7 +979,7 @@
                     </div>
                     <div class="form-group">
                         <label for="vectorZ">Thành phần Z:</label>
-                        <input type="number" id="vectorZ" step="0.1" value="0">
+                        <input type="number" id="vectorZ" step="0.1" value="1">
                     </div>
                 </div>
                 <div class="form-group">
@@ -1167,6 +1320,17 @@
         let selectedPoint = null;
         let calculationPoints = [];
 
+        // === BIẾN MỚI CHO BOUNDING BOX VÀ ROTATION CONTROL ===
+        let boundingBox = null;
+        let rotationControl = null;
+        let isRotatingWithControl = false;
+
+        // === BIẾN MỚI CHO ĐỔI TÊN ĐIỂM ===
+        let renamingPoint = null;
+
+        // === BIẾN MỚI CHO GÓC NHÌN ===
+        let currentView = 'default'; // 'default' hoặc 'oxy'
+
         // Hàm tạo View Rotation Gizmo
         function createViewRotationGizmo() {
             const gizmoGroup = new THREE.Group();
@@ -1265,6 +1429,7 @@
                 if (selectedMesh.userData.originalMaterial) {
                     selectedMesh.material = selectedMesh.userData.originalMaterial;
                 }
+                hideBoundingBox();
             }
             
             // Chọn hình mới
@@ -1282,8 +1447,41 @@
             highlightMaterial.emissiveIntensity = 0.3;
             selectedMesh.material = highlightMaterial;
             
+            // Hiển thị bounding box và rotation control
+            showBoundingBox();
+            
             document.getElementById('infoText').textContent = `Đã chọn hình khối. Có thể di chuyển, xoay, phóng to/thu nhỏ.`;
             document.getElementById('infoPanel').style.display = 'block';
+        }
+
+        // Hàm hiển thị bounding box
+        function showBoundingBox() {
+            if (!selectedMesh) return;
+            
+            // Tạo bounding box
+            const box = new THREE.Box3().setFromObject(selectedMesh);
+            const size = box.getSize(new THREE.Vector3());
+            const center = box.getCenter(new THREE.Vector3());
+            
+            // Cập nhật vị trí bounding box
+            const boundingBoxElement = document.getElementById('boundingBox');
+            boundingBoxElement.style.display = 'block';
+            boundingBoxElement.style.width = `${size.x * 100}px`;
+            boundingBoxElement.style.height = `${size.y * 100}px`;
+            boundingBoxElement.style.left = `${50 + center.x * 50}%`;
+            boundingBoxElement.style.top = `${50 - center.y * 50}%`;
+            
+            // Hiển thị rotation control
+            const rotationControlElement = document.getElementById('rotationControl');
+            rotationControlElement.style.display = 'block';
+            rotationControlElement.style.left = `${50 + center.x * 50}%`;
+            rotationControlElement.style.top = `${50 - (center.y + size.y/2 + 0.2) * 50}%`;
+        }
+
+        // Hàm ẩn bounding box
+        function hideBoundingBox() {
+            document.getElementById('boundingBox').style.display = 'none';
+            document.getElementById('rotationControl').style.display = 'none';
         }
 
         // Hàm bỏ chọn hình khối
@@ -1297,6 +1495,7 @@
                 }
                 
                 selectedMesh = null;
+                hideBoundingBox();
                 
                 document.getElementById('infoText').textContent = 'Đã bỏ chọn hình khối.';
                 document.getElementById('infoPanel').style.display = 'block';
@@ -1326,6 +1525,9 @@
                 
                 // Cập nhật các điểm của hình khối
                 updateMeshPoints(selectedMesh, intersectionPoint.sub(originalMeshPosition));
+                
+                // Cập nhật bounding box
+                showBoundingBox();
             }
         }
 
@@ -1336,6 +1538,19 @@
             const sensitivity = 0.01;
             selectedMesh.rotation.y += mouseDelta.x * sensitivity;
             selectedMesh.rotation.x += mouseDelta.y * sensitivity;
+            
+            // Cập nhật bounding box
+            showBoundingBox();
+        }
+
+        // Hàm xoay hình khối với control
+        function rotateMeshWithControl(angle) {
+            if (!selectedMesh) return;
+            
+            selectedMesh.rotation.y += angle;
+            
+            // Cập nhật bounding box
+            showBoundingBox();
         }
 
         // Hàm phóng to/thu nhỏ hình khối
@@ -1349,6 +1564,9 @@
             const minScale = 0.1;
             const maxScale = 5.0;
             selectedMesh.scale.clampScalar(minScale, maxScale);
+            
+            // Cập nhật bounding box
+            showBoundingBox();
         }
 
         // Hàm cập nhật các điểm của hình khối khi di chuyển
@@ -1382,6 +1600,9 @@
             
             // Reset các điểm về vị trí gốc (cần implement tùy theo loại hình)
             resetMeshPoints(selectedMesh.userData.shapeType);
+            
+            // Cập nhật bounding box
+            showBoundingBox();
             
             document.getElementById('infoText').textContent = 'Đã reset hình khối về vị trí và kích thước gốc.';
             document.getElementById('infoPanel').style.display = 'block';
@@ -1565,6 +1786,9 @@
             } else {
                 // Hiển thị thông tin điểm
                 selectPoint(point);
+                
+                // Hiển thị form đổi tên điểm
+                showRenamePointForm(point);
             }
         }
 
@@ -1591,6 +1815,9 @@
             document.getElementById('infoText').textContent = 
                 `Đã chọn mặt phẳng ${plane.userData.name}`;
             document.getElementById('infoPanel').style.display = 'block';
+            
+            // Hiển thị panel bên phải với thông tin mặt phẳng
+            showRightPanel(plane);
         }
 
         // Hàm chọn điểm
@@ -1613,6 +1840,9 @@
             document.getElementById('infoText').textContent = 
                 `Điểm ${pointName}: (${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${position.z.toFixed(2)})`;
             document.getElementById('infoPanel').style.display = 'block';
+            
+            // Hiển thị panel bên phải với thông tin điểm
+            showRightPanel(point);
         }
 
         // Hàm xử lý chọn điểm cho tính toán
@@ -1669,6 +1899,9 @@
             selectedPoint = null;
             calculationPoints = [];
             document.getElementById('infoPanel').style.display = 'none';
+            
+            // Ẩn các panel
+            hideSidePanels();
         }
 
         // Hàm kiểm tra double click
@@ -1683,6 +1916,187 @@
                 lastTapTime = currentTime;
                 return false;
             }
+        }
+
+        // ========== CÁC HÀM MỚI CHO ĐỔI TÊN ĐIỂM ==========
+
+        // Hàm hiển thị form đổi tên điểm
+        function showRenamePointForm(point) {
+            renamingPoint = point;
+            const form = document.getElementById('pointRenameForm');
+            const canvasRect = canvas.getBoundingClientRect();
+            
+            // Đặt vị trí form gần điểm được chọn
+            const pointPosition = point.position.clone();
+            pointPosition.project(camera);
+            
+            form.style.display = 'block';
+            form.style.left = (pointPosition.x * canvasRect.width / 2 + canvasRect.width / 2 - 100) + 'px';
+            form.style.top = (-pointPosition.y * canvasRect.height / 2 + canvasRect.height / 2 - 50) + 'px';
+            
+            // Đặt tên hiện tại vào input
+            document.getElementById('renamePointName').value = point.userData.name;
+        }
+
+        // Hàm ẩn form đổi tên điểm
+        function hideRenamePointForm() {
+            document.getElementById('pointRenameForm').style.display = 'none';
+            renamingPoint = null;
+        }
+
+        // Hàm đổi tên điểm
+        function renamePoint(oldName, newName) {
+            if (points[newName]) {
+                alert('Tên điểm đã tồn tại!');
+                return false;
+            }
+            
+            // Cập nhật tên điểm trong đối tượng points
+            points[newName] = points[oldName];
+            delete points[oldName];
+            
+            // Cập nhật tên điểm trong đối tượng point
+            const pointObj = pointObjects.find(obj => 
+                obj.userData.type === 'point' && obj.userData.name === oldName);
+            if (pointObj) {
+                pointObj.userData.name = newName;
+            }
+            
+            // Cập nhật nhãn
+            const labelObj = pointObjects.find(obj => 
+                obj.userData.type === 'label' && obj.userData.name === oldName);
+            if (labelObj) {
+                scene.remove(labelObj);
+                const index = pointObjects.indexOf(labelObj);
+                if (index > -1) {
+                    pointObjects.splice(index, 1);
+                }
+                
+                const newLabel = createPointLabel(newName, points[newName]);
+                scene.add(newLabel);
+                pointObjects.push(newLabel);
+            }
+            
+            // Cập nhật các dropdown
+            updatePointDropdowns();
+            updateSegmentDropdowns();
+            updateTriangleDropdowns();
+            
+            return true;
+        }
+
+        // ========== CÁC HÀM MỚI CHO PANEL BÊN ==========
+
+        // Hàm hiển thị panel bên phải
+        function showRightPanel(object) {
+            const panel = document.getElementById('rightPanel');
+            const content = document.getElementById('rightPanelContent');
+            
+            // Xóa nội dung cũ
+            content.innerHTML = '';
+            
+            if (object.userData.type === 'point') {
+                // Hiển thị thông tin điểm
+                const pointName = object.userData.name;
+                const position = object.userData.position;
+                
+                content.innerHTML = `
+                    <h4>Điểm ${pointName}</h4>
+                    <p>Tọa độ:</p>
+                    <p>X: ${position.x.toFixed(2)}</p>
+                    <p>Y: ${position.y.toFixed(2)}</p>
+                    <p>Z: ${position.z.toFixed(2)}</p>
+                    <button class="primary-button" id="renamePointBtn" style="margin-top: 10px;">Đổi tên</button>
+                `;
+                
+                // Thêm sự kiện cho nút đổi tên
+                document.getElementById('renamePointBtn').addEventListener('click', function() {
+                    showRenamePointForm(object);
+                });
+            } else if (object.userData.type === 'plane') {
+                // Hiển thị thông tin mặt phẳng
+                const planeName = object.userData.name;
+                
+                content.innerHTML = `
+                    <h4>Mặt phẳng ${planeName}</h4>
+                    <p>Bạn có thể thêm điểm vào mặt phẳng này.</p>
+                    <div class="action-buttons" style="margin-top: 15px;">
+                        <button class="primary-button" id="addPointToPlaneBtn">Thêm điểm</button>
+                    </div>
+                `;
+                
+                // Thêm sự kiện cho nút thêm điểm
+                document.getElementById('addPointToPlaneBtn').addEventListener('click', function() {
+                    showPointInputForm();
+                });
+            } else if (object.userData.type === 'model') {
+                // Hiển thị thông tin hình khối
+                const shapeType = object.userData.shapeType;
+                let shapeName = '';
+                
+                switch(shapeType) {
+                    case 'cube': shapeName = 'Hình lập phương'; break;
+                    case 'cuboid': shapeName = 'Hình hộp chữ nhật'; break;
+                    case 'tetrahedron': shapeName = 'Tứ diện S.ABC'; break;
+                    case 'tetrahedronRight': shapeName = 'Tứ diện S.ABC (ABC vuông cân tại A)'; break;
+                    case 'tetrahedronRightA': shapeName = 'Tứ diện S.ABC (ABC vuông tại A)'; break;
+                    case 'tetrahedronIsosceles': shapeName = 'Tứ diện S.ABC (ABC cân tại A)'; break;
+                    case 'triangularPrism': shapeName = 'Lăng trụ đứng tam giác'; break;
+                    case 'quadrangularPrism': shapeName = 'Lăng trụ đứng tứ giác'; break;
+                    case 'pyramid': shapeName = 'Chóp tứ giác đều'; break;
+                    case 'triangularPyramid': shapeName = 'Chóp tam giác đều'; break;
+                }
+                
+                content.innerHTML = `
+                    <h4>${shapeName}</h4>
+                    <p>Vị trí: (${object.position.x.toFixed(2)}, ${object.position.y.toFixed(2)}, ${object.position.z.toFixed(2)})</p>
+                    <p>Xoay: (${object.rotation.x.toFixed(2)}, ${object.rotation.y.toFixed(2)}, ${object.rotation.z.toFixed(2)})</p>
+                    <p>Tỉ lệ: (${object.scale.x.toFixed(2)}, ${object.scale.y.toFixed(2)}, ${object.scale.z.toFixed(2)})</p>
+                    <div class="action-buttons" style="margin-top: 15px;">
+                        <button class="primary-button" id="resetMeshBtn">Reset</button>
+                    </div>
+                `;
+                
+                // Thêm sự kiện cho nút reset
+                document.getElementById('resetMeshBtn').addEventListener('click', function() {
+                    resetMesh();
+                });
+            }
+            
+            panel.style.display = 'block';
+        }
+
+        // Hàm ẩn các panel bên
+        function hideSidePanels() {
+            document.getElementById('leftPanel').style.display = 'none';
+            document.getElementById('rightPanel').style.display = 'none';
+        }
+
+        // ========== CÁC HÀM MỚI CHO GÓC NHÌN ==========
+
+        // Hàm thay đổi góc nhìn
+        function changeView(viewType) {
+            currentView = viewType;
+            
+            if (viewType === 'oxy') {
+                // Góc nhìn OXY (từ trên xuống)
+                camera.position.set(0, 10, 0);
+                camera.lookAt(0, 0, 0);
+                controls.target.set(0, 0, 0);
+                controls.update();
+                
+                document.getElementById('infoText').textContent = 'Góc nhìn OXY (từ trên xuống)';
+            } else {
+                // Góc nhìn mặc định
+                camera.position.set(5, 5, 5);
+                camera.lookAt(0, 0, 0);
+                controls.target.set(0, 0, 0);
+                controls.update();
+                
+                document.getElementById('infoText').textContent = 'Góc nhìn mặc định';
+            }
+            
+            document.getElementById('infoPanel').style.display = 'block';
         }
 
         // ========== KẾT THÚC CÁC HÀM MỚI ==========
@@ -2522,6 +2936,9 @@
             document.getElementById('addLineTool').classList.add('hidden');
             document.getElementById('connectTool').classList.add('hidden');
             selectedPlane = null;
+            
+            // Ẩn bounding box và rotation control
+            hideBoundingBox();
         }
 
         // Hàm tạo mô hình mới
@@ -3411,6 +3828,32 @@
 
         // Hàm xử lý sự kiện mouse down
         function onMouseDown(event) {
+            // Kiểm tra xem có click vào rotation control không
+            const rotationControl = document.getElementById('rotationControl');
+            if (rotationControl.style.display === 'block') {
+                const rect = rotationControl.getBoundingClientRect();
+                let clientX, clientY;
+                
+                if (event.type.includes('touch')) {
+                    if (event.touches.length > 0) {
+                        clientX = event.touches[0].clientX;
+                        clientY = event.touches[0].clientY;
+                    } else {
+                        return;
+                    }
+                } else {
+                    clientX = event.clientX;
+                    clientY = event.clientY;
+                }
+                
+                if (clientX >= rect.left && clientX <= rect.right && 
+                    clientY >= rect.top && clientY <= rect.bottom) {
+                    isRotatingWithControl = true;
+                    originalMousePosition.set(clientX, clientY);
+                    return;
+                }
+            }
+            
             // Chỉ xử lý nếu đang chọn hình khối
             if (!selectedMesh) return;
             
@@ -3447,6 +3890,34 @@
 
         // Hàm xử lý sự kiện mouse move
         function onMouseMove(event) {
+            if (isRotatingWithControl) {
+                let clientX, clientY;
+                
+                if (event.type.includes('touch')) {
+                    if (event.touches.length > 0) {
+                        clientX = event.touches[0].clientX;
+                        clientY = event.touches[0].clientY;
+                    } else {
+                        return;
+                    }
+                } else {
+                    clientX = event.clientX;
+                    clientY = event.clientY;
+                }
+                
+                const mouseDelta = new THREE.Vector2(
+                    clientX - originalMousePosition.x,
+                    clientY - originalMousePosition.y
+                );
+                
+                // Xoay hình khối với control
+                const angle = mouseDelta.x * 0.01;
+                rotateMeshWithControl(angle);
+                
+                originalMousePosition.set(clientX, clientY);
+                return;
+            }
+            
             if (!selectedMesh) return;
             
             let clientX, clientY;
@@ -3484,6 +3955,7 @@
             isDraggingMesh = false;
             isRotatingMesh = false;
             isScalingMesh = false;
+            isRotatingWithControl = false;
         }
 
         // Hàm xử lý sự kiện scroll (phóng to/thu nhỏ hình khối)
@@ -3620,6 +4092,29 @@
 
         // Sự kiện cho View Rotation Gizmo
         document.getElementById('viewGizmo').addEventListener('click', toggleViewGizmo);
+
+        // Sự kiện cho nút Quay lại
+        document.getElementById('backButton').addEventListener('click', function() {
+            // Quay lại góc nhìn mặc định
+            changeView('default');
+        });
+
+        // Sự kiện cho nút Góc nhìn
+        document.getElementById('viewButton').addEventListener('click', function() {
+            // Chuyển đổi giữa các góc nhìn
+            if (currentView === 'default') {
+                changeView('oxy');
+            } else {
+                changeView('default');
+            }
+        });
+
+        // Sự kiện cho nút đóng panel bên
+        document.querySelectorAll('.close-side-panel').forEach(button => {
+            button.addEventListener('click', function() {
+                hideSidePanels();
+            });
+        });
 
         // Xác nhận chỉnh sửa cạnh
         document.getElementById('confirmEdgeEdit').addEventListener('click', function() {
@@ -3758,6 +4253,32 @@
         document.getElementById('cancelCalculate').addEventListener('click', function() {
             document.getElementById('calculateModal').style.display = 'none';
         });
+
+        // Xác nhận đổi tên điểm
+        document.getElementById('confirmRename').addEventListener('click', function() {
+            const newName = document.getElementById('renamePointName').value.trim().toUpperCase();
+            
+            if (!newName) {
+                alert('Vui lòng nhập tên mới!');
+                return;
+            }
+            
+            if (renamingPoint) {
+                const oldName = renamingPoint.userData.name;
+                if (renamePoint(oldName, newName)) {
+                    hideRenamePointForm();
+                    
+                    // Cập nhật panel bên phải
+                    if (selectedPoint && selectedPoint.userData.name === oldName) {
+                        selectedPoint.userData.name = newName;
+                        showRightPanel(selectedPoint);
+                    }
+                }
+            }
+        });
+
+        // Hủy đổi tên điểm
+        document.getElementById('cancelRename').addEventListener('click', hideRenamePointForm);
 
         // Đóng modal khi nhấn nút đóng
         document.querySelectorAll('.close-button').forEach(button => {
