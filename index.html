@@ -1263,6 +1263,9 @@
         let selectedPoints = [];
         let selectedLine = null;
         let selectedEdge = null;
+        let selectedMesh = null; // Thêm biến này để theo dõi mesh được chọn
+        let selectedPlane = null; // Thêm biến này để theo dõi mặt phẳng được chọn
+        let renamingPoint = null; // Thêm biến này để theo dõi điểm đang đổi tên
 
         // Biến để xử lý double tap
         let lastTapTime = 0;
@@ -1382,6 +1385,22 @@
 
         // Hàm chọn hình khối (chỉ để hiển thị thông tin, không di chuyển)
         function selectMesh(mesh) {
+            // Bỏ chọn điểm
+            pointObjects.forEach(p => {
+                if (p.userData.type === 'point' && p.userData.isSelected) {
+                    p.userData.isSelected = false;
+                    highlightPoint(p, false);
+                }
+            });
+            
+            // Bỏ chọn mặt phẳng
+            planeObjects.forEach(p => {
+                if (p.userData.isSelected) {
+                    p.userData.isSelected = false;
+                    highlightPlane(p, false);
+                }
+            });
+
             // Bỏ chọn hình cũ
             if (selectedMesh) {
                 selectedMesh.userData.isSelected = false;
@@ -1446,8 +1465,10 @@
             edgeList.forEach(edge => {
                 const point1 = points[edge[0]];
                 const point2 = points[edge[1]];
-                vertices.push(point1.x, point1.y, point1.z);
-                vertices.push(point2.x, point2.y, point2.z);
+                if (point1 && point2) {
+                    vertices.push(point1.x, point1.y, point1.z);
+                    vertices.push(point2.x, point2.y, point2.z);
+                }
             });
             
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
@@ -1622,6 +1643,19 @@
                 }
             });
             
+            // Bỏ chọn điểm
+            pointObjects.forEach(p => {
+                if (p.userData.type === 'point' && p.userData.isSelected) {
+                    p.userData.isSelected = false;
+                    highlightPoint(p, false);
+                }
+            });
+
+            // Bỏ chọn hình khối
+            if (selectedMesh) {
+                deselectMesh();
+            }
+            
             // Chọn mặt phẳng mới
             plane.userData.isSelected = true;
             highlightPlane(plane, true);
@@ -1644,6 +1678,19 @@
                     highlightPoint(p, false);
                 }
             });
+            
+            // Bỏ chọn mặt phẳng
+            planeObjects.forEach(p => {
+                if (p.userData.isSelected) {
+                    p.userData.isSelected = false;
+                    highlightPlane(p, false);
+                }
+            });
+
+            // Bỏ chọn hình khối
+            if (selectedMesh) {
+                deselectMesh();
+            }
             
             // Chọn điểm mới
             point.userData.isSelected = true;
@@ -1895,12 +1942,17 @@
             });
             
             // Thêm sự kiện cho nút thêm vuông góc
-            document.getElementById('addPerpendicular').addEventListener('click', addPerpendicularCondition);
+            const addPerpendicularBtn = document.getElementById('addPerpendicular');
+            if (addPerpendicularBtn) {
+                addPerpendicularBtn.addEventListener('click', addPerpendicularCondition);
+            }
         }
 
         // Hàm cập nhật danh sách độ dài cạnh
         function updateEdgeLengthsList() {
             const edgeLengthsList = document.getElementById('edgeLengthsList');
+            if (!edgeLengthsList) return;
+            
             edgeLengthsList.innerHTML = '';
             
             if (!selectedMesh) return;
@@ -1964,6 +2016,8 @@
         // Hàm cập nhật danh sách tọa độ điểm
         function updatePointCoordinatesList() {
             const pointCoordinatesList = document.getElementById('pointCoordinatesList');
+            if (!pointCoordinatesList) return;
+            
             pointCoordinatesList.innerHTML = '';
             
             if (!selectedMesh) return;
@@ -2052,6 +2106,8 @@
         // Hàm cập nhật danh sách điều kiện vuông góc
         function updatePerpendicularList() {
             const perpendicularList = document.getElementById('perpendicularList');
+            if (!perpendicularList) return;
+            
             perpendicularList.innerHTML = '';
             
             if (perpendicularConditions.length === 0) {
@@ -3065,6 +3121,9 @@
                 
                 // Chọn hình khối mới tạo
                 selectMesh(model);
+                
+                // Cập nhật dropdown
+                updatePointDropdowns();
             }
             
             return model;
@@ -3469,6 +3528,9 @@
                 }
                 
                 delete points[object.userData.name];
+                
+                // Cập nhật dropdown
+                updatePointDropdowns();
             } else if (object.userData.type === 'line') {
                 scene.remove(object);
                 const index = lineObjects.indexOf(object);
@@ -3488,6 +3550,9 @@
                         delete vectors[key];
                     }
                 });
+                
+                // Cập nhật dropdown
+                updateVectorDropdowns();
             }
         }
 
