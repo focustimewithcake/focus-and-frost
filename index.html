@@ -889,32 +889,69 @@
                 <!-- Side panels -->
                 <div class="side-panel left-panel" id="leftPanel">
                     <h3>Hình khối</h3>
+                    <button class="close-side-panel" id="closeLeftPanel">&times;</button>
                     <div class="shape-list" id="shapeList">
                         <!-- Content will be dynamically filled -->
                     </div>
-                    <div class="shape-details" id="shapeDetails" style="display: none;">
-                        <h4>Thông tin hình khối</h4>
-                        <div class="form-group">
-                            <label for="shapeName">Tên hình:</label>
-                            <input type="text" id="shapeName" placeholder="Nhập tên hình">
-                        </div>
-                        <div class="edge-list" id="edgeList">
-                            <!-- Danh sách cạnh sẽ được thêm động -->
-                        </div>
-                        <div class="action-buttons">
-                            <button class="primary-button" id="updateShape">Cập nhật</button>
-                        </div>
+                    <div class="action-buttons">
+                        <button class="primary-button" id="clearAllShapes">Xóa tất cả</button>
                     </div>
                 </div>
 
                 <div class="side-panel right-panel" id="rightPanel">
-                    <button class="close-side-panel">&times;</button>
+                    <button class="close-side-panel" id="closeRightPanel">&times;</button>
                     <h3>Thông tin</h3>
                     <div class="side-panel-content" id="rightPanelContent">
                         <!-- Content will be dynamically filled -->
                     </div>
                 </div>
             </section>
+        </div>
+    </div>
+
+    <!-- Modal tạo hình khối -->
+    <div class="modal" id="createShapeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tạo hình khối</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="shape-grid">
+                <div class="shape-option" data-shape="cube">
+                    <span>Hình lập phương</span>
+                </div>
+                <div class="shape-option" data-shape="cuboid">
+                    <span>Hình hộp chữ nhật</span>
+                </div>
+                <div class="shape-option" data-shape="tetrahedron">
+                    <span>Tứ diện S.ABC</span>
+                </div>
+                <div class="shape-option" data-shape="tetrahedronRight">
+                    <span>Tứ diện S.ABC (ABC vuông cân tại A)</span>
+                </div>
+                <div class="shape-option" data-shape="tetrahedronRightA">
+                    <span>Tứ diện S.ABC (ABC vuông tại A)</span>
+                </div>
+                <div class="shape-option" data-shape="tetrahedronIsosceles">
+                    <span>Tứ diện S.ABC (ABC cân tại A)</span>
+                </div>
+                <div class="shape-option" data-shape="triangularPrism">
+                    <span>Lăng trụ đứng tam giác</span>
+                </div>
+                <div class="shape-option" data-shape="quadrangularPrism">
+                    <span>Lăng trụ đứng tứ giác</span>
+                </div>
+                <div class="shape-option" data-shape="pyramid">
+                    <span>Chóp tứ giác đều</span>
+                </div>
+                <div class="shape-option" data-shape="triangularPyramid">
+                    <span>Chóp tam giác đều</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="secondary-button" id="cancelCreateShape">Hủy</button>
+                <button class="primary-button" id="confirmCreateShape">Tạo hình</button>
+            </div>
         </div>
     </div>
 
@@ -1179,8 +1216,7 @@
         controls.zoomSpeed = 0.5;
 
         // Biến lưu trữ các đối tượng
-        let currentModel = null;
-        let selectedPlane = null;
+        const createdModels = []; // Lưu trữ tất cả các hình khối đã tạo
         const points = {};
         const vectors = {}; // Lưu trữ các vector
         const lines = [];
@@ -1234,6 +1270,7 @@
 
         // === BIẾN MỚI CHO DANH SÁCH HÌNH KHỐI ===
         let currentShapeId = null;
+        let shapeCounter = 0; // Đếm số lượng hình đã tạo để đặt vị trí
 
         // Hàm tạo View Rotation Gizmo
         function createViewRotationGizmo() {
@@ -1356,6 +1393,9 @@
             
             document.getElementById('infoText').textContent = `Đã chọn hình khối. Có thể di chuyển, xoay, phóng to/thu nhỏ.`;
             document.getElementById('infoPanel').style.display = 'block';
+            
+            // Hiển thị thông tin chi tiết trong panel bên phải
+            showRightPanel(mesh);
         }
 
         // Hàm hiển thị bounding box
@@ -1408,6 +1448,9 @@
                 setTimeout(() => {
                     document.getElementById('infoPanel').style.display = 'none';
                 }, 2000);
+                
+                // Ẩn panel bên phải
+                document.getElementById('rightPanel').style.display = 'none';
             }
         }
 
@@ -1432,6 +1475,9 @@
                 
                 // Cập nhật bounding box
                 showBoundingBox();
+                
+                // Cập nhật panel bên phải
+                showRightPanel(selectedMesh);
             }
         }
 
@@ -1445,6 +1491,9 @@
             
             // Cập nhật bounding box
             showBoundingBox();
+            
+            // Cập nhật panel bên phải
+            showRightPanel(selectedMesh);
         }
 
         // Hàm xoay hình khối với control
@@ -1455,6 +1504,9 @@
             
             // Cập nhật bounding box
             showBoundingBox();
+            
+            // Cập nhật panel bên phải
+            showRightPanel(selectedMesh);
         }
 
         // Hàm phóng to/thu nhỏ hình khối
@@ -1471,6 +1523,9 @@
             
             // Cập nhật bounding box
             showBoundingBox();
+            
+            // Cập nhật panel bên phải
+            showRightPanel(selectedMesh);
         }
 
         // Hàm cập nhật các điểm của hình khối khi di chuyển
@@ -1507,6 +1562,9 @@
             
             // Cập nhật bounding box
             showBoundingBox();
+            
+            // Cập nhật panel bên phải
+            showRightPanel(selectedMesh);
             
             document.getElementById('infoText').textContent = 'Đã reset hình khối về vị trí và kích thước gốc.';
             document.getElementById('infoPanel').style.display = 'block';
@@ -1943,6 +2001,7 @@
                     <p>Tỉ lệ: (${object.scale.x.toFixed(2)}, ${object.scale.y.toFixed(2)}, ${object.scale.z.toFixed(2)})</p>
                     <div class="action-buttons" style="margin-top: 15px;">
                         <button class="primary-button" id="resetMeshBtn">Reset</button>
+                        <button class="secondary-button" id="deleteMeshBtn">Xóa</button>
                     </div>
                 `;
                 
@@ -1950,9 +2009,39 @@
                 document.getElementById('resetMeshBtn').addEventListener('click', function() {
                     resetMesh();
                 });
+                
+                // Thêm sự kiện cho nút xóa
+                document.getElementById('deleteMeshBtn').addEventListener('click', function() {
+                    deleteMesh(object);
+                });
             }
             
             panel.style.display = 'block';
+        }
+
+        // Hàm xóa hình khối
+        function deleteMesh(mesh) {
+            if (!mesh) return;
+            
+            // Xóa mesh khỏi scene
+            scene.remove(mesh);
+            
+            // Xóa khỏi mảng createdModels
+            const index = createdModels.indexOf(mesh);
+            if (index > -1) {
+                createdModels.splice(index, 1);
+            }
+            
+            // Cập nhật danh sách hình khối trong panel bên trái
+            updateShapeList();
+            
+            // Bỏ chọn nếu đang chọn mesh này
+            if (selectedMesh === mesh) {
+                deselectMesh();
+            }
+            
+            document.getElementById('infoText').textContent = 'Đã xóa hình khối.';
+            document.getElementById('infoPanel').style.display = 'block';
         }
 
         // Hàm ẩn các panel bên
@@ -1990,28 +2079,38 @@
         // ========== CÁC HÀM MỚI CHO DANH SÁCH HÌNH KHỐI ==========
 
         // Hàm hiển thị danh sách hình khối
-        function displayShapeList() {
-            const shapeList = [
-                { id: 'tetrahedron', name: 'Tứ diện S.ABC' },
-                { id: 'tetrahedronRight', name: 'Tứ diện S.ABC (ABC vuông cân tại A)' },
-                { id: 'tetrahedronRightA', name: 'Tứ diện S.ABC (ABC vuông tại A)' },
-                { id: 'tetrahedronIsosceles', name: 'Tứ diện S.ABC (ABC cân tại A)' },
-                { id: 'cube', name: 'Hình lập phương' },
-                { id: 'cuboid', name: 'Hình hộp chữ nhật' },
-                { id: 'triangularPrism', name: 'Lăng trụ đứng tam giác' },
-                { id: 'quadrangularPrism', name: 'Lăng trụ đứng tứ giác' },
-                { id: 'pyramid', name: 'Chóp tứ giác đều' },
-                { id: 'triangularPyramid', name: 'Chóp tam giác đều' }
-            ];
-            
+        function updateShapeList() {
             const shapeListElement = document.getElementById('shapeList');
             shapeListElement.innerHTML = '';
             
-            shapeList.forEach(shape => {
+            if (createdModels.length === 0) {
+                shapeListElement.innerHTML = '<p>Chưa có hình khối nào được tạo.</p>';
+                return;
+            }
+            
+            createdModels.forEach((model, index) => {
                 const shapeElement = document.createElement('div');
                 shapeElement.className = 'shape-list-item';
-                shapeElement.textContent = shape.name;
-                shapeElement.dataset.id = shape.id;
+                
+                const shapeType = model.userData.shapeType;
+                let shapeName = '';
+                
+                switch(shapeType) {
+                    case 'cube': shapeName = 'Hình lập phương'; break;
+                    case 'cuboid': shapeName = 'Hình hộp chữ nhật'; break;
+                    case 'tetrahedron': shapeName = 'Tứ diện S.ABC'; break;
+                    case 'tetrahedronRight': shapeName = 'Tứ diện S.ABC (ABC vuông cân tại A)'; break;
+                    case 'tetrahedronRightA': shapeName = 'Tứ diện S.ABC (ABC vuông tại A)'; break;
+                    case 'tetrahedronIsosceles': shapeName = 'Tứ diện S.ABC (ABC cân tại A)'; break;
+                    case 'triangularPrism': shapeName = 'Lăng trụ đứng tam giác'; break;
+                    case 'quadrangularPrism': shapeName = 'Lăng trụ đứng tứ giác'; break;
+                    case 'pyramid': shapeName = 'Chóp tứ giác đều'; break;
+                    case 'triangularPyramid': shapeName = 'Chóp tam giác đều'; break;
+                }
+                
+                shapeElement.textContent = `${shapeName} ${index + 1}`;
+                shapeElement.dataset.index = index;
+                
                 shapeElement.addEventListener('click', () => {
                     // Xóa active class khỏi tất cả các item
                     document.querySelectorAll('.shape-list-item').forEach(item => {
@@ -2022,138 +2121,31 @@
                     shapeElement.classList.add('active');
                     
                     // Chọn hình khối
-                    selectShape(shape.id);
+                    selectMesh(model);
                 });
+                
                 shapeListElement.appendChild(shapeElement);
             });
         }
 
-        // Hàm chọn hình khối
-        function selectShape(shapeId) {
-            currentShapeId = shapeId;
-            
-            // Tạo hình khối mới
-            createNewModel(shapeId);
-            
-            // Hiển thị thông tin chi tiết
-            const shapeDetails = document.getElementById('shapeDetails');
-            shapeDetails.style.display = 'block';
-            
-            // Điền thông tin hình khối
-            const shapeName = document.querySelector(`.shape-list-item[data-id="${shapeId}"]`).textContent;
-            document.getElementById('shapeName').value = shapeName;
-            
-            // Hiển thị danh sách cạnh
-            displayEdgeList(shapeId);
-        }
-
-        // Hàm hiển thị danh sách cạnh
-        function displayEdgeList(shapeId) {
-            const edgeListElement = document.getElementById('edgeList');
-            edgeListElement.innerHTML = '';
-            
-            // Lấy danh sách cạnh dựa trên hình khối
-            const edges = getEdgesByShape(shapeId);
-            
-            edges.forEach(edge => {
-                const edgeElement = document.createElement('div');
-                edgeElement.className = 'edge-item';
-                
-                const label = document.createElement('label');
-                label.textContent = `${edge.name} =`;
-                
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.value = edge.value;
-                input.dataset.edge = edge.name;
-                
-                edgeElement.appendChild(label);
-                edgeElement.appendChild(input);
-                edgeListElement.appendChild(edgeElement);
-            });
-        }
-
-        // Hàm lấy danh sách cạnh của hình khối
-        function getEdgesByShape(shapeId) {
-            // Dựa vào shapeId và các điểm trong `points`, tính độ dài các cạnh
-            // Ví dụ với hình lập phương, các cạnh là AB, BC, CD, ...
-            // Trả về mảng các đối tượng { name: 'AB', value: '2' }
-            
-            // Đây là ví dụ cho hình lập phương
-            const edges = [];
-            let edgeNames = [];
-            
-            switch(shapeId) {
-                case 'cube':
-                case 'cuboid':
-                case 'quadrangularPrism':
-                    edgeNames = [
-                        'AB', 'BC', 'CD', 'DA',
-                        'EF', 'FG', 'GH', 'HE',
-                        'AE', 'BF', 'CG', 'DH'
-                    ];
-                    break;
-                case 'tetrahedron':
-                case 'tetrahedronRight':
-                case 'tetrahedronRightA':
-                case 'tetrahedronIsosceles':
-                case 'triangularPyramid':
-                    edgeNames = [
-                        'AB', 'BC', 'CA',
-                        'SA', 'SB', 'SC'
-                    ];
-                    break;
-                case 'triangularPrism':
-                    edgeNames = [
-                        'AB', 'BC', 'CA',
-                        'DE', 'EF', 'FD',
-                        'AD', 'BE', 'CF'
-                    ];
-                    break;
-                case 'pyramid':
-                    edgeNames = [
-                        'AB', 'BC', 'CD', 'DA',
-                        'SA', 'SB', 'SC', 'SD'
-                    ];
-                    break;
-            }
-            
-            edgeNames.forEach(edgeName => {
-                // Tính độ dài thực tế của cạnh
-                const point1 = points[edgeName[0]];
-                const point2 = points[edgeName[1]];
-                if (point1 && point2) {
-                    const length = point1.distanceTo(point2);
-                    // Hiển thị giá trị mặc định là 2 (theo yêu cầu)
-                    edges.push({ name: edgeName, value: '2' });
-                }
+        // Hàm xóa tất cả hình khối
+        function clearAllShapes() {
+            // Xóa tất cả các hình khối khỏi scene
+            createdModels.forEach(model => {
+                scene.remove(model);
             });
             
-            return edges;
-        }
-
-        // Hàm cập nhật hình khối
-        function updateShape() {
-            const shapeName = document.getElementById('shapeName').value;
+            // Xóa mảng createdModels
+            createdModels.length = 0;
             
-            // Cập nhật tên hình khối
-            if (currentModel) {
-                // Cập nhật tên hình khối (nếu cần)
-            }
+            // Cập nhật danh sách hình khối
+            updateShapeList();
             
-            // Cập nhật các cạnh
-            const edgeInputs = document.querySelectorAll('#edgeList input');
-            edgeInputs.forEach(input => {
-                const edgeName = input.dataset.edge;
-                const newValue = input.value;
-                
-                // Ở đây chúng ta chỉ lưu giá trị, không thay đổi kích thước thực tế
-                // Vì yêu cầu là cho phép nhập ẩn như 2A nhưng để dễ vẽ thì coi là 5
-                // Trong thực tế, chúng ta sẽ cần xử lý các biến và công thức
-                console.log(`Cạnh ${edgeName} = ${newValue}`);
-            });
+            // Bỏ chọn hình khối hiện tại
+            deselectMesh();
             
-            alert('Đã cập nhật thông tin hình khối!');
+            document.getElementById('infoText').textContent = 'Đã xóa tất cả hình khối.';
+            document.getElementById('infoPanel').style.display = 'block';
         }
 
         // ========== KẾT THÚC CÁC HÀM MỚI ==========
@@ -2916,7 +2908,7 @@
             const context = canvas.getContext('2d');
             
             // Tính toán kích thước canvas
-            const modelSize = currentModel ? getModelSize() : 1;
+            const modelSize = createdModels.length > 0 ? getModelSize() : 1;
             const fontSize = Math.max(12, Math.min(20, 16 / modelSize));
             const canvasSize = Math.max(32, Math.min(64, 48 / modelSize));
             
@@ -2946,95 +2938,76 @@
 
         // Hàm tính kích thước của mô hình
         function getModelSize() {
-            if (!currentModel) return 1;
+            if (createdModels.length === 0) return 1;
             
-            const box = new THREE.Box3().setFromObject(currentModel);
+            const box = new THREE.Box3();
+            createdModels.forEach(model => {
+                box.expandByObject(model);
+            });
             const size = new THREE.Vector3();
             box.getSize(size);
             
             return Math.max(size.x, size.y, size.z);
         }
 
-        // Hàm xóa mô hình hiện tại
-        function clearCurrentModel() {
-            if (currentModel) {
-                scene.remove(currentModel);
-                currentModel = null;
-            }
-            
-            // Xóa các điểm, đường và cạnh đã thêm
-            pointObjects.forEach(obj => scene.remove(obj));
-            lineObjects.forEach(obj => scene.remove(obj));
-            planeObjects.forEach(obj => scene.remove(obj));
-            edgeObjects.forEach(obj => scene.remove(obj));
-            vectorObjects.forEach(obj => scene.remove(obj));
-            
-            pointObjects.length = 0;
-            lineObjects.length = 0;
-            planeObjects.length = 0;
-            edgeObjects.length = 0;
-            vectorObjects.length = 0;
-            lines.length = 0;
-            
-            // Giữ lại các điểm gốc của mô hình
-            Object.keys(points).forEach(key => {
-                if (!['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'S', 'O1', 'O2'].includes(key)) {
-                    delete points[key];
-                }
-            });
-            
-            // Xóa các vector
-            Object.keys(vectors).forEach(key => {
-                delete vectors[key];
-            });
-            
-            selectedPlane = null;
-            
-            // Ẩn bounding box và rotation control
-            hideBoundingBox();
-        }
-
         // Hàm tạo mô hình mới
         function createNewModel(shapeType) {
-            clearCurrentModel();
+            let model = null;
             
             switch(shapeType) {
                 case 'cube':
-                    currentModel = createCube();
+                    model = createCube();
                     break;
                 case 'cuboid':
-                    currentModel = createCuboid();
+                    model = createCuboid();
                     break;
                 case 'tetrahedron':
-                    currentModel = createTetrahedron();
+                    model = createTetrahedron();
                     break;
                 case 'tetrahedronRight':
-                    currentModel = createTetrahedronRight();
+                    model = createTetrahedronRight();
                     break;
                 case 'tetrahedronRightA':
-                    currentModel = createTetrahedronRightA();
+                    model = createTetrahedronRightA();
                     break;
                 case 'tetrahedronIsosceles':
-                    currentModel = createTetrahedronIsosceles();
+                    model = createTetrahedronIsosceles();
                     break;
                 case 'triangularPrism':
-                    currentModel = createTriangularPrism();
+                    model = createTriangularPrism();
                     break;
                 case 'quadrangularPrism':
-                    currentModel = createQuadrangularPrism();
+                    model = createQuadrangularPrism();
                     break;
                 case 'pyramid':
-                    currentModel = createPyramid();
+                    model = createPyramid();
                     break;
                 case 'triangularPyramid':
-                    currentModel = createTriangularPyramid();
+                    model = createTriangularPyramid();
                     break;
             }
             
-            if (currentModel) {
-                currentModel.userData = { type: 'model', movable: true, shapeType: shapeType };
-                scene.add(currentModel);
+            if (model) {
+                // Đặt vị trí cho hình khối mới để không chồng chéo
+                // Tăng counter và đặt vị trí dựa trên counter
+                shapeCounter++;
+                const offsetX = (shapeCounter % 3) * 2 - 2; // -2, 0, 2
+                const offsetZ = Math.floor(shapeCounter / 3) * 2 - 2; // -2, 0, 2, ...
+                
+                model.position.set(offsetX, 0, offsetZ);
+                
+                model.userData = { type: 'model', movable: true, shapeType: shapeType };
+                scene.add(model);
+                createdModels.push(model);
+                
+                // Cập nhật danh sách hình khối trong panel bên trái
+                updateShapeList();
+                
+                // Chọn hình khối mới tạo
+                selectMesh(model);
             }
+            
+            return model;
         }
 
         // Hàm thay đổi độ dài và góc của cạnh
@@ -3095,63 +3068,66 @@
             edgeObjects.forEach(obj => scene.remove(obj));
             edgeObjects.length = 0;
             
-            if (!currentModel) return;
+            if (createdModels.length === 0) return;
             
-            const shapeType = currentModel.userData.shapeType;
-            let edges;
-            
-            // Tạo lại các cạnh dựa trên loại hình
-            switch(shapeType) {
-                case 'cube':
-                case 'cuboid':
-                case 'quadrangularPrism':
-                    edges = createEdges([
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-                    ]);
-                    break;
-                case 'tetrahedron':
-                case 'tetrahedronRight':
-                case 'tetrahedronRightA':
-                case 'tetrahedronIsosceles':
-                case 'triangularPyramid':
-                    edges = createEdges([
-                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                        ['A', 'S'], ['B', 'S'], ['C', 'S']
-                    ]);
-                    break;
-                case 'triangularPrism':
-                    edges = createEdges([
-                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                        ['D', 'E'], ['E', 'F'], ['F', 'D'],
-                        ['A', 'D'], ['B', 'E'], ['C', 'F']
-                    ]);
-                    break;
-                case 'pyramid':
-                    edges = createEdges([
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
-                    ]);
-                    break;
-            }
-            
-            if (edges) {
-                scene.add(edges);
-                edgeObjects.push(edges);
+            // Cập nhật cạnh cho hình khối được chọn
+            if (selectedMesh) {
+                const shapeType = selectedMesh.userData.shapeType;
+                let edges;
+                
+                // Tạo lại các cạnh dựa trên loại hình
+                switch(shapeType) {
+                    case 'cube':
+                    case 'cuboid':
+                    case 'quadrangularPrism':
+                        edges = createEdges([
+                            ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                            ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
+                            ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
+                        ]);
+                        break;
+                    case 'tetrahedron':
+                    case 'tetrahedronRight':
+                    case 'tetrahedronRightA':
+                    case 'tetrahedronIsosceles':
+                    case 'triangularPyramid':
+                        edges = createEdges([
+                            ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                            ['A', 'S'], ['B', 'S'], ['C', 'S']
+                        ]);
+                        break;
+                    case 'triangularPrism':
+                        edges = createEdges([
+                            ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                            ['D', 'E'], ['E', 'F'], ['F', 'D'],
+                            ['A', 'D'], ['B', 'E'], ['C', 'F']
+                        ]);
+                        break;
+                    case 'pyramid':
+                        edges = createEdges([
+                            ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                            ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
+                        ]);
+                        break;
+                }
+                
+                if (edges) {
+                    scene.add(edges);
+                    edgeObjects.push(edges);
+                }
             }
         }
 
         // Hàm cập nhật các mặt phẳng
         function updatePlanes() {
-            if (!currentModel) return;
+            if (!selectedMesh) return;
             
-            const shapeType = currentModel.userData.shapeType;
+            const shapeType = selectedMesh.userData.shapeType;
             
             if (shapeType === 'cube') {
-                createPlanesForCube(currentModel);
+                createPlanesForCube(selectedMesh);
             } else if (shapeType === 'cuboid') {
-                createPlanesForCuboid(currentModel);
+                createPlanesForCuboid(selectedMesh);
             } else if (['tetrahedron', 'tetrahedronRight', 'tetrahedronRightA', 'tetrahedronIsosceles', 'triangularPyramid'].includes(shapeType)) {
                 createPlanesForTetrahedron();
             } else if (shapeType === 'triangularPrism') {
@@ -3159,7 +3135,7 @@
             } else if (shapeType === 'pyramid') {
                 createPlanesForPyramid();
             } else if (shapeType === 'quadrangularPrism') {
-                createPlanesForCuboid(currentModel);
+                createPlanesForCuboid(selectedMesh);
             }
         }
 
@@ -3657,9 +3633,10 @@
             
             // Xử lý double click để chọn hình khối
             if (event.type === 'dblclick' || (event.type === 'click' && isDoubleClick())) {
-                const modelIntersects = raycaster.intersectObject(currentModel);
+                // Kiểm tra xem có click vào hình khối nào không
+                const modelIntersects = raycaster.intersectObjects(createdModels);
                 if (modelIntersects.length > 0) {
-                    selectMesh(currentModel);
+                    selectMesh(modelIntersects[0].object);
                     return;
                 }
             }
@@ -3925,9 +3902,9 @@
             renderer.setSize(canvas.clientWidth, canvas.clientHeight);
         }
 
-        // Hàm hiển thị modal đặt điểm theo tọa độ
-        function showPointByCoordModal() {
-            document.getElementById('pointByCoordModal').style.display = 'flex';
+        // Hàm hiển thị modal tạo hình khối
+        function showCreateShapeModal() {
+            document.getElementById('createShapeModal').style.display = 'flex';
         }
 
         // Hàm ẩn tất cả modal
@@ -3939,6 +3916,11 @@
                 document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
                 activeTool = null;
             }
+        }
+
+        // Hàm hiển thị modal đặt điểm theo tọa độ
+        function showPointByCoordModal() {
+            document.getElementById('pointByCoordModal').style.display = 'flex';
         }
 
         // Hàm hiển thị form thêm điểm
@@ -3963,9 +3945,7 @@
 
         // Gán sự kiện
         document.getElementById('createShapeTool').addEventListener('click', function() {
-            // Hiển thị danh sách hình khối trong bảng bên trái
-            displayShapeList();
-            document.getElementById('leftPanel').style.display = 'block';
+            showCreateShapeModal();
         });
         document.getElementById('addPointByCoordTool').addEventListener('click', function() {
             document.getElementById('pointByCoordModal').style.display = 'flex';
@@ -4027,15 +4007,53 @@
             document.getElementById('tutorialPanel').style.display = 'none';
         });
 
-        // Sự kiện cho nút đóng panel bên
-        document.querySelectorAll('.close-side-panel').forEach(button => {
-            button.addEventListener('click', function() {
-                hideSidePanels();
+        // Sự kiện cho nút đóng panel bên trái
+        document.getElementById('closeLeftPanel').addEventListener('click', function() {
+            document.getElementById('leftPanel').style.display = 'none';
+        });
+
+        // Sự kiện cho nút đóng panel bên phải
+        document.getElementById('closeRightPanel').addEventListener('click', function() {
+            document.getElementById('rightPanel').style.display = 'none';
+        });
+
+        // Sự kiện cho nút xóa tất cả hình khối
+        document.getElementById('clearAllShapes').addEventListener('click', clearAllShapes);
+
+        // Sự kiện cho các tùy chọn hình khối
+        document.querySelectorAll('.shape-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Xóa active class khỏi tất cả các option
+                document.querySelectorAll('.shape-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                // Thêm active class cho option được chọn
+                this.classList.add('active');
             });
         });
 
-        // Sự kiện cho nút cập nhật hình khối
-        document.getElementById('updateShape').addEventListener('click', updateShape);
+        // Xác nhận tạo hình khối
+        document.getElementById('confirmCreateShape').addEventListener('click', function() {
+            const selectedOption = document.querySelector('.shape-option.active');
+            if (!selectedOption) {
+                alert('Vui lòng chọn một hình khối!');
+                return;
+            }
+            
+            const shapeType = selectedOption.dataset.shape;
+            createNewModel(shapeType);
+            
+            document.getElementById('createShapeModal').style.display = 'none';
+            
+            // Hiển thị panel bên trái
+            document.getElementById('leftPanel').style.display = 'block';
+        });
+
+        // Hủy tạo hình khối
+        document.getElementById('cancelCreateShape').addEventListener('click', function() {
+            document.getElementById('createShapeModal').style.display = 'none';
+        });
 
         // Xác nhận chỉnh sửa cạnh
         document.getElementById('confirmEdgeEdit').addEventListener('click', function() {
@@ -4321,7 +4339,7 @@
         canvas.addEventListener('touchend', onMouseUp, false);
 
         // Khởi tạo trạng thái ban đầu
-        displayShapeList();
+        updateShapeList();
 
         // Hàm animate
         function animate() {
