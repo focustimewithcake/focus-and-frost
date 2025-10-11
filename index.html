@@ -378,6 +378,17 @@
             line-height: 1.4;
         }
 
+        .close-tutorial {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #777;
+        }
+
         .point-input-form {
             position: absolute;
             bottom: 100px;
@@ -800,6 +811,7 @@
                 <div class="rotation-control" id="rotationControl">↻</div>
                 
                 <div class="tutorial" id="tutorialPanel">
+                    <button class="close-tutorial">&times;</button>
                     <h3>Hướng dẫn sử dụng</h3>
                     <ul>
                         <li>Chọn hình khối từ bảng bên trái</li>
@@ -1192,42 +1204,16 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         // Trục Oxyz với nhãn
-        const axesHelper = new THREE.AxesHelper(3);
+        const axesHelper = new THREE.AxesHelper(5); // Tăng kích thước trục lên 5
         scene.add(axesHelper);
         
-        // Thêm nhãn cho trục
-        function createAxisLabel(text, position, color) {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = 64;
-            canvas.height = 32;
-            
-            context.fillStyle = 'rgba(255, 255, 255, 0.7)';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            
-            context.fillStyle = color;
-            context.font = 'bold 24px Arial';
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-            context.fillText(text, canvas.width / 2, canvas.height / 2);
-            
-            const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ map: texture });
-            const sprite = new THREE.Sprite(material);
-            sprite.position.copy(position);
-            sprite.scale.set(1, 0.5, 1);
-            
-            return sprite;
-        }
-        
-        // Thêm nhãn X, Y, Z
-        scene.add(createAxisLabel('X', new THREE.Vector3(3.5, 0, 0), '#ff0000'));
-        scene.add(createAxisLabel('Y', new THREE.Vector3(0, 3.5, 0), '#00ff00'));
-        scene.add(createAxisLabel('Z', new THREE.Vector3(0, 0, 3.5), '#0000ff'));
-
-        // Mặt phẳng tọa độ OXY (z=0)
-        const gridHelper = new THREE.GridHelper(10, 10);
-        gridHelper.rotation.x = Math.PI / 2; // Xoay để nằm trong mặt phẳng OXY
+        // Mặt phẳng OXY với lưới mờ
+        const gridSize = 20;
+        const gridDivisions = 20;
+        const gridHelper = new THREE.GridHelper(gridSize, gridDivisions, 0x888888, 0xcccccc);
+        gridHelper.position.y = -0.01; // Đặt lưới thấp hơn một chút để tránh trùng với các đối tượng khác
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.3;
         scene.add(gridHelper);
 
         // Ánh sáng
@@ -1369,6 +1355,31 @@
             gizmoGroup.name = 'viewGizmo';
             
             return gizmoGroup;
+        }
+
+        // Hàm tạo nhãn cho trục
+        function createAxisLabel(text, position, color) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 64;
+            canvas.height = 32;
+            
+            context.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            context.fillStyle = color;
+            context.font = 'bold 24px Arial';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(text, canvas.width / 2, canvas.height / 2);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(material);
+            sprite.position.copy(position);
+            sprite.scale.set(1, 0.5, 1);
+            
+            return sprite;
         }
 
         // Hàm bật/tắt View Rotation Gizmo
@@ -3652,6 +3663,11 @@
             document.getElementById('tutorialPanel').style.display = 'block';
         });
 
+        document.getElementById('createShapeTool').addEventListener('click', function() {
+            const leftPanel = document.getElementById('leftPanel');
+            leftPanel.style.display = leftPanel.style.display === 'none' ? 'block' : 'none';
+        });
+
         document.getElementById('addPointTool').addEventListener('click', function() {
             document.getElementById('addPointModal').style.display = 'flex';
             updatePointDropdowns();
@@ -3715,6 +3731,11 @@
             } else {
                 changeView('default');
             }
+        });
+
+        // Sự kiện cho nút đóng hướng dẫn
+        document.querySelector('.close-tutorial').addEventListener('click', function() {
+            document.getElementById('tutorialPanel').style.display = 'none';
         });
 
         // Xác nhận chỉnh sửa cạnh
