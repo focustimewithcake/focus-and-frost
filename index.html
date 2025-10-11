@@ -503,31 +503,6 @@
             outline-offset: 2px;
         }
 
-        /* Bounding box for selected mesh */
-        .bounding-box {
-            border: 2px dashed #FF6B6B;
-            position: absolute;
-            pointer-events: none;
-            display: none;
-        }
-
-        /* Rotation control */
-        .rotation-control {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background-color: #3A86FF;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            z-index: 200;
-            display: none;
-        }
-
         /* Side panels */
         .side-panel {
             position: absolute;
@@ -677,6 +652,44 @@
             font-size: 14px;
         }
 
+        /* Perpendicular condition styles */
+        .perpendicular-condition {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .condition-row {
+            margin-bottom: 10px;
+        }
+
+        .condition-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .condition-input input {
+            flex: 1;
+        }
+
+        .perpendicular-toggle {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .toggle-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .toggle-option input {
+            width: auto;
+        }
+
         @media (max-width: 768px) {
             .toolbar {
                 flex-wrap: wrap;
@@ -783,7 +796,7 @@
             </div>
             <div class="header-title">
                 <h1>Công cụ Vẽ Hình Không Gian 3D</h1>
-                <p>Nhấp đúp vào hình khối để di chuyển, nhấp vào đỉnh/điểm để xem tọa độ, nhấp vào cạnh để thay đổi độ dài/góc</p>
+                <p>Nhấp vào hình khối để xem thông tin, nhấp vào đỉnh/điểm để xem tọa độ, nhấp vào cạnh để thay đổi độ dài/góc</p>
             </div>
             <div class="header-controls">
                 <button class="header-button" id="viewButton">Góc nhìn</button>
@@ -812,18 +825,12 @@
                     </svg>
                 </div>
                 
-                <!-- Bounding box for selected mesh -->
-                <div class="bounding-box" id="boundingBox"></div>
-                
-                <!-- Rotation control for selected mesh -->
-                <div class="rotation-control" id="rotationControl">↻</div>
-                
                 <div class="tutorial" id="tutorialPanel">
                     <h3>Hướng dẫn sử dụng</h3>
                     <button class="close-side-panel" id="closeTutorial">&times;</button>
                     <ul>
                         <li>Chọn hình khối từ bảng bên trái</li>
-                        <li>Nhấp đúp để di chuyển hình khối</li>
+                        <li>Nhấp vào hình khối để xem thông tin</li>
                         <li>Nhấp vào điểm để xem tọa độ</li>
                         <li>Nhấp vào cạnh để thay đổi độ dài/góc</li>
                         <li>Dùng chuột để xoay và phóng to</li>
@@ -1252,8 +1259,6 @@
         const planeObjects = [];
         const edgeObjects = []; // Lưu các cạnh của hình khối
         const vectorObjects = []; // Lưu các vector
-        let isMovingModel = false;
-        let selectedModel = null;
         let activeTool = null;
         let selectedPoints = [];
         let selectedLine = null;
@@ -1266,29 +1271,15 @@
         // Độ dài cố định cho tất cả các hình
         const FIXED_LENGTH = 1;
 
-        // === BIẾN MỚI CHO TÍNH NĂNG XOAY GÓC NHÌN VÀ XOAY HÌNH KHỐI ===
+        // === BIẾN MỚI CHO TÍNH NĂNG XOAY GÓC NHÌN ===
         let viewGizmoActive = false;
         let viewGizmo = null;
-        let selectedMesh = null;
-        let isRotatingMesh = false;
-        let isDraggingMesh = false;
-        let originalMousePosition = new THREE.Vector2();
-        let originalMeshPosition = new THREE.Vector3();
-        let originalMeshRotation = new THREE.Euler();
 
         // === BIẾN MỚI CHO CHỌN MẶT PHẲNG VÀ ĐIỂM ===
         let hoveredPoint = null;
         let hoveredPlane = null;
         let selectedPoint = null;
         let calculationPoints = [];
-
-        // === BIẾN MỚI CHO BOUNDING BOX VÀ ROTATION CONTROL ===
-        let boundingBox = null;
-        let rotationControl = null;
-        let isRotatingWithControl = false;
-
-        // === BIẾN MỚI CHO ĐỔI TÊN ĐIỂM ===
-        let renamingPoint = null;
 
         // === BIẾN MỚI CHO GÓC NHÌN ===
         let currentView = 'default'; // 'default' hoặc 'oxy'
@@ -1389,7 +1380,7 @@
             document.getElementById('infoPanel').style.display = 'block';
         }
 
-        // Hàm chọn hình khối
+        // Hàm chọn hình khối (chỉ để hiển thị thông tin, không di chuyển)
         function selectMesh(mesh) {
             // Bỏ chọn hình cũ
             if (selectedMesh) {
@@ -1398,7 +1389,6 @@
                 if (selectedMesh.userData.originalMaterial) {
                     selectedMesh.material = selectedMesh.userData.originalMaterial;
                 }
-                hideBoundingBox();
             }
             
             // Chọn hình mới
@@ -1416,44 +1406,11 @@
             highlightMaterial.emissiveIntensity = 0.3;
             selectedMesh.material = highlightMaterial;
             
-            // Hiển thị bounding box và rotation control
-            showBoundingBox();
-            
-            document.getElementById('infoText').textContent = `Đã chọn hình khối. Có thể di chuyển, xoay.`;
+            document.getElementById('infoText').textContent = `Đã chọn hình khối.`;
             document.getElementById('infoPanel').style.display = 'block';
             
             // Hiển thị thông tin chi tiết trong panel bên trái
             updateLeftPanel(mesh);
-        }
-
-        // Hàm hiển thị bounding box
-        function showBoundingBox() {
-            if (!selectedMesh) return;
-            
-            // Tạo bounding box
-            const box = new THREE.Box3().setFromObject(selectedMesh);
-            const size = box.getSize(new THREE.Vector3());
-            const center = box.getCenter(new THREE.Vector3());
-            
-            // Cập nhật vị trí bounding box
-            const boundingBoxElement = document.getElementById('boundingBox');
-            boundingBoxElement.style.display = 'block';
-            boundingBoxElement.style.width = `${size.x * 100}px`;
-            boundingBoxElement.style.height = `${size.y * 100}px`;
-            boundingBoxElement.style.left = `${50 + center.x * 50}%`;
-            boundingBoxElement.style.top = `${50 - center.y * 50}%`;
-            
-            // Hiển thị rotation control
-            const rotationControlElement = document.getElementById('rotationControl');
-            rotationControlElement.style.display = 'block';
-            rotationControlElement.style.left = `${50 + center.x * 50}%`;
-            rotationControlElement.style.top = `${50 - (center.y + size.y/2 + 0.2) * 50}%`;
-        }
-
-        // Hàm ẩn bounding box
-        function hideBoundingBox() {
-            document.getElementById('boundingBox').style.display = 'none';
-            document.getElementById('rotationControl').style.display = 'none';
         }
 
         // Hàm bỏ chọn hình khối
@@ -1467,7 +1424,6 @@
                 }
                 
                 selectedMesh = null;
-                hideBoundingBox();
                 
                 document.getElementById('infoText').textContent = 'Đã bỏ chọn hình khối.';
                 document.getElementById('infoPanel').style.display = 'block';
@@ -1480,113 +1436,6 @@
                 // Ẩn panel bên trái
                 document.getElementById('leftPanel').style.display = 'none';
             }
-        }
-
-        // Hàm di chuyển hình khối
-        function moveMesh(mouse) {
-            if (!selectedMesh) return;
-            
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, camera);
-            
-            // Tạo mặt phẳng tại vị trí hiện tại của hình khối
-            const plane = new THREE.Plane();
-            const normal = camera.getWorldDirection(new THREE.Vector3());
-            plane.setFromNormalAndCoplanarPoint(normal, selectedMesh.position);
-            
-            const intersectionPoint = new THREE.Vector3();
-            if (raycaster.ray.intersectPlane(plane, intersectionPoint)) {
-                selectedMesh.position.copy(intersectionPoint);
-                
-                // Cập nhật các điểm của hình khối
-                updateMeshPoints(selectedMesh, intersectionPoint.sub(originalMeshPosition));
-                
-                // Cập nhật bounding box
-                showBoundingBox();
-                
-                // Cập nhật panel bên trái
-                updateLeftPanel(selectedMesh);
-            }
-        }
-
-        // Hàm xoay hình khối
-        function rotateMesh(mouseDelta) {
-            if (!selectedMesh) return;
-            
-            const sensitivity = 0.01;
-            selectedMesh.rotation.y += mouseDelta.x * sensitivity;
-            selectedMesh.rotation.x += mouseDelta.y * sensitivity;
-            
-            // Cập nhật bounding box
-            showBoundingBox();
-            
-            // Cập nhật panel bên trái
-            updateLeftPanel(selectedMesh);
-        }
-
-        // Hàm xoay hình khối với control
-        function rotateMeshWithControl(angle) {
-            if (!selectedMesh) return;
-            
-            selectedMesh.rotation.y += angle;
-            
-            // Cập nhật bounding box
-            showBoundingBox();
-            
-            // Cập nhật panel bên trái
-            updateLeftPanel(selectedMesh);
-        }
-
-        // Hàm cập nhật các điểm của hình khối khi di chuyển
-        function updateMeshPoints(mesh, offset) {
-            if (!mesh.userData.shapeType) return;
-            
-            // Cập nhật tất cả các điểm thuộc về hình khối này
-            Object.keys(points).forEach(key => {
-                if (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'S', 'O1', 'O2'].includes(key)) {
-                    points[key].add(offset);
-                }
-            });
-            
-            // Cập nhật lại các điểm hiển thị
-            createPointSpheres();
-            
-            // Cập nhật lại các mặt phẳng
-            updatePlanes();
-            
-            // Cập nhật lại các cạnh
-            updateEdges();
-        }
-
-        // Hàm reset hình khối về vị trí và kích thước gốc
-        function resetMesh() {
-            if (!selectedMesh) return;
-            
-            selectedMesh.position.set(0, 0, 0);
-            selectedMesh.rotation.set(0, 0, 0);
-            selectedMesh.scale.set(1, 1, 1);
-            
-            // Reset các điểm về vị trí gốc (cần implement tùy theo loại hình)
-            resetMeshPoints(selectedMesh.userData.shapeType);
-            
-            // Cập nhật bounding box
-            showBoundingBox();
-            
-            // Cập nhật panel bên trái
-            updateLeftPanel(selectedMesh);
-            
-            document.getElementById('infoText').textContent = 'Đã reset hình khối về vị trí và kích thước gốc.';
-            document.getElementById('infoPanel').style.display = 'block';
-        }
-
-        // Hàm reset các điểm của hình khối (cần implement chi tiết cho từng loại hình)
-        function resetMeshPoints(shapeType) {
-            // Xóa các điểm hiện tại
-            pointObjects.forEach(obj => scene.remove(obj));
-            pointObjects.length = 0;
-            
-            // Tạo lại hình khối để reset các điểm
-            createNewModel(shapeType);
         }
 
         // Hàm tạo các cạnh cho hình khối
@@ -1981,7 +1830,7 @@
                 case 'triangularPyramid': shapeName = 'Chóp tam giác đều'; break;
             }
             
-            // Tạo nội dung cho panel bên trái
+            // Tạo nội dung cho panel bên trái với điều kiện vuông góc mới
             let html = `
                 <h4>${shapeName}</h4>
                 <div class="edge-lengths">
@@ -1994,20 +1843,30 @@
                 </div>
                 <div class="perpendicular-section">
                     <h5>Điều kiện vuông góc:</h5>
+                    <div class="perpendicular-condition">
+                        <div class="condition-row">
+                            <label>Hai đường vuông góc:</label>
+                            <div class="perpendicular-toggle">
+                                <div class="toggle-option">
+                                    <input type="radio" id="perpendicularYes" name="perpendicular" value="yes">
+                                    <label for="perpendicularYes">Có</label>
+                                </div>
+                                <div class="toggle-option">
+                                    <input type="radio" id="perpendicularNo" name="perpendicular" value="no" checked>
+                                    <label for="perpendicularNo">Không</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="perpendicularDetails" style="display: none;">
+                            <div class="condition-input">
+                                <input type="text" id="perpendicularLine1" placeholder="Nhập đường thẳng/mặt phẳng">
+                                <span>⊥</span>
+                                <input type="text" id="perpendicularLine2" placeholder="Nhập đường thẳng/mặt phẳng">
+                            </div>
+                            <button class="primary-button" id="addPerpendicular">Thêm vuông góc</button>
+                        </div>
+                    </div>
                     <div class="perpendicular-list" id="perpendicularList"></div>
-                    <div class="form-group">
-                        <label for="perpendicularLine1">Đường thẳng 1:</label>
-                        <select id="perpendicularLine1">
-                            <!-- Các cạnh sẽ được thêm động -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="perpendicularLine2">Đường thẳng 2:</label>
-                        <select id="perpendicularLine2">
-                            <!-- Các cạnh sẽ được thêm động -->
-                        </select>
-                    </div>
-                    <button class="primary-button" id="addPerpendicular">Thêm vuông góc</button>
                 </div>
             `;
             
@@ -2020,8 +1879,20 @@
             // Cập nhật danh sách tọa độ điểm
             updatePointCoordinatesList();
             
-            // Cập nhật danh sách cạnh cho dropdown vuông góc
-            updatePerpendicularDropdowns();
+            // Cập nhật danh sách điều kiện vuông góc
+            updatePerpendicularList();
+            
+            // Thêm sự kiện cho nút radio
+            document.querySelectorAll('input[name="perpendicular"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const details = document.getElementById('perpendicularDetails');
+                    if (this.value === 'yes') {
+                        details.style.display = 'block';
+                    } else {
+                        details.style.display = 'none';
+                    }
+                });
+            });
             
             // Thêm sự kiện cho nút thêm vuông góc
             document.getElementById('addPerpendicular').addEventListener('click', addPerpendicularCondition);
@@ -2136,85 +2007,18 @@
             });
         }
 
-        // Hàm cập nhật danh sách cạnh cho dropdown vuông góc
-        function updatePerpendicularDropdowns() {
-            const line1Select = document.getElementById('perpendicularLine1');
-            const line2Select = document.getElementById('perpendicularLine2');
-            
-            // Xóa các tùy chọn cũ
-            line1Select.innerHTML = '';
-            line2Select.innerHTML = '';
-            
-            if (!selectedMesh) return;
-            
-            const shapeType = selectedMesh.userData.shapeType;
-            let edges = [];
-            
-            // Xác định các cạnh dựa trên loại hình
-            switch(shapeType) {
-                case 'cube':
-                case 'cuboid':
-                case 'quadrangularPrism':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-                    ];
-                    break;
-                case 'tetrahedron':
-                case 'tetrahedronRight':
-                case 'tetrahedronRightA':
-                case 'tetrahedronIsosceles':
-                case 'triangularPyramid':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                        ['A', 'S'], ['B', 'S'], ['C', 'S']
-                    ];
-                    break;
-                case 'triangularPrism':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                        ['D', 'E'], ['E', 'F'], ['F', 'D'],
-                        ['A', 'D'], ['B', 'E'], ['C', 'F']
-                    ];
-                    break;
-                case 'pyramid':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
-                    ];
-                    break;
-            }
-            
-            // Thêm các cạnh vào dropdown
-            edges.forEach(edge => {
-                const option1 = document.createElement('option');
-                option1.value = edge[0] + edge[1];
-                option1.textContent = edge[0] + edge[1];
-                line1Select.appendChild(option1);
-                
-                const option2 = document.createElement('option');
-                option2.value = edge[0] + edge[1];
-                option2.textContent = edge[0] + edge[1];
-                line2Select.appendChild(option2);
-            });
-            
-            // Cập nhật danh sách điều kiện vuông góc
-            updatePerpendicularList();
-        }
-
         // Hàm thêm điều kiện vuông góc
         function addPerpendicularCondition() {
-            const line1 = document.getElementById('perpendicularLine1').value;
-            const line2 = document.getElementById('perpendicularLine2').value;
+            const line1 = document.getElementById('perpendicularLine1').value.trim();
+            const line2 = document.getElementById('perpendicularLine2').value.trim();
             
             if (!line1 || !line2) {
-                alert('Vui lòng chọn cả hai đường thẳng!');
+                alert('Vui lòng nhập cả hai đường thẳng/mặt phẳng!');
                 return;
             }
             
             if (line1 === line2) {
-                alert('Hai đường thẳng phải khác nhau!');
+                alert('Hai đường thẳng/mặt phẳng phải khác nhau!');
                 return;
             }
             
@@ -2236,6 +2040,10 @@
             
             // Cập nhật danh sách hiển thị
             updatePerpendicularList();
+            
+            // Xóa nội dung input
+            document.getElementById('perpendicularLine1').value = '';
+            document.getElementById('perpendicularLine2').value = '';
             
             document.getElementById('infoText').textContent = `Đã thêm điều kiện: ${line1} ⊥ ${line2}`;
             document.getElementById('infoPanel').style.display = 'block';
@@ -2329,15 +2137,9 @@
                     <p>Xoay: (${object.rotation.x.toFixed(2)}, ${object.rotation.y.toFixed(2)}, ${object.rotation.z.toFixed(2)})</p>
                     <p>Tỉ lệ: (${object.scale.x.toFixed(2)}, ${object.scale.y.toFixed(2)}, ${object.scale.z.toFixed(2)})</p>
                     <div class="action-buttons" style="margin-top: 15px;">
-                        <button class="primary-button" id="resetMeshBtn">Reset</button>
                         <button class="secondary-button" id="deleteMeshBtn">Xóa</button>
                     </div>
                 `;
-                
-                // Thêm sự kiện cho nút reset
-                document.getElementById('resetMeshBtn').addEventListener('click', function() {
-                    resetMesh();
-                });
                 
                 // Thêm sự kiện cho nút xóa
                 document.getElementById('deleteMeshBtn').addEventListener('click', function() {
@@ -3254,7 +3056,7 @@
                 
                 model.position.set(offsetX, 0, offsetZ);
                 
-                model.userData = { type: 'model', movable: true, shapeType: shapeType };
+                model.userData = { type: 'model', movable: false, shapeType: shapeType };
                 scene.add(model);
                 createdModels.push(model);
                 
@@ -3892,16 +3694,6 @@
             // Xử lý hover trước khi xử lý click
             handleHover(mouse);
             
-            // Xử lý double click để chọn hình khối
-            if (event.type === 'dblclick' || (event.type === 'click' && isDoubleClick())) {
-                // Kiểm tra xem có click vào hình khối nào không
-                const modelIntersects = raycaster.intersectObjects(createdModels);
-                if (modelIntersects.length > 0) {
-                    selectMesh(modelIntersects[0].object);
-                    return;
-                }
-            }
-            
             // Xử lý click thông thường
             if (event.type === 'click') {
                 // Kiểm tra click vào điểm (sử dụng vùng chọn mở rộng)
@@ -3915,6 +3707,13 @@
                 const planeIntersects = raycaster.intersectObjects(planeObjects);
                 if (planeIntersects.length > 0) {
                     handlePlaneClick(planeIntersects[0].object);
+                    return;
+                }
+                
+                // Kiểm tra xem có click vào hình khối không
+                const modelIntersects = raycaster.intersectObjects(createdModels);
+                if (modelIntersects.length > 0) {
+                    selectMesh(modelIntersects[0].object);
                     return;
                 }
                 
@@ -3984,136 +3783,6 @@
                 // Click vào vùng trống - bỏ chọn tất cả
                 deselectAll();
             }
-        }
-
-        // Hàm xử lý sự kiện mouse down
-        function onMouseDown(event) {
-            // Kiểm tra xem có click vào rotation control không
-            const rotationControl = document.getElementById('rotationControl');
-            if (rotationControl.style.display === 'block') {
-                const rect = rotationControl.getBoundingClientRect();
-                let clientX, clientY;
-                
-                if (event.type.includes('touch')) {
-                    if (event.touches.length > 0) {
-                        clientX = event.touches[0].clientX;
-                        clientY = event.touches[0].clientY;
-                    } else {
-                        return;
-                    }
-                } else {
-                    clientX = event.clientX;
-                    clientY = event.clientY;
-                }
-                
-                if (clientX >= rect.left && clientX <= rect.right && 
-                    clientY >= rect.top && clientY <= rect.bottom) {
-                    isRotatingWithControl = true;
-                    originalMousePosition.set(clientX, clientY);
-                    return;
-                }
-            }
-            
-            // Chỉ xử lý nếu đang chọn hình khối
-            if (!selectedMesh) return;
-            
-            let clientX, clientY;
-            
-            if (event.type.includes('touch')) {
-                if (event.touches.length > 0) {
-                    clientX = event.touches[0].clientX;
-                    clientY = event.touches[0].clientY;
-                } else {
-                    return;
-                }
-            } else {
-                clientX = event.clientX;
-                clientY = event.clientY;
-            }
-            
-            const mouse = new THREE.Vector2();
-            mouse.x = (clientX / canvas.clientWidth) * 2 - 1;
-            mouse.y = - (clientY / canvas.clientHeight) * 2 + 1;
-            
-            originalMousePosition.copy(mouse);
-            originalMeshPosition.copy(selectedMesh.position);
-            originalMeshRotation.copy(selectedMesh.rotation);
-            
-            // Kiểm tra xem có nhấn Alt để xoay không
-            if (event.altKey) {
-                isRotatingMesh = true;
-            } else {
-                isDraggingMesh = true;
-            }
-        }
-
-        // Hàm xử lý sự kiện mouse move
-        function onMouseMove(event) {
-            if (isRotatingWithControl) {
-                let clientX, clientY;
-                
-                if (event.type.includes('touch')) {
-                    if (event.touches.length > 0) {
-                        clientX = event.touches[0].clientX;
-                        clientY = event.touches[0].clientY;
-                    } else {
-                        return;
-                    }
-                } else {
-                    clientX = event.clientX;
-                    clientY = event.clientY;
-                }
-                
-                const mouseDelta = new THREE.Vector2(
-                    clientX - originalMousePosition.x,
-                    clientY - originalMousePosition.y
-                );
-                
-                // Xoay hình khối với control
-                const angle = mouseDelta.x * 0.01;
-                rotateMeshWithControl(angle);
-                
-                originalMousePosition.set(clientX, clientY);
-                return;
-            }
-            
-            if (!selectedMesh) return;
-            
-            let clientX, clientY;
-            
-            if (event.type.includes('touch')) {
-                if (event.touches.length > 0) {
-                    clientX = event.touches[0].clientX;
-                    clientY = event.touches[0].clientY;
-                } else {
-                    return;
-                }
-            } else {
-                clientX = event.clientX;
-                clientY = event.clientY;
-            }
-            
-            const mouse = new THREE.Vector2();
-            mouse.x = (clientX / canvas.clientWidth) * 2 - 1;
-            mouse.y = - (clientY / canvas.clientHeight) * 2 + 1;
-            
-            if (isDraggingMesh) {
-                moveMesh(mouse);
-            } else if (isRotatingMesh) {
-                const mouseDelta = new THREE.Vector2(
-                    mouse.x - originalMousePosition.x,
-                    mouse.y - originalMousePosition.y
-                );
-                rotateMesh(mouseDelta);
-                originalMousePosition.copy(mouse);
-            }
-        }
-
-        // Hàm xử lý sự kiện mouse up
-        function onMouseUp() {
-            isDraggingMesh = false;
-            isRotatingMesh = false;
-            isRotatingWithControl = false;
         }
 
         // Hàm tìm cạnh dựa trên geometry
@@ -4556,8 +4225,7 @@
             // Reset góc nhìn khi nhấn R (chỉ khi không có hình khối được chọn)
             if (event.key === 'r' || event.key === 'R') {
                 if (selectedMesh) {
-                    // Nếu có hình khối được chọn, reset hình khối
-                    resetMesh();
+                    // Nếu có hình khối được chọn, không làm gì cả
                 } else {
                     // Nếu không có hình khối được chọn, reset camera
                     controls.reset();
@@ -4569,21 +4237,10 @@
         
         // Thêm sự kiện cho cả mouse và touch
         canvas.addEventListener('click', onPointerEvent, false);
-        canvas.addEventListener('dblclick', onPointerEvent, false);
         canvas.addEventListener('touchstart', onPointerEvent, false);
         canvas.addEventListener('touchend', function(e) {
             e.preventDefault();
         }, false);
-        
-        // Thêm sự kiện cho việc di chuyển và xoay hình khối
-        canvas.addEventListener('mousedown', onMouseDown, false);
-        canvas.addEventListener('mousemove', onMouseMove, false);
-        canvas.addEventListener('mouseup', onMouseUp, false);
-        
-        // Sự kiện touch cho mobile
-        canvas.addEventListener('touchstart', onMouseDown, false);
-        canvas.addEventListener('touchmove', onMouseMove, false);
-        canvas.addEventListener('touchend', onMouseUp, false);
 
         // Khởi tạo trạng thái ban đầu
         updateLeftPanel(null);
