@@ -7,7 +7,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <style>
-        /* CSS giữ nguyên như trước */
         * {
             margin: 0;
             padding: 0;
@@ -23,8 +22,828 @@
             touch-action: none;
         }
 
-        /* ... (giữ nguyên toàn bộ CSS) ... */
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
 
+        header {
+            background: linear-gradient(90deg, #3A86FF 0%, #2a75f0 100%);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .header-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        section {
+            width: 100%;
+            position: relative;
+        }
+
+        #sceneCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+        }
+
+        .toolbar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 12px 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        .tool-button {
+            background: linear-gradient(to bottom, #3A86FF, #2a75f0);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-button.active {
+            background: linear-gradient(to bottom, #FF6B6B, #ff5252);
+            transform: translateY(-2px);
+        }
+
+        .tool-button img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+            object-fit: contain;
+        }
+
+        .tool-button span {
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .tool-button.hidden {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            color: #3A86FF;
+            font-size: 1.4rem;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+            transition: color 0.3s;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        .shape-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .shape-option {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .shape-option:hover {
+            background-color: #e9ecef;
+            border-color: #3A86FF;
+        }
+
+        .shape-option.active {
+            background-color: #e7f1ff;
+            border-color: #3A86FF;
+            box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+        }
+
+        .shape-option img {
+            width: 28px;
+            height: 28px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+
+        .shape-option span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        select:focus, input:focus {
+            border-color: #3A86FF;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .primary-button {
+            background: linear-gradient(to bottom, #3A86FF, #2a75f0);
+            color: white;
+        }
+
+        .primary-button:hover {
+            background: linear-gradient(to bottom, #2a75f0, #1d68e0);
+        }
+
+        .secondary-button {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .secondary-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        #infoPanel {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            display: none;
+            backdrop-filter: blur(5px);
+            border-left: 4px solid #3A86FF;
+        }
+
+        #infoPanel h3 {
+            color: #3A86FF;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        #infoPanel p {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .tutorial {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 250px;
+            backdrop-filter: blur(5px);
+            border-left: 4px solid #FF6B6B;
+            display: none;
+        }
+
+        .tutorial h3 {
+            color: #FF6B6B;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .tutorial ul {
+            padding-left: 20px;
+        }
+
+        .tutorial li {
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .point-input-form {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: none;
+            backdrop-filter: blur(5px);
+            min-width: 300px;
+        }
+
+        .point-input-form h3 {
+            color: #3A86FF;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .point-input-form .form-row {
+            margin-bottom: 10px;
+        }
+
+        .point-input-form .action-buttons {
+            margin-top: 15px;
+        }
+
+        .edge-edit-form {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 100;
+            min-width: 250px;
+        }
+
+        .edge-edit-form h3 {
+            color: #3A86FF;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .edge-edit-form .form-row {
+            margin-bottom: 10px;
+        }
+
+        .edge-edit-form .action-buttons {
+            margin-top: 15px;
+        }
+
+        /* View Rotation Gizmo Styles */
+        .view-gizmo {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .view-gizmo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .view-gizmo.active {
+            background-color: rgba(58, 134, 255, 0.2);
+            box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.5);
+        }
+
+        .view-gizmo svg {
+            width: 60px;
+            height: 60px;
+        }
+
+        .view-gizmo .axis-x {
+            stroke: #ff0000;
+            stroke-width: 2;
+        }
+
+        .view-gizmo .axis-y {
+            stroke: #00ff00;
+            stroke-width: 2;
+        }
+
+        .view-gizmo .axis-z {
+            stroke: #0000ff;
+            stroke-width: 2;
+        }
+
+        .view-gizmo .label {
+            font-size: 10px;
+            font-weight: bold;
+            text-anchor: middle;
+        }
+
+        .view-gizmo .label-x {
+            fill: #ff0000;
+        }
+
+        .view-gizmo .label-y {
+            fill: #00ff00;
+        }
+
+        .view-gizmo .label-z {
+            fill: #0000ff;
+        }
+
+        /* Selection Highlight */
+        .selected-mesh {
+            outline: 2px solid #FF6B6B;
+            outline-offset: 2px;
+        }
+
+        /* Side panels */
+        .side-panel {
+            position: absolute;
+            top: 80px;
+            width: 300px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            padding: 15px;
+            backdrop-filter: blur(5px);
+            z-index: 50;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .left-panel {
+            left: 15px;
+        }
+
+        .right-panel {
+            right: 15px;
+        }
+
+        .side-panel h3 {
+            color: #3A86FF;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .side-panel .close-side-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        /* Point rename form */
+        .point-rename-form {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 100;
+            min-width: 200px;
+        }
+
+        .point-rename-form h3 {
+            color: #3A86FF;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .point-rename-form .action-buttons {
+            margin-top: 15px;
+        }
+
+        /* Shape list styles */
+        .shape-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .shape-list-item {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .shape-list-item:hover {
+            background-color: #e9ecef;
+            border-color: #3A86FF;
+        }
+
+        .shape-list-item.active {
+            background-color: #e7f1ff;
+            border-color: #3A86FF;
+            box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+        }
+
+        .shape-details {
+            margin-top: 15px;
+        }
+
+        .edge-list {
+            margin-top: 15px;
+        }
+
+        .edge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .edge-item label {
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .edge-item input {
+            width: 80px;
+            margin-left: 10px;
+        }
+
+        /* Perpendicular styles */
+        .perpendicular-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .perpendicular-list {
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .perpendicular-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .perpendicular-item button {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Perpendicular condition styles */
+        .perpendicular-condition {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .condition-row {
+            margin-bottom: 10px;
+        }
+
+        .condition-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .condition-input input {
+            flex: 1;
+        }
+
+        .perpendicular-toggle {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .toggle-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .toggle-option input {
+            width: auto;
+        }
+
+        /* Edge length labels */
+        .edge-length-label {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Back button styles */
+        .back-button {
+            background: #3A86FF;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #2a75f0;
+        }
+
+        .plane-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .plane-button {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .plane-button:hover {
+            background: #e9ecef;
+            border-color: #3A86FF;
+        }
+
+        .plane-button.active {
+            background: #e7f1ff;
+            border-color: #3A86FF;
+            box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 95%;
+                bottom: 10px;
+            }
+            
+            .tool-button {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .tool-button img {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .tool-button span {
+                font-size: 0.7rem;
+            }
+            
+            .shape-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tutorial {
+                display: none;
+            }
+            
+            header h1 {
+                font-size: 1.3rem;
+            }
+            
+            header p {
+                font-size: 0.8rem;
+            }
+            
+            .point-input-form {
+                width: 90%;
+                min-width: unset;
+            }
+            
+            .edge-edit-form {
+                width: 90%;
+                min-width: unset;
+            }
+            
+            .view-gizmo {
+                width: 60px;
+                height: 60px;
+                bottom: 10px;
+                left: 10px;
+            }
+            
+            .view-gizmo svg {
+                width: 45px;
+                height: 45px;
+            }
+
+            .side-panel {
+                width: 90%;
+                left: 5%;
+                right: 5%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .shape-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 20px 15px;
+            }
+            
+            .toolbar {
+                gap: 5px;
+                padding: 10px;
+            }
+            
+            .tool-button {
+                width: 55px;
+                height: 55px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -68,7 +887,7 @@
                     <button class="close-side-panel" id="closeTutorial">&times;</button>
                     <ul>
                         <li>Chọn hình khối từ bảng bên trái</li>
-                        <li>Nhấp đúp vào hình khối để xem thông tin</li>
+                        <li>Nhấp vào hình khối để xem thông tin</li>
                         <li>Nhấp vào điểm để xem tọa độ</li>
                         <li>Nhấp vào cạnh để thay đổi độ dài/góc</li>
                         <li>Dùng chuột để xoay và phóng to</li>
@@ -172,6 +991,7 @@
 
                 <div class="side-panel right-panel" id="rightPanel">
                     <button class="close-side-panel" id="closeRightPanel">&times;</button>
+                    <h3>Thông tin</h3>
                     <div class="side-panel-content" id="rightPanelContent">
                         <!-- Content will be dynamically filled -->
                     </div>
@@ -507,8 +1327,6 @@
         // Biến để xử lý double tap
         let lastTapTime = 0;
         const doubleTapDelay = 300;
-        let lastClickTime = 0;
-        let lastClickedObject = null;
 
         // Độ dài cố định cho tất cả các hình
         const FIXED_LENGTH = 1;
@@ -535,6 +1353,10 @@
 
         // === BIẾN MỚI CHO HIỂN THỊ ĐỘ DÀI CẠNH ===
         let edgeLabels = [];
+
+        // === BIẾN MỚI CHO PANEL BÊN TRÁI ===
+        let leftPanelMode = 'shapeInfo'; // 'shapeInfo' hoặc 'planeList'
+        let selectedPointForProjection = null;
 
         // Hàm tạo View Rotation Gizmo
         function createViewRotationGizmo() {
@@ -672,6 +1494,9 @@
             
             // Hiển thị thông tin chi tiết trong panel bên trái
             updateLeftPanel(mesh);
+            
+            // Đảm bảo panel bên trái hiển thị
+            document.getElementById('leftPanel').style.display = 'block';
         }
 
         // Hàm bỏ chọn hình khối
@@ -693,6 +1518,9 @@
                 setTimeout(() => {
                     document.getElementById('infoPanel').style.display = 'none';
                 }, 2000);
+                
+                // Ẩn panel bên trái
+                document.getElementById('leftPanel').style.display = 'none';
             }
         }
 
@@ -962,6 +1790,9 @@
                 
                 // Hiển thị form đổi tên điểm
                 showRenamePointForm(point);
+                
+                // Hiển thị danh sách mặt phẳng trong panel bên trái
+                showPlaneListForPoint(point);
             }
         }
 
@@ -1037,6 +1868,9 @@
             
             // Hiển thị panel bên phải với thông tin điểm
             showRightPanel(point);
+            
+            // Đảm bảo panel bên trái hiển thị
+            document.getElementById('leftPanel').style.display = 'block';
         }
 
         // Hàm xử lý chọn điểm cho tính toán
@@ -1099,16 +1933,15 @@
         }
 
         // Hàm kiểm tra double click
-        function isDoubleClick(currentTime, object) {
-            const clickLength = currentTime - lastClickTime;
+        function isDoubleClick() {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
             
-            if (clickLength < doubleTapDelay && object === lastClickedObject) {
-                lastClickTime = 0;
-                lastClickedObject = null;
+            if (tapLength < doubleTapDelay && tapLength > 0) {
+                lastTapTime = 0;
                 return true;
             } else {
-                lastClickTime = currentTime;
-                lastClickedObject = object;
+                lastTapTime = currentTime;
                 return false;
             }
         }
@@ -1191,6 +2024,7 @@
             if (!mesh) {
                 content.innerHTML = '<p>Chọn một hình khối để xem thông tin</p>';
                 panel.style.display = 'block';
+                leftPanelMode = 'shapeInfo';
                 return;
             }
             
@@ -1225,12 +2059,133 @@
             
             content.innerHTML = html;
             panel.style.display = 'block';
+            leftPanelMode = 'shapeInfo';
             
             // Cập nhật danh sách độ dài cạnh
             updateEdgeLengthsList();
             
             // Cập nhật danh sách tọa độ điểm
             updatePointCoordinatesList();
+        }
+
+        // Hàm hiển thị danh sách mặt phẳng cho điểm được chọn
+        function showPlaneListForPoint(point) {
+            const panel = document.getElementById('leftPanel');
+            const content = document.getElementById('shapeInfo');
+            
+            // Xóa nội dung cũ
+            content.innerHTML = '';
+            
+            // Thêm nút quay lại
+            const backButton = document.createElement('button');
+            backButton.textContent = '← Quay lại thông tin hình khối';
+            backButton.className = 'back-button';
+            backButton.addEventListener('click', function() {
+                updateLeftPanel(selectedMesh);
+            });
+            
+            content.appendChild(backButton);
+            
+            // Tiêu đề
+            const title = document.createElement('h4');
+            title.textContent = `Chọn mặt phẳng để chiếu điểm ${point.userData.name}`;
+            content.appendChild(title);
+            
+            // Lấy danh sách mặt phẳng của hình khối hiện tại
+            if (!selectedMesh) {
+                const noShapeMsg = document.createElement('p');
+                noShapeMsg.textContent = 'Không có hình khối được chọn.';
+                content.appendChild(noShapeMsg);
+                return;
+            }
+            
+            const shapeType = selectedMesh.userData.shapeType;
+            let planeList = [];
+            
+            // Xác định các mặt phẳng dựa trên loại hình
+            switch(shapeType) {
+                case 'cube':
+                case 'cuboid':
+                case 'quadrangularPrism':
+                    planeList = ['ABCD', 'EFGH', 'ADHE', 'BCGF', 'ABFE', 'DCGH'];
+                    break;
+                case 'tetrahedron':
+                case 'tetrahedronRight':
+                case 'tetrahedronRightA':
+                case 'tetrahedronIsosceles':
+                case 'triangularPyramid':
+                    planeList = ['ABC', 'SAB', 'SBC', 'SCA'];
+                    break;
+                case 'triangularPrism':
+                    planeList = ['ABC', 'DEF', 'ABED', 'BCFE', 'CADF'];
+                    break;
+                case 'pyramid':
+                    planeList = ['ABCD', 'SAB', 'SBC', 'SCD', 'SDA'];
+                    break;
+                default:
+                    planeList = [];
+            }
+            
+            // Tạo danh sách các mặt phẳng
+            const planeListElement = document.createElement('div');
+            planeListElement.className = 'plane-list';
+            
+            planeList.forEach(planeName => {
+                const planeButton = document.createElement('button');
+                planeButton.textContent = `Mặt phẳng ${planeName}`;
+                planeButton.className = 'plane-button';
+                planeButton.addEventListener('click', function() {
+                    // Tính hình chiếu của điểm lên mặt phẳng này
+                    const projectedPoint = calculateProjection(point, planeName);
+                    if (projectedPoint) {
+                        // Tạo điểm mới với tên là điểm gốc + "'"
+                        const newPointName = point.userData.name + "'";
+                        addPointByCoord(newPointName, projectedPoint.x, projectedPoint.y, projectedPoint.z);
+                        
+                        // Thông báo
+                        document.getElementById('infoText').textContent = 
+                            `Đã chiếu điểm ${point.userData.name} lên mặt phẳng ${planeName} thành điểm ${newPointName}`;
+                        document.getElementById('infoPanel').style.display = 'block';
+                    }
+                });
+                
+                planeListElement.appendChild(planeButton);
+            });
+            
+            content.appendChild(planeListElement);
+            
+            // Cập nhật trạng thái panel
+            leftPanelMode = 'planeList';
+            panel.style.display = 'block';
+            
+            // Lưu điểm được chọn để tính hình chiếu
+            selectedPointForProjection = point;
+        }
+
+        // Hàm tính hình chiếu của điểm lên mặt phẳng
+        function calculateProjection(point, planeName) {
+            // Lấy mặt phẳng từ planeObjects dựa trên tên
+            const plane = planeObjects.find(p => p.userData.name === planeName);
+            if (!plane) {
+                alert(`Không tìm thấy mặt phẳng ${planeName}`);
+                return null;
+            }
+            
+            // Lấy 3 điểm đầu tiên của mặt phẳng để xác định mặt phẳng
+            const positions = plane.geometry.attributes.position.array;
+            const p1 = new THREE.Vector3(positions[0], positions[1], positions[2]);
+            const p2 = new THREE.Vector3(positions[3], positions[4], positions[5]);
+            const p3 = new THREE.Vector3(positions[6], positions[7], positions[8]);
+            
+            // Tạo mặt phẳng từ 3 điểm
+            const planeGeometry = new THREE.Plane();
+            planeGeometry.setFromCoplanarPoints(p1, p2, p3);
+            
+            // Tính hình chiếu của điểm lên mặt phẳng
+            const projectedPoint = new THREE.Vector3();
+            planeGeometry.projectPoint(point.position, projectedPoint);
+            
+            return projectedPoint;
         }
 
         // Hàm cập nhật danh sách độ dài cạnh
@@ -1420,7 +2375,7 @@
                 const position = object.userData.position;
                 
                 content.innerHTML = `
-                    <h3>Điểm ${pointName}</h3>
+                    <h4>Điểm ${pointName}</h4>
                     <p>Tọa độ:</p>
                     <p>X: ${position.x.toFixed(2)}</p>
                     <p>Y: ${position.y.toFixed(2)}</p>
@@ -1437,7 +2392,7 @@
                 const planeName = object.userData.name;
                 
                 content.innerHTML = `
-                    <h3>Mặt phẳng ${planeName}</h3>
+                    <h4>Mặt phẳng ${planeName}</h4>
                     <p>Bạn có thể thêm điểm vào mặt phẳng này.</p>
                 `;
             } else if (object.userData.type === 'model') {
@@ -1459,7 +2414,7 @@
                 }
                 
                 content.innerHTML = `
-                    <h3>${shapeName}</h3>
+                    <h4>${shapeName}</h4>
                     <p>Vị trí: (${object.position.x.toFixed(2)}, ${object.position.y.toFixed(2)}, ${object.position.z.toFixed(2)})</p>
                     <p>Xoay: (${object.rotation.x.toFixed(2)}, ${object.rotation.y.toFixed(2)}, ${object.rotation.z.toFixed(2)})</p>
                     <p>Tỉ lệ: (${object.scale.x.toFixed(2)}, ${object.scale.y.toFixed(2)}, ${object.scale.z.toFixed(2)})</p>
@@ -1534,7 +2489,6 @@
         // Hàm ẩn các panel bên
         function hideSidePanels() {
             document.getElementById('rightPanel').style.display = 'none';
-            // KHÔNG ẩn panel bên trái ở đây để nó có thể mở lại được
         }
 
         // ========== CÁC HÀM MỚI CHO GÓC NHÌN ==========
@@ -3083,45 +4037,34 @@
             
             // Xử lý click thông thường
             if (event.type === 'click') {
-                const currentTime = new Date().getTime();
+                // Kiểm tra double click
+                if (isDoubleClick()) {
+                    // Xử lý double click để chọn hình khối
+                    const modelIntersects = raycaster.intersectObjects(createdModels);
+                    if (modelIntersects.length > 0) {
+                        selectMesh(modelIntersects[0].object);
+                        return;
+                    }
+                }
                 
                 // Kiểm tra click vào điểm (sử dụng vùng chọn mở rộng)
                 const nearestPoint = findNearestPoint(mouse);
                 if (nearestPoint) {
-                    if (isDoubleClick(currentTime, nearestPoint)) {
-                        // Double click vào điểm - hiển thị thông tin chi tiết
-                        selectPoint(nearestPoint);
-                        showRenamePointForm(nearestPoint);
-                    } else {
-                        handlePointClick(nearestPoint);
-                    }
+                    handlePointClick(nearestPoint);
                     return;
                 }
                 
                 // Kiểm tra click vào mặt phẳng
                 const planeIntersects = raycaster.intersectObjects(planeObjects);
                 if (planeIntersects.length > 0) {
-                    const plane = planeIntersects[0].object;
-                    if (isDoubleClick(currentTime, plane)) {
-                        // Double click vào mặt phẳng - hiển thị thông tin chi tiết
-                        handlePlaneClick(plane);
-                    } else {
-                        handlePlaneClick(plane);
-                    }
+                    handlePlaneClick(planeIntersects[0].object);
                     return;
                 }
                 
                 // Kiểm tra xem có click vào hình khối không
                 const modelIntersects = raycaster.intersectObjects(createdModels);
                 if (modelIntersects.length > 0) {
-                    const mesh = modelIntersects[0].object;
-                    if (isDoubleClick(currentTime, mesh)) {
-                        // Double click vào hình khối - hiển thị panel bên trái
-                        selectMesh(mesh);
-                        document.getElementById('leftPanel').style.display = 'block';
-                    } else {
-                        selectMesh(mesh);
-                    }
+                    selectMesh(modelIntersects[0].object);
                     return;
                 }
                 
