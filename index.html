@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1185,40 +1187,6 @@
         </div>
     </div>
 
-    <!-- Modal góc nhìn -->
-    <div class="modal" id="viewModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Chọn góc nhìn</h2>
-                <button class="close-button">&times;</button>
-            </div>
-            <div class="view-options-grid">
-                <div class="view-option" data-view="default">
-                    <span>Mặc định</span>
-                </div>
-                <div class="view-option" data-view="top">
-                    <span>Trên (OXY)</span>
-                </div>
-                <div class="view-option" data-view="front">
-                    <span>Trước (OXZ)</span>
-                </div>
-                <div class="view-option" data-view="right">
-                    <span>Phải (OYZ)</span>
-                </div>
-                <div class="view-option" data-view="isometric">
-                    <span>Trục đo</span>
-                </div>
-                <div class="view-option" data-view="back">
-                    <span>Sau</span>
-                </div>
-            </div>
-            <div class="action-buttons">
-                <button class="secondary-button" id="cancelView">Hủy</button>
-                <button class="primary-button" id="confirmView">Áp dụng</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         // Khởi tạo scene, camera, renderer
         const scene = new THREE.Scene();
@@ -1278,7 +1246,7 @@
         const gridHelper = new THREE.GridHelper(10, 10);
         // Đặt lưới nằm trong mặt phẳng OXY (z=0)
         gridHelper.position.set(0, 0, 0);
-        gridHelper.rotation.x = 0; // Không xoay, nằm ngang
+        gridHelper.rotation.x = -Math.PI/2; // Xoay để lưới nằm trong mặt phẳng OXY
         scene.add(gridHelper);
 
         // Ánh sáng
@@ -1352,12 +1320,12 @@
         // === BIẾN MỚI CHO TÍNH NĂNG GÓC NHÌN ===
         let viewIndex = 0;
         const views = [
-            { name: 'Mặc định', position: [5, 5, 5] },
-            { name: 'Trên (OXY)', position: [0, 0, 10] },
-            { name: 'Trước (OXZ)', position: [0, 10, 0] },
-            { name: 'Phải (OYZ)', position: [10, 0, 0] },
-            { name: 'Trục đo', position: [5, 5, 5] },
-            { name: 'Sau', position: [0, -10, 0] }
+            { name: 'default', displayName: 'Mặc định', position: [5, 5, 5] },
+            { name: 'top', displayName: 'Trên (OXY)', position: [0, 0, 10] },
+            { name: 'front', displayName: 'Trước (OXZ)', position: [0, 10, 0] },
+            { name: 'right', displayName: 'Phải (OYZ)', position: [10, 0, 0] },
+            { name: 'isometric', displayName: 'Trục đo', position: [5, 5, 5] },
+            { name: 'back', displayName: 'Sau', position: [0, -10, 0] }
         ];
 
         // Hàm thay đổi góc nhìn
@@ -3600,10 +3568,10 @@
             }
         }
 
-        // Hàm hiển thị modal góc nhìn
-        function showViewModal() {
-            document.getElementById('viewModal').style.display = 'flex';
-        }
+        // Hàm hiển thị modal góc nhìn (đã xóa vì không còn cần thiết)
+        // function showViewModal() {
+        //     document.getElementById('viewModal').style.display = 'flex';
+        // }
 
         // Gán sự kiện
         document.getElementById('createShapeTool').addEventListener('click', function() {
@@ -3631,8 +3599,11 @@
             changeView('default');
         });
 
-        // Sự kiện cho nút Góc nhìn
-        document.getElementById('viewButton').addEventListener('click', showViewModal);
+        // Sự kiện cho nút Góc nhìn - MỖI LẦN NHẤN SẼ THAY ĐỔI GÓC NHÌN
+        document.getElementById('viewButton').addEventListener('click', function() {
+            viewIndex = (viewIndex + 1) % views.length;
+            changeView(views[viewIndex].name);
+        });
 
         // Sự kiện cho nút Hướng dẫn
         document.getElementById('helpButton').addEventListener('click', function() {
@@ -3649,19 +3620,6 @@
             option.addEventListener('click', function() {
                 // Xóa active class khỏi tất cả các option
                 document.querySelectorAll('.shape-option').forEach(opt => {
-                    opt.classList.remove('active');
-                });
-                
-                // Thêm active class cho option được chọn
-                this.classList.add('active');
-            });
-        });
-
-        // Sự kiện cho các tùy chọn góc nhìn
-        document.querySelectorAll('.view-option').forEach(option => {
-            option.addEventListener('click', function() {
-                // Xóa active class khỏi tất cả các option
-                document.querySelectorAll('.view-option').forEach(opt => {
                     opt.classList.remove('active');
                 });
                 
@@ -3775,25 +3733,6 @@
         // Hủy vẽ vector
         document.getElementById('cancelVector').addEventListener('click', function() {
             document.getElementById('vectorModal').style.display = 'none';
-        });
-
-        // Xác nhận góc nhìn
-        document.getElementById('confirmView').addEventListener('click', function() {
-            const selectedOption = document.querySelector('.view-option.active');
-            if (!selectedOption) {
-                alert('Vui lòng chọn một góc nhìn!');
-                return;
-            }
-            
-            const viewType = selectedOption.dataset.view;
-            changeView(viewType);
-            
-            document.getElementById('viewModal').style.display = 'none';
-        });
-
-        // Hủy góc nhìn
-        document.getElementById('cancelView').addEventListener('click', function() {
-            document.getElementById('viewModal').style.display = 'none';
         });
 
         // Đóng modal khi nhấn nút đóng
@@ -3934,4 +3873,4 @@
         animate();
     </script>
 </body>
-</html>
+</html> 
