@@ -449,6 +449,7 @@
             z-index: 50;
             max-height: calc(100vh - 160px);
             overflow-y: auto;
+            transition: all 0.3s ease;
         }
 
         .left-panel {
@@ -788,6 +789,73 @@
             font-weight: 500;
         }
 
+        /* Toggle button for left panel */
+        .toggle-left-panel {
+            position: absolute;
+            top: 80px;
+            left: 15px;
+            background: #3A86FF;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 40;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .toggle-left-panel:hover {
+            background: #2a75f0;
+        }
+
+        /* Color plane button */
+        .color-plane-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .color-plane-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Color plane form */
+        .color-plane-form {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: none;
+            backdrop-filter: blur(5px);
+            min-width: 300px;
+            z-index: 100;
+        }
+
+        .color-plane-form h3 {
+            color: #3A86FF;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .color-plane-form .form-row {
+            margin-bottom: 10px;
+        }
+
+        .color-plane-form .action-buttons {
+            margin-top: 15px;
+        }
+
         @media (max-width: 768px) {
             .toolbar {
                 flex-wrap: wrap;
@@ -879,12 +947,12 @@
         <header>
             <div class="header-controls">
                 <button class="header-button" id="backButton">Quay lại</button>
+                <button class="color-plane-button" id="colorPlaneButton">Tô màu mặt phẳng</button>
             </div>
             <div class="header-title">
                 <!-- Đã xóa tiêu đề và mô tả -->
             </div>
             <div class="header-controls">
-                <button class="header-button" id="viewButton">Góc nhìn</button>
                 <button class="header-button" id="helpButton">Hướng dẫn</button>
             </div>
         </header>
@@ -961,6 +1029,28 @@
                 <div class="point-rename-form" id="pointRenameForm">
                     <!-- Đã ẩn form đổi tên điểm -->
                 </div>
+
+                <!-- Color plane form -->
+                <div class="color-plane-form" id="colorPlaneForm">
+                    <h3>Tô màu mặt phẳng</h3>
+                    <div class="form-group">
+                        <label>Nhập các điểm xác định mặt phẳng (ít nhất 3 điểm):</label>
+                        <div id="planePointsInputs">
+                            <input type="text" class="plane-point-input" placeholder="Điểm 1" maxlength="2">
+                            <input type="text" class="plane-point-input" placeholder="Điểm 2" maxlength="2">
+                            <input type="text" class="plane-point-input" placeholder="Điểm 3" maxlength="2">
+                        </div>
+                        <button id="addMorePlanePoint" class="secondary-button" style="margin-top: 10px;">Thêm điểm</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="planeColor">Chọn màu:</label>
+                        <input type="color" id="planeColor" value="#3A86FF">
+                    </div>
+                    <div class="action-buttons">
+                        <button class="secondary-button" id="cancelColorPlane">Hủy</button>
+                        <button class="primary-button" id="confirmColorPlane">Tô màu</button>
+                    </div>
+                </div>
                 
                 <div class="toolbar">
                     <button class="tool-button" id="createShapeTool" title="Tạo hình khối">
@@ -977,10 +1067,13 @@
                     </button>
                 </div>
 
+                <!-- Toggle button for left panel -->
+                <button class="toggle-left-panel" id="toggleLeftPanelBtn">&gt;</button>
+
                 <!-- Side panels -->
                 <div class="side-panel left-panel" id="leftPanel">
                     <h3>Thông tin hình khối</h3>
-                    <button class="close-side-panel" id="closeLeftPanel" style="display: none;">&times;</button>
+                    <button class="close-side-panel" id="closeLeftPanel">&lt;</button>
                     <div class="shape-info" id="shapeInfo">
                         <p>Chọn một hình khối để xem thông tin</p>
                     </div>
@@ -1325,6 +1418,17 @@
             { name: 'isometric', displayName: 'Trục đo', position: [5, 5, 5] },
             { name: 'back', displayName: 'Sau', position: [0, -10, 0] }
         ];
+
+        // Màu sắc cho vector
+        const vectorColors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+        let vectorColorIndex = 0;
+
+        // Hàm lấy màu tiếp theo cho vector
+        function getNextVectorColor() {
+            const color = vectorColors[vectorColorIndex];
+            vectorColorIndex = (vectorColorIndex + 1) % vectorColors.length;
+            return color;
+        }
 
         // Hàm thay đổi góc nhìn
         function changeView(viewType) {
@@ -2698,13 +2802,18 @@
         }
 
         // Hàm vẽ vector
-        function drawVector(name, startPoint, endPoint, color = 0xff0000) {
+        function drawVector(name, startPoint, endPoint, color = null) {
             const start = points[startPoint];
             const end = points[endPoint];
             
             if (!start || !end) {
                 alert('Điểm không tồn tại!');
                 return false;
+            }
+            
+            // Sử dụng màu được truyền vào hoặc lấy màu tiếp theo từ danh sách
+            if (color === null) {
+                color = getNextVectorColor();
             }
             
             const direction = new THREE.Vector3().subVectors(end, start);
@@ -2724,12 +2833,17 @@
         }
 
         // Hàm vẽ vector từ tọa độ
-        function drawVectorFromCoords(name, x, y, z, origin = 'O', color = 0xff0000) {
+        function drawVectorFromCoords(name, x, y, z, origin = 'O', color = null) {
             const start = origin === 'O' ? new THREE.Vector3(0, 0, 0) : points[origin];
             
             if (!start && origin !== 'O') {
                 alert('Điểm gốc không tồn tại!');
                 return false;
+            }
+            
+            // Sử dụng màu được truyền vào hoặc lấy màu tiếp theo từ danh sách
+            if (color === null) {
+                color = getNextVectorColor();
             }
             
             const direction = new THREE.Vector3(x, y, z);
@@ -3305,51 +3419,326 @@
             
             // Tạo nội dung cho panel bên trái với các trường có thể chỉnh sửa
             let html = `
-                <h4>${shapeName}</h4>
-                <p>Chọn hình khối để xem chi tiết</p>
+                <div class="shape-header">
+                    <h4>${shapeName}</h4>
+                    <button class="toggle-panel-btn" id="closeLeftPanel">&lt;</button>
+                </div>
+                <div class="shape-details">
+                    <div class="section">
+                        <h5>Tọa độ điểm</h5>
+                        <div class="point-coordinates" id="pointCoordinates">
+                            <!-- Điểm sẽ được thêm ở đây -->
+                        </div>
+                    </div>
+                    <div class="section">
+                        <h5>Độ dài cạnh</h5>
+                        <div class="edge-lengths" id="edgeLengths">
+                            <!-- Độ dài cạnh sẽ được thêm ở đây -->
+                        </div>
+                    </div>
+                    <div class="section perpendicular-section">
+                        <div class="perpendicular-toggle">
+                            <label>Vuông góc:</label>
+                            <div class="toggle-options">
+                                <label class="toggle-option">
+                                    <input type="radio" name="perpendicular" value="yes"> Có
+                                </label>
+                                <label class="toggle-option">
+                                    <input type="radio" name="perpendicular" value="no" checked> Không
+                                </label>
+                            </div>
+                        </div>
+                        <div class="perpendicular-conditions" id="perpendicularConditions" style="display: none;">
+                            <!-- Các điều kiện vuông góc sẽ được thêm ở đây -->
+                        </div>
+                    </div>
+                </div>
             `;
             
             content.innerHTML = html;
             panel.style.display = 'block';
             leftPanelMode = 'shapeInfo';
+            
+            // Điền thông tin điểm và cạnh
+            updatePointCoordinates();
+            updateEdgeLengths();
+            
+            // Sự kiện cho nút toggle vuông góc
+            const perpendicularRadios = content.querySelectorAll('input[name="perpendicular"]');
+            perpendicularRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const perpendicularConditions = document.getElementById('perpendicularConditions');
+                    if (this.value === 'yes') {
+                        perpendicularConditions.style.display = 'block';
+                        updatePerpendicularConditions();
+                    } else {
+                        perpendicularConditions.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Sự kiện cho nút ẩn panel
+            document.getElementById('closeLeftPanel').addEventListener('click', function() {
+                toggleLeftPanel();
+            });
         }
 
-        // Hàm thay đổi góc nhìn
-        function changeView(viewType) {
-            currentView = viewType;
+        // Hàm cập nhật tọa độ điểm trong panel
+        function updatePointCoordinates() {
+            const container = document.getElementById('pointCoordinates');
+            if (!container) return;
             
-            switch(viewType) {
-                case 'default':
-                    camera.position.set(5, 5, 5);
-                    camera.lookAt(0, 0, 0);
+            container.innerHTML = '';
+            
+            Object.keys(points).forEach(pointName => {
+                const point = points[pointName];
+                const div = document.createElement('div');
+                div.className = 'point-coordinate';
+                div.innerHTML = `
+                    <span class="point-name">${pointName}:</span>
+                    <span class="point-coord">(${point.x.toFixed(2)}, ${point.y.toFixed(2)}, ${point.z.toFixed(2)})</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Hàm cập nhật độ dài cạnh trong panel
+        function updateEdgeLengths() {
+            const container = document.getElementById('edgeLengths');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (!selectedMesh) return;
+            
+            const shapeType = selectedMesh.userData.shapeType;
+            let edges = [];
+            
+            // Xác định các cạnh dựa trên loại hình
+            switch(shapeType) {
+                case 'cube':
+                case 'cuboid':
+                case 'quadrangularPrism':
+                    edges = [
+                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
+                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
+                    ];
                     break;
-                case 'top':
-                    camera.position.set(0, 0, 10);
-                    camera.lookAt(0, 0, 0);
+                case 'tetrahedron':
+                case 'tetrahedronRight':
+                case 'tetrahedronRightA':
+                case 'tetrahedronIsosceles':
+                case 'triangularPyramid':
+                    edges = [
+                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                        ['A', 'S'], ['B', 'S'], ['C', 'S']
+                    ];
                     break;
-                case 'front':
-                    camera.position.set(0, 10, 0);
-                    camera.lookAt(0, 0, 0);
+                case 'triangularPrism':
+                    edges = [
+                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                        ['D', 'E'], ['E', 'F'], ['F', 'D'],
+                        ['A', 'D'], ['B', 'E'], ['C', 'F']
+                    ];
                     break;
-                case 'right':
-                    camera.position.set(10, 0, 0);
-                    camera.lookAt(0, 0, 0);
+                case 'pyramid':
+                    edges = [
+                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                        ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
+                    ];
                     break;
-                case 'isometric':
-                    camera.position.set(5, 5, 5);
-                    camera.lookAt(0, 0, 0);
+                case 'sphere':
+                    // Hình cầu không có cạnh
                     break;
-                case 'back':
-                    camera.position.set(0, -10, 0);
-                    camera.lookAt(0, 0, 0);
+                case 'cylinder':
+                    edges = [
+                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
+                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
+                    ];
                     break;
             }
             
-            controls.target.set(0, 0, 0);
-            controls.update();
+            edges.forEach(edge => {
+                const point1 = points[edge[0]];
+                const point2 = points[edge[1]];
+                if (point1 && point2) {
+                    const length = point1.distanceTo(point2);
+                    const div = document.createElement('div');
+                    div.className = 'edge-length';
+                    div.innerHTML = `
+                        <span class="edge-name">${edge[0]}${edge[1]}:</span>
+                        <span class="edge-length-value">${length.toFixed(2)}</span>
+                    `;
+                    container.appendChild(div);
+                }
+            });
+        }
+
+        // Hàm cập nhật điều kiện vuông góc
+        function updatePerpendicularConditions() {
+            const container = document.getElementById('perpendicularConditions');
+            if (!container) return;
             
-            document.getElementById('infoText').textContent = `Đã chuyển sang góc nhìn: ${getViewName(viewType)}`;
-            document.getElementById('infoPanel').style.display = 'block';
+            container.innerHTML = '';
+            
+            // Ở đây chúng ta có thể thêm các điều kiện vuông góc mặc định
+            // Ví dụ: với hình lập phương, các cạnh đối diện vuông góc với nhau
+            if (!selectedMesh) return;
+            
+            const shapeType = selectedMesh.userData.shapeType;
+            let perpendiculars = [];
+            
+            // Xác định các cặp vuông góc dựa trên loại hình
+            switch(shapeType) {
+                case 'cube':
+                case 'cuboid':
+                    perpendiculars = [
+                        'AB ⟂ BC',
+                        'BC ⟂ CD', 
+                        'CD ⟂ DA',
+                        'DA ⟂ AB',
+                        'AE ⟂ EF',
+                        'BF ⟂ FG',
+                        'CG ⟂ GH',
+                        'DH ⟂ HE'
+                    ];
+                    break;
+                case 'tetrahedron':
+                case 'triangularPyramid':
+                    perpendiculars = [
+                        'SA ⟂ AB',
+                        'SB ⟂ BC',
+                        'SC ⟂ CA'
+                    ];
+                    break;
+                case 'triangularPrism':
+                    perpendiculars = [
+                        'AB ⟂ AD',
+                        'BC ⟂ BE', 
+                        'CA ⟂ CF'
+                    ];
+                    break;
+                case 'pyramid':
+                    perpendiculars = [
+                        'SA ⟂ AB',
+                        'SB ⟂ BC',
+                        'SC ⟂ CD',
+                        'SD ⟂ DA'
+                    ];
+                    break;
+                default:
+                    perpendiculars = ['Không có thông tin vuông góc cho hình này'];
+            }
+            
+            perpendiculars.forEach(perp => {
+                const div = document.createElement('div');
+                div.className = 'perpendicular-condition';
+                div.innerHTML = `
+                    <span>${perp}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Hàm ẩn/hiện panel bên trái
+        function toggleLeftPanel() {
+            const panel = document.getElementById('leftPanel');
+            const toggleBtn = document.getElementById('toggleLeftPanelBtn');
+            
+            if (panel.style.display !== 'none') {
+                panel.style.display = 'none';
+                toggleBtn.style.display = 'block';
+            } else {
+                panel.style.display = 'block';
+                toggleBtn.style.display = 'none';
+            }
+        }
+
+        // Hàm hiển thị form tô màu mặt phẳng
+        function showColorPlaneForm() {
+            document.getElementById('colorPlaneForm').style.display = 'block';
+        }
+
+        // Hàm ẩn form tô màu mặt phẳng
+        function hideColorPlaneForm() {
+            document.getElementById('colorPlaneForm').style.display = 'none';
+        }
+
+        // Hàm kiểm tra xem các điểm có tạo thành mặt phẳng không
+        function isPlane(points) {
+            if (points.length < 3) return false;
+            
+            // Lấy 3 điểm đầu để kiểm tra
+            const p1 = points[0];
+            const p2 = points[1];
+            const p3 = points[2];
+            
+            // Tính vector từ p1 đến p2 và từ p1 đến p3
+            const v1 = new THREE.Vector3().subVectors(p2, p1);
+            const v2 = new THREE.Vector3().subVectors(p3, p1);
+            
+            // Tính tích có hướng của hai vector
+            const normal = new THREE.Vector3().crossVectors(v1, v2);
+            
+            // Nếu tích có hướng bằng 0, các điểm thẳng hàng, không tạo thành mặt phẳng
+            return normal.length() > 1e-10;
+        }
+
+        // Hàm tạo mặt phẳng màu
+        function createColoredPlane(pointNames, color) {
+            // Kiểm tra xem các điểm có tồn tại không
+            const pointsArray = [];
+            for (let name of pointNames) {
+                if (!points[name]) {
+                    alert(`Điểm ${name} không tồn tại!`);
+                    return false;
+                }
+                pointsArray.push(points[name]);
+            }
+            
+            // Kiểm tra xem các điểm có tạo thành mặt phẳng không
+            if (!isPlane(pointsArray)) {
+                alert('Các điểm này không tạo thành một mặt phẳng!');
+                return false;
+            }
+            
+            // Tạo geometry từ các điểm
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            
+            pointsArray.forEach(point => {
+                vertices.push(point.x, point.y, point.z);
+            });
+            
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            
+            // Tạo các tam giác từ các điểm (đơn giản hóa - tạo hình đa giác lồi)
+            const indices = [];
+            for (let i = 1; i < pointsArray.length - 1; i++) {
+                indices.push(0, i, i+1);
+            }
+            
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+            
+            // Tạo material với màu được chọn
+            const material = new THREE.MeshBasicMaterial({
+                color: color,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.5
+            });
+            
+            const plane = new THREE.Mesh(geometry, material);
+            plane.userData = { type: 'coloredPlane', points: pointNames };
+            scene.add(plane);
+            
+            // Thêm vào danh sách planeObjects để quản lý
+            planeObjects.push(plane);
+            
+            return true;
         }
 
         // ========== HÀM MỚI CHO THÊM ĐIỂM/ĐOẠN THẲNG ==========
@@ -3362,6 +3751,7 @@
             
             // Cập nhật dropdown
             updatePointDropdowns();
+            updatePlaneDropdowns();
         }
 
         // Hàm hiển thị form thêm đoạn thẳng
@@ -3528,9 +3918,34 @@
             const point = points[pointName];
             if (!point) return null;
             
-            // Đơn giản hóa: giả sử chiếu lên mặt phẳng OXY (z=0)
-            // Trong thực tế, cần xác định mặt phẳng cụ thể từ planeName
-            return new THREE.Vector3(point.x, point.y, 0);
+            // Tìm mặt phẳng từ planeObjects
+            const plane = planeObjects.find(p => p.userData.name === planeName);
+            if (!plane) {
+                alert('Mặt phẳng không tồn tại!');
+                return null;
+            }
+            
+            // Lấy 3 điểm đầu tiên của mặt phẳng để tính toán
+            const positions = plane.geometry.attributes.position.array;
+            const p1 = new THREE.Vector3(positions[0], positions[1], positions[2]);
+            const p2 = new THREE.Vector3(positions[3], positions[4], positions[5]);
+            const p3 = new THREE.Vector3(positions[6], positions[7], positions[8]);
+            
+            // Tính vector pháp tuyến của mặt phẳng
+            const v1 = new THREE.Vector3().subVectors(p2, p1);
+            const v2 = new THREE.Vector3().subVectors(p3, p1);
+            const normal = new THREE.Vector3().crossVectors(v1, v2).normalize();
+            
+            // Tính vector từ điểm trên mặt phẳng đến điểm cần chiếu
+            const pointToPlane = new THREE.Vector3().subVectors(point, p1);
+            
+            // Tính khoảng cách từ điểm đến mặt phẳng
+            const distance = pointToPlane.dot(normal);
+            
+            // Tính hình chiếu
+            const projection = new THREE.Vector3().copy(point).sub(normal.multiplyScalar(distance));
+            
+            return projection;
         }
 
         // Hàm cập nhật dropdown tam giác
@@ -3566,10 +3981,29 @@
             }
         }
 
-        // Hàm hiển thị modal góc nhìn (đã xóa vì không còn cần thiết)
-        // function showViewModal() {
-        //     document.getElementById('viewModal').style.display = 'flex';
-        // }
+        // Hàm cập nhật dropdown mặt phẳng
+        function updatePlaneDropdowns() {
+            const planeSelect = document.getElementById('projectionPlane');
+            const currentValue = planeSelect.value;
+            
+            while (planeSelect.firstChild) {
+                planeSelect.removeChild(planeSelect.firstChild);
+            }
+            
+            // Thêm các mặt phẳng từ planeObjects
+            planeObjects.forEach(plane => {
+                if (plane.userData.name) {
+                    const option = document.createElement('option');
+                    option.value = plane.userData.name;
+                    option.textContent = plane.userData.name;
+                    planeSelect.appendChild(option);
+                }
+            });
+            
+            if (currentValue) {
+                planeSelect.value = currentValue;
+            }
+        }
 
         // Gán sự kiện
         document.getElementById('createShapeTool').addEventListener('click', function() {
@@ -3597,10 +4031,9 @@
             changeView('default');
         });
 
-        // Sự kiện cho nút Góc nhìn - MỖI LẦN NHẤN SẼ THAY ĐỔI GÓC NHÌN
-        document.getElementById('viewButton').addEventListener('click', function() {
-            viewIndex = (viewIndex + 1) % views.length;
-            changeView(views[viewIndex].name);
+        // Sự kiện cho nút Tô màu mặt phẳng
+        document.getElementById('colorPlaneButton').addEventListener('click', function() {
+            showColorPlaneForm();
         });
 
         // Sự kiện cho nút Hướng dẫn
@@ -3828,6 +4261,65 @@
         // Sự kiện cho xác nhận thêm đoạn thẳng
         document.getElementById('confirmAddSegment').addEventListener('click', function() {
             addNewSegment();
+        });
+
+        // === SỰ KIỆN CHO TÔ MÀU MẶT PHẲNG ===
+
+        // Sự kiện cho nút thêm điểm trong form tô màu
+        document.getElementById('addMorePlanePoint').addEventListener('click', function() {
+            const inputsContainer = document.getElementById('planePointsInputs');
+            const inputCount = inputsContainer.children.length;
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.className = 'plane-point-input';
+            newInput.placeholder = `Điểm ${inputCount + 1}`;
+            newInput.maxLength = 2;
+            inputsContainer.appendChild(newInput);
+        });
+
+        // Sự kiện cho xác nhận tô màu mặt phẳng
+        document.getElementById('confirmColorPlane').addEventListener('click', function() {
+            const pointInputs = document.querySelectorAll('.plane-point-input');
+            const pointNames = [];
+            
+            pointInputs.forEach(input => {
+                const pointName = input.value.trim().toUpperCase();
+                if (pointName) {
+                    pointNames.push(pointName);
+                }
+            });
+            
+            if (pointNames.length < 3) {
+                alert('Cần ít nhất 3 điểm để xác định mặt phẳng!');
+                return;
+            }
+            
+            const color = document.getElementById('planeColor').value;
+            
+            // Chuyển đổi màu từ hex sang số
+            const colorNum = parseInt(color.replace('#', ''), 16);
+            
+            if (createColoredPlane(pointNames, colorNum)) {
+                hideColorPlaneForm();
+                
+                document.getElementById('infoText').textContent = `Đã tô màu mặt phẳng xác định bởi các điểm: ${pointNames.join(', ')}`;
+                document.getElementById('infoPanel').style.display = 'block';
+                
+                // Xóa nội dung các input
+                pointInputs.forEach(input => {
+                    input.value = '';
+                });
+            }
+        });
+
+        // Sự kiện cho hủy tô màu mặt phẳng
+        document.getElementById('cancelColorPlane').addEventListener('click', function() {
+            hideColorPlaneForm();
+        });
+
+        // Sự kiện cho nút toggle panel bên trái
+        document.getElementById('toggleLeftPanelBtn').addEventListener('click', function() {
+            toggleLeftPanel();
         });
 
         // === THÊM SỰ KIỆN BÀN PHÍM ===
