@@ -61,16 +61,6 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
-        header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        header p {
-            font-size: 0.85rem;
-            opacity: 0.9;
-        }
-
         .main-container {
             display: flex;
             flex: 1;
@@ -132,20 +122,9 @@
             transform: translateY(-2px);
         }
 
-        .tool-button img {
-            width: 24px;
-            height: 24px;
-            margin-bottom: 5px;
-            object-fit: contain;
-        }
-
         .tool-button span {
             font-size: 0.75rem;
             text-align: center;
-        }
-
-        .tool-button.hidden {
-            display: none;
         }
 
         .modal {
@@ -240,13 +219,6 @@
             background-color: #e7f1ff;
             border-color: #3A86FF;
             box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
-        }
-
-        .shape-option img {
-            width: 28px;
-            height: 28px;
-            margin-bottom: 10px;
-            object-fit: contain;
         }
 
         .shape-option span {
@@ -431,11 +403,6 @@
             margin-top: 15px;
         }
 
-        /* Selection Highlight */
-        .selected-mesh {
-            /* Đã xóa outline */
-        }
-
         /* Side panels */
         .side-panel {
             position: absolute;
@@ -476,12 +443,6 @@
             font-size: 20px;
             cursor: pointer;
             color: #777;
-            display: none;
-        }
-
-        /* Point rename form - ĐÃ XÓA */
-        .point-rename-form {
-            display: none;
         }
 
         /* Shape list styles */
@@ -742,11 +703,6 @@
                 height: 60px;
             }
             
-            .tool-button img {
-                width: 20px;
-                height: 20px;
-            }
-            
             .tool-button span {
                 font-size: 0.7rem;
             }
@@ -761,10 +717,6 @@
             
             header h1 {
                 font-size: 1.3rem;
-            }
-            
-            header p {
-                font-size: 0.8rem;
             }
             
             .point-input-form {
@@ -822,9 +774,6 @@
                 <button class="header-button" id="backButton">Quay lại</button>
                 <button class="header-button" id="colorPlaneButton">Tô màu mặt phẳng</button>
             </div>
-            <div class="header-title">
-                <!-- Đã xóa tiêu đề và mô tả -->
-            </div>
             <div class="header-controls">
                 <button class="header-button" id="viewButton">Góc nhìn</button>
                 <button class="header-button" id="helpButton">Hướng dẫn</button>
@@ -856,59 +805,6 @@
                     <p id="infoText">Chọn một hình khối để bắt đầu</p>
                 </div>
                 
-                <div class="point-input-form" id="pointInputForm">
-                    <h3>Thêm điểm</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="pointName">Đặt điểm</label>
-                            <input type="text" id="pointName" placeholder="Tên điểm" maxlength="2">
-                        </div>
-                        <div class="form-group">
-                            <label for="pointType">Là</label>
-                            <select id="pointType">
-                                <option value="midpoint">Trung điểm</option>
-                                <option value="centroid">Trọng tâm</option>
-                                <option value="projection">Hình chiếu</option>
-                                <option value="onSegment">Điểm trên đoạn</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="pointReference">Của</label>
-                            <select id="pointReference">
-                                <!-- Các tùy chọn sẽ được cập nhật động -->
-                            </select>
-                        </div>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="secondary-button" id="cancelPoint">Hủy</button>
-                        <button class="primary-button" id="confirmPoint">Xác nhận</button>
-                    </div>
-                </div>
-                
-                <div class="edge-edit-form" id="edgeEditForm">
-                    <h3>Chỉnh sửa cạnh</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="edgeLength">Độ dài:</label>
-                            <input type="number" id="edgeLength" step="0.1" min="0.1">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="edgeAngle">Góc (độ):</label>
-                            <input type="number" id="edgeAngle" step="1" min="0" max="360">
-                        </div>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="secondary-button" id="cancelEdgeEdit">Hủy</button>
-                        <button class="primary-button" id="confirmEdgeEdit">Áp dụng</button>
-                    </div>
-                </div>
-
-                <div class="point-rename-form" id="pointRenameForm">
-                    <!-- Đã ẩn form đổi tên điểm -->
-                </div>
-                
                 <div class="toolbar">
                     <button class="tool-button" id="createShapeTool" title="Tạo hình khối">
                         <span>Tạo hình</span>
@@ -927,7 +823,7 @@
                 <!-- Side panels -->
                 <div class="side-panel left-panel" id="leftPanel">
                     <h3>Thông tin hình khối</h3>
-                    <button class="close-side-panel" id="closeLeftPanel" style="display: none;">&times;</button>
+                    <button class="close-side-panel" id="closeLeftPanel">&times;</button>
                     <div class="shape-info" id="shapeInfo">
                         <p>Chọn một hình khối để xem thông tin</p>
                     </div>
@@ -974,7 +870,7 @@
                             <button class="primary-button" id="confirmAddPoint" style="width: 100%; margin-top: 10px;">Thêm điểm</button>
                         </div>
 
-                        <button class="add-element-button" id="addSegmentBtn">Thêm đoạn thẳng</button>
+                        <button class="add-element-button" id="addSegmentBtn">Nối đoạn thẳng</button>
                         <div class="element-form" id="addSegmentForm">
                             <div class="form-group">
                                 <label for="segmentStart">Điểm đầu:</label>
@@ -1001,30 +897,23 @@
             </div>
             <div class="shape-grid">
                 <div class="shape-option" data-shape="cube">
-                    <img src="http://example.com/cube.png" alt="Hình lập phương">
                     <span>Hình lập phương</span>
                 </div>
                 <div class="shape-option" data-shape="cuboid">
-                    <img src="http://example.com/cuboid.png" alt="Hình hộp chữ nhật">
                     <span>Hình hộp chữ nhật</span>
                 </div>
                 <div class="shape-option" data-shape="tetrahedron">
-                    <img src="http://example.com/tetrahedron.png" alt="Tứ diện S.ABC">
                     <span>Tứ diện S.ABC</span>
                 </div>
                 <div class="shape-option" data-shape="triangularPrism">
-                    <img src="http://example.com/triangular-prism.png" alt="Lăng trụ đứng tam giác">
                     <span>Lăng trụ đứng tam giác</span>
                 </div>
                 <div class="shape-option" data-shape="pyramid">
-                    <img src="http://example.com/pyramid.png" alt="Chóp tứ giác đều">
                     <span>Chóp tứ giác đều</span>
                 </div>
                 <div class="shape-option" data-shape="triangularPyramid">
-                    <img src="http://example.com/triangular-pyramid.png" alt="Chóp tam giác đều">
                     <span>Chóp tam giác đều</span>
                 </div>
-                <!-- Đã xóa hình trụ và hình cầu -->
             </div>
             <div class="action-buttons">
                 <button class="secondary-button" id="cancelCreateShape">Hủy</button>
@@ -1083,15 +972,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="vectorStartPoint">Điểm đầu:</label>
-                        <select id="vectorStartPoint">
-                            <!-- Các điểm sẽ được thêm động -->
-                        </select>
+                        <select id="vectorStartPoint"></select>
                     </div>
                     <div class="form-group">
                         <label for="vectorEndPoint">Điểm cuối:</label>
-                        <select id="vectorEndPoint">
-                            <!-- Các điểm sẽ được thêm động -->
-                        </select>
+                        <select id="vectorEndPoint"></select>
                     </div>
                 </div>
             </div>
@@ -1114,7 +999,6 @@
                     <label for="vectorOrigin">Điểm gốc:</label>
                     <select id="vectorOrigin">
                         <option value="O">Gốc tọa độ O</option>
-                        <!-- Các điểm sẽ được thêm động -->
                     </select>
                 </div>
             </div>
@@ -1164,10 +1048,9 @@
 
         const canvas = document.getElementById('sceneCanvas');
         
-        // Thay đổi góc nhìn ban đầu: mặt phẳng OXY nằm ngang, trục OZ hướng lên
         const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
         camera.position.set(5, 5, 5);
-        camera.up.set(0, 0, 1); // Đặt trục Z là hướng lên
+        camera.up.set(0, 0, 1);
         camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ 
@@ -1207,16 +1090,14 @@
             return sprite;
         }
         
-        // Thêm nhãn X, Y, Z
         scene.add(createAxisLabel('X', new THREE.Vector3(3.5, 0, 0), '#ff0000'));
         scene.add(createAxisLabel('Y', new THREE.Vector3(0, 3.5, 0), '#00ff00'));
         scene.add(createAxisLabel('Z', new THREE.Vector3(0, 0, 3.5), '#0000ff'));
 
-        // Mặt phẳng tọa độ OXY (z=0) - TRÙNG VỚI MẶT PHẲNG OXY
+        // Mặt phẳng tọa độ OXY
         const gridHelper = new THREE.GridHelper(10, 10);
-        // Đặt lưới nằm trong mặt phẳng OXY (z=0)
         gridHelper.position.set(0, 0, 0);
-        gridHelper.rotation.x = -Math.PI/2; // Xoay để lưới nằm trong mặt phẳng OXY
+        gridHelper.rotation.x = -Math.PI/2;
         scene.add(gridHelper);
 
         // Ánh sáng
@@ -1225,43 +1106,38 @@
         scene.add(light);
         scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
-        // Điều khiển camera - GIẢM ĐỘ NHẠY
+        // Điều khiển camera
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.enablePan = true;
         controls.touchAction = 'none';
-        
-        // Cập nhật để phù hợp với trục Z hướng lên
-        controls.screenSpacePanning = false; // Để panning hoạt động đúng với trục Z hướng lên
+        controls.screenSpacePanning = false;
         controls.mouseButtons = {
             LEFT: THREE.MOUSE.ROTATE,
             MIDDLE: THREE.MOUSE.DOLLY,
             RIGHT: THREE.MOUSE.PAN
         };
-        
-        // Giảm độ nhạy
         controls.rotateSpeed = 0.5;
         controls.panSpeed = 0.5;
         controls.zoomSpeed = 0.5;
 
         // Biến lưu trữ các đối tượng
-        const createdModels = []; // Lưu trữ tất cả các hình khối đã tạo
+        const createdModels = [];
         const points = {};
-        const vectors = {}; // Lưu trữ các vector
+        const vectors = {};
         const lines = [];
         const pointObjects = [];
         const lineObjects = [];
         const planeObjects = [];
-        const edgeObjects = []; // Lưu các cạnh của hình khối
-        const vectorObjects = []; // Lưu các vector
-        const coloredPlanes = []; // Lưu các mặt phẳng đã tô màu
+        const edgeObjects = [];
+        const vectorObjects = [];
+        const coloredPlanes = [];
         let activeTool = null;
         let selectedPoints = [];
         let selectedLine = null;
         let selectedEdge = null;
         let selectedMesh = null;
         let selectedPlane = null;
-        let renamingPoint = null;
 
         // Biến để xử lý double tap
         let lastTapTime = 0;
@@ -1270,25 +1146,8 @@
         // Độ dài cố định cho tất cả các hình
         const FIXED_LENGTH = 1;
 
-        // === BIẾN MỚI CHO GÓC NHÌN ===
-        let currentView = 'default'; // 'default', 'top', 'front', 'right', 'isometric', 'back'
-
-        // === BIẾN MỚI CHO DANH SÁCH HÌNH KHỐI ===
-        let currentShapeId = null;
-        let shapeCounter = 0; // Đếm số lượng hình đã tạo để đặt vị trí
-
-        // === BIẾN MỚI CHO THÔNG TIN HÌNH KHỐI ===
-        let perpendicularConditions = [];
-        let donationConditions = [];
-
-        // === BIẾN MỚI CHO HIỂN THỊ ĐỘ DÀI CẠNH ===
-        let edgeLabels = [];
-
-        // === BIẾN MỚI CHO PANEL BÊN TRÁI ===
-        let leftPanelMode = 'shapeInfo'; // 'shapeInfo' hoặc 'planeList'
-        let selectedPointForProjection = null;
-
-        // === BIẾN MỚI CHO TÍNH NĂNG GÓC NHÌN ===
+        // Biến cho góc nhìn
+        let currentView = 'default';
         let viewIndex = 0;
         const views = [
             { name: 'default', displayName: 'Mặc định', position: [5, 5, 5] },
@@ -1296,15 +1155,13 @@
             { name: 'front', displayName: 'Trước (OXZ)', position: [0, 10, 0] },
             { name: 'right', displayName: 'Phải (OYZ)', position: [10, 0, 0] },
             { name: 'isometric', displayName: 'Trục đo', position: [5, 5, 5] },
-            { name: 'back', displayName: 'Sau', position: [0, -10, 0] },
-            { name: 'left', displayName: 'Trái', position: [-10, 0, 0] },
-            { name: 'bottom', displayName: 'Dưới', position: [0, 0, -10] }
+            { name: 'back', displayName: 'Sau', position: [0, -10, 0] }
         ];
 
-        // === BIẾN MỚI CHO TÔ MÀU MẶT PHẲNG ===
+        // Biến cho tô màu mặt phẳng
         let selectedColor = '#ff0000';
 
-        // === BIẾN MỚI CHO ẨN/HIỆN PANEL ===
+        // Biến cho ẩn/hiện panel
         let leftPanelVisible = true;
 
         // Hàm thay đổi góc nhìn
@@ -1336,14 +1193,6 @@
                     camera.position.set(0, -10, 0);
                     camera.lookAt(0, 0, 0);
                     break;
-                case 'left':
-                    camera.position.set(-10, 0, 0);
-                    camera.lookAt(0, 0, 0);
-                    break;
-                case 'bottom':
-                    camera.position.set(0, 0, -10);
-                    camera.lookAt(0, 0, 0);
-                    break;
             }
             
             controls.target.set(0, 0, 0);
@@ -1352,7 +1201,6 @@
             document.getElementById('infoText').textContent = `Đã chuyển sang góc nhìn: ${getViewName(viewType)}`;
             document.getElementById('infoPanel').style.display = 'block';
             
-            // Ẩn thông báo sau 2 giây
             setTimeout(() => {
                 document.getElementById('infoPanel').style.display = 'none';
             }, 2000);
@@ -1367,31 +1215,24 @@
                 case 'right': return 'Phải (OYZ)';
                 case 'isometric': return 'Trục đo';
                 case 'back': return 'Sau';
-                case 'left': return 'Trái';
-                case 'bottom': return 'Dưới';
                 default: return 'Mặc định';
             }
         }
 
-        // Hàm chọn hình khối (CHỈ HIỂN THỊ THÔNG TIN, KHÔNG HIGHLIGHT)
+        // Hàm chọn hình khối
         function selectMesh(mesh) {
             selectedMesh = mesh;
             
             document.getElementById('infoText').textContent = `Đã chọn hình khối.`;
             document.getElementById('infoPanel').style.display = 'block';
             
-            // Ẩn thông báo sau 2 giây
             setTimeout(() => {
                 document.getElementById('infoPanel').style.display = 'none';
             }, 2000);
             
-            // Hiển thị thông tin chi tiết trong panel bên trái
             updateLeftPanel(mesh);
-            
-            // Đảm bảo panel bên trái hiển thị
             document.getElementById('leftPanel').style.display = 'block';
             
-            // Cập nhật dropdown cho phần thêm điểm/đoạn thẳng
             updatePointDropdowns();
             updateSegmentDropdowns();
             updateTriangleDropdowns();
@@ -1405,12 +1246,10 @@
             document.getElementById('infoText').textContent = 'Đã bỏ chọn hình khối.';
             document.getElementById('infoPanel').style.display = 'block';
             
-            // Ẩn thông báo sau 2 giây
             setTimeout(() => {
                 document.getElementById('infoPanel').style.display = 'none';
             }, 2000);
             
-            // Ẩn panel bên trái
             document.getElementById('leftPanel').style.display = 'none';
         }
 
@@ -1430,7 +1269,7 @@
             
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
             const material = new THREE.LineBasicMaterial({ 
-                color: 0x000000, // Màu đen cho các cạnh
+                color: 0x000000,
                 linewidth: 2
             });
             const lineSegments = new THREE.LineSegments(geometry, material);
@@ -1449,100 +1288,7 @@
             return arrowHelper;
         }
 
-        // Hàm tạo nhãn hiển thị độ dài cạnh
-        function createEdgeLengthLabel(edge) {
-            const point1 = points[edge[0]];
-            const point2 = points[edge[1]];
-            
-            if (!point1 || !point2) return null;
-            
-            const midPoint = new THREE.Vector3().addVectors(point1, point2).multiplyScalar(0.5);
-            const length = point1.distanceTo(point2);
-            
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = 64;
-            canvas.height = 32;
-            
-            context.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            
-            context.fillStyle = 'black';
-            context.font = 'bold 14px Arial';
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-            context.fillText(length.toFixed(2), canvas.width / 2, canvas.height / 2);
-            
-            const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ map: texture });
-            const sprite = new THREE.Sprite(material);
-            sprite.position.copy(midPoint);
-            sprite.scale.set(0.8, 0.4, 1);
-            sprite.userData = { type: 'edgeLabel', edge: edge };
-            
-            return sprite;
-        }
-
-        // Hàm cập nhật nhãn độ dài cạnh
-        function updateEdgeLengthLabels() {
-            // Xóa các nhãn cũ
-            edgeLabels.forEach(label => {
-                scene.remove(label);
-            });
-            edgeLabels.length = 0;
-            
-            if (!selectedMesh) return;
-            
-            const shapeType = selectedMesh.userData.shapeType;
-            let edges = [];
-            
-            // Xác định các cạnh dựa trên loại hình
-            switch(shapeType) {
-                case 'cube':
-                case 'cuboid':
-                case 'quadrangularPrism':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-                    ];
-                    break;
-                case 'tetrahedron':
-                case 'tetrahedronRight':
-                case 'tetrahedronRightA':
-                case 'tetrahedronIsosceles':
-                case 'triangularPyramid':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                        ['A', 'S'], ['B', 'S'], ['C', 'S']
-                    ];
-                    break;
-                case 'triangularPrism':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                        ['D', 'E'], ['E', 'F'], ['F', 'D'],
-                        ['A', 'D'], ['B', 'E'], ['C', 'F']
-                    ];
-                    break;
-                case 'pyramid':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
-                    ];
-                    break;
-            }
-            
-            // Tạo nhãn cho từng cạnh
-            edges.forEach(edge => {
-                const label = createEdgeLengthLabel(edge);
-                if (label) {
-                    scene.add(label);
-                    edgeLabels.push(label);
-                }
-            });
-        }
-
-        // Hàm tạo hình lập phương với một mặt nằm trong OXY
+        // Hàm tạo hình lập phương
         function createCube() {
             const geometry = new THREE.BoxGeometry(FIXED_LENGTH, FIXED_LENGTH, FIXED_LENGTH);
             const material = new THREE.MeshBasicMaterial({ 
@@ -1553,38 +1299,29 @@
             });
             const cube = new THREE.Mesh(geometry, material);
             
-            // Đặt hình lập phương sao cho mặt dưới nằm trong OXY (z=0)
             cube.position.z = FIXED_LENGTH / 2;
             
-            // Thêm các điểm đỉnh - MẶT DƯỚI NẰM TRONG OXY (z=0)
             const half = FIXED_LENGTH / 2;
-            points['A'] = new THREE.Vector3(-half, -half, 0); // Mặt dưới - OXY
+            points['A'] = new THREE.Vector3(-half, -half, 0);
             points['B'] = new THREE.Vector3(half, -half, 0);
             points['C'] = new THREE.Vector3(half, half, 0);
             points['D'] = new THREE.Vector3(-half, half, 0);
-            points['E'] = new THREE.Vector3(-half, -half, FIXED_LENGTH); // Mặt trên
+            points['E'] = new THREE.Vector3(-half, -half, FIXED_LENGTH);
             points['F'] = new THREE.Vector3(half, -half, FIXED_LENGTH);
             points['G'] = new THREE.Vector3(half, half, FIXED_LENGTH);
             points['H'] = new THREE.Vector3(-half, half, FIXED_LENGTH);
             
-            // Tạo các cạnh
             const cubeEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Đáy dưới - OXY
-                ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'], // Đáy trên
-                ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']  // Cạnh bên
+                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
+                ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
             ];
             const edges = createEdges(cubeEdges);
             scene.add(edges);
             edgeObjects.push(edges);
             
-            // Tạo các điểm hiển thị (hình tròn đầu mút)
             createPointSpheres();
-            
-            // Tạo các mặt phẳng
             createPlanesForCube(cube);
-            
-            // Tạo nhãn độ dài cạnh
-            updateEdgeLengthLabels();
             
             return cube;
         }
@@ -1600,58 +1337,47 @@
             });
             const cuboid = new THREE.Mesh(geometry, material);
             
-            // Đặt hình hộp sao cho mặt dưới nằm trong OXY (z=0)
             cuboid.position.z = FIXED_LENGTH / 2;
             
-            // Thêm các điểm đỉnh - MẶT DƯỚI NẰM TRONG OXY (z=0)
             const half = FIXED_LENGTH / 2;
-            points['A'] = new THREE.Vector3(-half, -half, 0); // Mặt dưới - OXY
+            points['A'] = new THREE.Vector3(-half, -half, 0);
             points['B'] = new THREE.Vector3(half, -half, 0);
             points['C'] = new THREE.Vector3(half, half, 0);
             points['D'] = new THREE.Vector3(-half, half, 0);
-            points['E'] = new THREE.Vector3(-half, -half, FIXED_LENGTH); // Mặt trên
+            points['E'] = new THREE.Vector3(-half, -half, FIXED_LENGTH);
             points['F'] = new THREE.Vector3(half, -half, FIXED_LENGTH);
             points['G'] = new THREE.Vector3(half, half, FIXED_LENGTH);
             points['H'] = new THREE.Vector3(-half, half, FIXED_LENGTH);
             
-            // Tạo các cạnh
             const cuboidEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Đáy dưới - OXY
-                ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'], // Đáy trên
-                ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']  // Cạnh bên
+                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
+                ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
             ];
             const edges = createEdges(cuboidEdges);
             scene.add(edges);
             edgeObjects.push(edges);
             
-            // Tạo các điểm hiển thị
             createPointSpheres();
-            
-            // Tạo các mặt phẳng
             createPlanesForCuboid(cuboid);
-            
-            // Tạo nhãn độ dài cạnh
-            updateEdgeLengthLabels();
             
             return cuboid;
         }
 
-        // Hàm tạo tứ diện S.ABC (A, B, C nằm trong mặt phẳng OXY, S nằm trên trục OZ)
+        // Hàm tạo tứ diện S.ABC (không có cạnh vuông góc)
         function createTetrahedron() {
             const geometry = new THREE.BufferGeometry();
             
-            // Tọa độ các đỉnh của tứ diện - A, B, C trong mặt phẳng OXY, S trên trục OZ
-            // Tứ diện không có cặp cạnh vuông góc
+            // Tọa độ các đỉnh của tứ diện - không có cặp cạnh nào vuông góc
             const vertices = new Float32Array([
-                0, 0, 0,           // A - gốc tọa độ
-                FIXED_LENGTH, 0, 0,           // B - trên trục OX
-                0.5, FIXED_LENGTH, 0,           // C - không vuông góc với A và B
-                0.3, 0.3, FIXED_LENGTH            // S - không vuông góc với bất kỳ cạnh nào
+                0, 0, 0,           // A
+                FIXED_LENGTH, 0, 0,           // B
+                0.5, FIXED_LENGTH, 0,         // C - không vuông góc với AB
+                0.3, 0.3, FIXED_LENGTH        // S - không vuông góc với bất kỳ cạnh nào
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
             
-            // Tạo các mặt
             const indices = [
                 0, 1, 2,  // Mặt đáy ABC
                 0, 3, 1,  // Mặt ABS
@@ -1669,29 +1395,21 @@
                 opacity: 0.7
             });
             
-            // Thêm các điểm đỉnh
             points['A'] = new THREE.Vector3(0, 0, 0);
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
             points['C'] = new THREE.Vector3(0.5, FIXED_LENGTH, 0);
             points['S'] = new THREE.Vector3(0.3, 0.3, FIXED_LENGTH);
             
-            // Tạo các cạnh
             const tetraEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy
-                ['A', 'S'], ['B', 'S'], ['C', 'S']  // Cạnh bên
+                ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                ['A', 'S'], ['B', 'S'], ['C', 'S']
             ];
             const edges = createEdges(tetraEdges);
             scene.add(edges);
             edgeObjects.push(edges);
             
-            // Tạo các điểm hiển thị
             createPointSpheres();
-            
-            // Tạo các mặt phẳng
             createPlanesForTetrahedron();
-            
-            // Tạo nhãn độ dài cạnh
-            updateEdgeLengthLabels();
             
             return new THREE.Mesh(geometry, material);
         }
@@ -1700,14 +1418,11 @@
         function createTriangularPrism() {
             const geometry = new THREE.BufferGeometry();
             
-            // Tọa độ các đỉnh - đáy tam giác trong OXY
             const height = FIXED_LENGTH * Math.sqrt(3) / 2;
             const vertices = new Float32Array([
-                // Đáy dưới - trong OXY
                 0, 0, 0,
                 FIXED_LENGTH, 0, 0,
                 FIXED_LENGTH/2, height, 0,
-                // Đáy trên - dịch lên theo OZ
                 0, 0, FIXED_LENGTH,
                 FIXED_LENGTH, 0, FIXED_LENGTH,
                 FIXED_LENGTH/2, height, FIXED_LENGTH
@@ -1715,16 +1430,15 @@
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
             
-            // Tạo các mặt
             const indices = [
-                0, 1, 2,    // Đáy dưới
-                3, 5, 4,    // Đáy trên
-                0, 3, 4,    // Mặt bên 1
-                0, 4, 1,    // Mặt bên 1 (tiếp)
-                1, 4, 5,    // Mặt bên 2
-                1, 5, 2,    // Mặt bên 2 (tiếp)
-                2, 5, 3,    // Mặt bên 3
-                2, 3, 0     // Mặt bên 3 (tiếp)
+                0, 1, 2,
+                3, 5, 4,
+                0, 3, 4,
+                0, 4, 1,
+                1, 4, 5,
+                1, 5, 2,
+                2, 5, 3,
+                2, 3, 0
             ];
             
             geometry.setIndex(indices);
@@ -1737,7 +1451,6 @@
                 opacity: 0.7
             });
             
-            // Thêm các điểm đỉnh
             points['A'] = new THREE.Vector3(0, 0, 0);
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
             points['C'] = new THREE.Vector3(FIXED_LENGTH/2, height, 0);
@@ -1745,24 +1458,17 @@
             points['E'] = new THREE.Vector3(FIXED_LENGTH, 0, FIXED_LENGTH);
             points['F'] = new THREE.Vector3(FIXED_LENGTH/2, height, FIXED_LENGTH);
             
-            // Tạo các cạnh
             const prismEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy dưới
-                ['D', 'E'], ['E', 'F'], ['F', 'D'], // Đáy trên
-                ['A', 'D'], ['B', 'E'], ['C', 'F']  // Cạnh bên
+                ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                ['D', 'E'], ['E', 'F'], ['F', 'D'],
+                ['A', 'D'], ['B', 'E'], ['C', 'F']
             ];
             const edges = createEdges(prismEdges);
             scene.add(edges);
             edgeObjects.push(edges);
             
-            // Tạo các điểm hiển thị
             createPointSpheres();
-            
-            // Tạo các mặt phẳng
             createPlanesForTriangularPrism();
-            
-            // Tạo nhãn độ dài cạnh
-            updateEdgeLengthLabels();
             
             return new THREE.Mesh(geometry, material);
         }
@@ -1771,27 +1477,23 @@
         function createPyramid() {
             const geometry = new THREE.BufferGeometry();
             
-            // Tọa độ các đỉnh - đáy trong OXY, đỉnh S trên trục OZ
             const vertices = new Float32Array([
-                // Đáy - trong OXY
                 -FIXED_LENGTH/2, -FIXED_LENGTH/2, 0,
                 FIXED_LENGTH/2, -FIXED_LENGTH/2, 0,
                 FIXED_LENGTH/2, FIXED_LENGTH/2, 0,
                 -FIXED_LENGTH/2, FIXED_LENGTH/2, 0,
-                // Đỉnh - trên trục OZ
                 0, 0, FIXED_LENGTH
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
             
-            // Tạo các mặt
             const indices = [
-                0, 1, 2,    // Mặt đáy 1
-                0, 2, 3,    // Mặt đáy 2
-                0, 4, 1,    // Mặt bên 1
-                1, 4, 2,    // Mặt bên 2
-                2, 4, 3,    // Mặt bên 3
-                3, 4, 0     // Mặt bên 4
+                0, 1, 2,
+                0, 2, 3,
+                0, 4, 1,
+                1, 4, 2,
+                2, 4, 3,
+                3, 4, 0
             ];
             
             geometry.setIndex(indices);
@@ -1804,30 +1506,22 @@
                 opacity: 0.7
             });
             
-            // Thêm các điểm đỉnh
             points['A'] = new THREE.Vector3(-FIXED_LENGTH/2, -FIXED_LENGTH/2, 0);
             points['B'] = new THREE.Vector3(FIXED_LENGTH/2, -FIXED_LENGTH/2, 0);
             points['C'] = new THREE.Vector3(FIXED_LENGTH/2, FIXED_LENGTH/2, 0);
             points['D'] = new THREE.Vector3(-FIXED_LENGTH/2, FIXED_LENGTH/2, 0);
             points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
             
-            // Tạo các cạnh
             const pyramidEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Đáy
-                ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']  // Cạnh bên
+                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
             ];
             const edges = createEdges(pyramidEdges);
             scene.add(edges);
             edgeObjects.push(edges);
             
-            // Tạo các điểm hiển thị
             createPointSpheres();
-            
-            // Tạo các mặt phẳng
             createPlanesForPyramid();
-            
-            // Tạo nhãn độ dài cạnh
-            updateEdgeLengthLabels();
             
             return new THREE.Mesh(geometry, material);
         }
@@ -1836,25 +1530,21 @@
         function createTriangularPyramid() {
             const geometry = new THREE.BufferGeometry();
             
-            // Tọa độ các đỉnh - đáy tam giác trong OXY, đỉnh S trên trục OZ
             const height = FIXED_LENGTH * Math.sqrt(3) / 2;
             const vertices = new Float32Array([
-                // Đáy - trong OXY
                 0, 0, 0,
                 FIXED_LENGTH, 0, 0,
                 FIXED_LENGTH/2, height, 0,
-                // Đỉnh - trên trục OZ
                 FIXED_LENGTH/2, height/3, FIXED_LENGTH
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
             
-            // Tạo các mặt
             const indices = [
-                0, 1, 2,  // Mặt đáy
-                0, 3, 1,  // Mặt bên 1
-                1, 3, 2,  // Mặt bên 2
-                2, 3, 0   // Mặt bên 3
+                0, 1, 2,
+                0, 3, 1,
+                1, 3, 2,
+                2, 3, 0
             ];
             
             geometry.setIndex(indices);
@@ -1867,101 +1557,85 @@
                 opacity: 0.7
             });
             
-            // Thêm các điểm đỉnh
             points['A'] = new THREE.Vector3(0, 0, 0);
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
             points['C'] = new THREE.Vector3(FIXED_LENGTH/2, height, 0);
             points['S'] = new THREE.Vector3(FIXED_LENGTH/2, height/3, FIXED_LENGTH);
             
-            // Tạo các cạnh
             const tetraEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'A'], // Đáy
-                ['A', 'S'], ['B', 'S'], ['C', 'S']  // Cạnh bên
+                ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                ['A', 'S'], ['B', 'S'], ['C', 'S']
             ];
             const edges = createEdges(tetraEdges);
             scene.add(edges);
             edgeObjects.push(edges);
             
-            // Tạo các điểm hiển thị
             createPointSpheres();
-            
-            // Tạo các mặt phẳng
             createPlanesForTetrahedron();
-            
-            // Tạo nhãn độ dài cạnh
-            updateEdgeLengthLabels();
             
             return new THREE.Mesh(geometry, material);
         }
 
-        // Hàm tạo các mặt phẳng cho hình lập phương (có thể chọn được)
+        // Hàm tạo các mặt phẳng cho hình lập phương (không màu ban đầu)
         function createPlanesForCube(cube) {
-            // Xóa các mặt phẳng cũ
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
             const half = FIXED_LENGTH / 2;
             
-            // Tạo 6 mặt phẳng cho hình lập phương
             const planes = [
-                // Mặt dưới (ABCD) - NẰM TRONG OXY
                 {
                     name: 'ABCD',
                     vertices: [
-                        -half, -half, 0,  // A
-                        half, -half, 0,   // B
-                        half, half, 0,    // C
-                        -half, half, 0    // D
+                        -half, -half, 0,
+                        half, -half, 0,
+                        half, half, 0,
+                        -half, half, 0
                     ]
                 },
-                // Mặt trên (EFGH)
                 {
                     name: 'EFGH', 
                     vertices: [
-                        -half, -half, FIXED_LENGTH,   // E
-                        half, -half, FIXED_LENGTH,    // F
-                        half, half, FIXED_LENGTH,     // G
-                        -half, half, FIXED_LENGTH     // H
+                        -half, -half, FIXED_LENGTH,
+                        half, -half, FIXED_LENGTH,
+                        half, half, FIXED_LENGTH,
+                        -half, half, FIXED_LENGTH
                     ]
                 },
-                // Mặt trước (ADHE)
                 {
                     name: 'ADHE',
                     vertices: [
-                        -half, -half, 0,  // A
-                        -half, -half, FIXED_LENGTH,   // E  
-                        -half, half, FIXED_LENGTH,    // H
-                        -half, half, 0    // D
+                        -half, -half, 0,
+                        -half, -half, FIXED_LENGTH,
+                        -half, half, FIXED_LENGTH,
+                        -half, half, 0
                     ]
                 },
-                // Mặt sau (BCGF)
                 {
                     name: 'BCGF',
                     vertices: [
-                        half, -half, 0,   // B
-                        half, -half, FIXED_LENGTH,    // F
-                        half, half, FIXED_LENGTH,     // G
-                        half, half, 0     // C
+                        half, -half, 0,
+                        half, -half, FIXED_LENGTH,
+                        half, half, FIXED_LENGTH,
+                        half, half, 0
                     ]
                 },
-                // Mặt trái (ABFE)
                 {
                     name: 'ABFE', 
                     vertices: [
-                        -half, -half, 0,  // A
-                        half, -half, 0,   // B
-                        half, -half, FIXED_LENGTH,    // F
-                        -half, -half, FIXED_LENGTH    // E
+                        -half, -half, 0,
+                        half, -half, 0,
+                        half, -half, FIXED_LENGTH,
+                        -half, -half, FIXED_LENGTH
                     ]
                 },
-                // Mặt phải (DCGH)
                 {
                     name: 'DCGH',
                     vertices: [
-                        -half, half, 0,   // D
-                        half, half, 0,    // C
-                        half, half, FIXED_LENGTH,     // G
-                        -half, half, FIXED_LENGTH     // H
+                        -half, half, 0,
+                        half, half, 0,
+                        half, half, FIXED_LENGTH,
+                        -half, half, FIXED_LENGTH
                     ]
                 }
             ];
@@ -1973,18 +1647,17 @@
             });
         }
 
-        // Hàm tạo mặt phẳng có thể chọn được
+        // Hàm tạo mặt phẳng có thể chọn được (không màu ban đầu)
         function createSelectablePlane(vertices, planeName) {
             const geometry = new THREE.BufferGeometry();
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-            geometry.setIndex([0, 1, 2, 0, 2, 3]); // Tạo 2 tam giác cho mặt phẳng
+            geometry.setIndex([0, 1, 2, 0, 2, 3]);
             geometry.computeVertexNormals();
             
-            // Mặt phẳng ban đầu không có màu
             const material = new THREE.MeshBasicMaterial({
-                color: 0xffffff,
+                color: 0xffffff, // Màu trắng (không màu)
                 transparent: true,
-                opacity: 0.0, // Ban đầu trong suốt
+                opacity: 0.0,    // Hoàn toàn trong suốt ban đầu
                 side: THREE.DoubleSide
             });
             
@@ -1995,7 +1668,7 @@
                 selectable: true,
                 originalColor: 0xffffff,
                 isSelected: false,
-                isColored: false
+                isColored: false // Đánh dấu chưa được tô màu
             };
             
             return plane;
@@ -2003,20 +1676,16 @@
 
         // Hàm tạo các mặt phẳng cho hình hộp chữ nhật
         function createPlanesForCuboid(cuboid) {
-            // Xóa các mặt phẳng cũ
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
-            // Tạo các mặt phẳng mới
             const positions = cuboid.geometry.attributes.position.array;
             const indices = cuboid.geometry.index.array;
             
-            // Tạo 6 mặt phẳng
             for (let i = 0; i < 6; i++) {
                 const planeGeometry = new THREE.BufferGeometry();
                 const planeVertices = [];
                 
-                // Lấy 3 đỉnh của mặt
                 for (let j = 0; j < 3; j++) {
                     const vertexIndex = indices[i * 6 + j] * 3;
                     planeVertices.push(
@@ -2033,7 +1702,7 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.0, // Ban đầu trong suốt
+                    opacity: 0.0,
                     side: THREE.DoubleSide
                 });
                 
@@ -2047,25 +1716,21 @@
 
         // Hàm tạo các mặt phẳng cho tứ diện
         function createPlanesForTetrahedron() {
-            // Xóa các mặt phẳng cũ
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
-            // Tạo 4 mặt phẳng
             const planeNames = ['ABC', 'SAB', 'SBC', 'SCA'];
             
             for (let i = 0; i < 4; i++) {
                 const planeGeometry = new THREE.BufferGeometry();
                 let planeVertices = [];
                 
-                // Xác định các đỉnh của mặt phẳng
                 let vertexNames = [];
                 if (i === 0) vertexNames = ['A', 'B', 'C'];
                 else if (i === 1) vertexNames = ['S', 'A', 'B'];
                 else if (i === 2) vertexNames = ['S', 'B', 'C'];
                 else if (i === 3) vertexNames = ['S', 'C', 'A'];
                 
-                // Thêm các đỉnh vào mặt phẳng
                 vertexNames.forEach(name => {
                     const point = points[name];
                     planeVertices.push(point.x, point.y, point.z);
@@ -2078,7 +1743,7 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.0, // Ban đầu trong suốt
+                    opacity: 0.0,
                     side: THREE.DoubleSide
                 });
                 
@@ -2092,18 +1757,15 @@
 
         // Hàm tạo các mặt phẳng cho lăng trụ tam giác
         function createPlanesForTriangularPrism() {
-            // Xóa các mặt phẳng cũ
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
-            // Tạo 5 mặt phẳng
             const planeNames = ['ABC', 'DEF', 'ABED', 'BCFE', 'CADF'];
             
             for (let i = 0; i < 5; i++) {
                 const planeGeometry = new THREE.BufferGeometry();
                 let planeVertices = [];
                 
-                // Xác định các đỉnh của mặt phẳng
                 let vertexNames = [];
                 if (i === 0) vertexNames = ['A', 'B', 'C'];
                 else if (i === 1) vertexNames = ['D', 'E', 'F'];
@@ -2111,7 +1773,6 @@
                 else if (i === 3) vertexNames = ['B', 'C', 'F', 'E'];
                 else if (i === 4) vertexNames = ['C', 'A', 'D', 'F'];
                 
-                // Thêm các đỉnh vào mặt phẳng
                 vertexNames.forEach(name => {
                     const point = points[name];
                     planeVertices.push(point.x, point.y, point.z);
@@ -2119,7 +1780,6 @@
                 
                 planeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(planeVertices, 3));
                 
-                // Tạo indices cho mặt phẳng
                 const indices = [];
                 if (vertexNames.length === 3) {
                     indices.push(0, 1, 2);
@@ -2133,7 +1793,7 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.0, // Ban đầu trong suốt
+                    opacity: 0.0,
                     side: THREE.DoubleSide
                 });
                 
@@ -2147,18 +1807,15 @@
 
         // Hàm tạo các mặt phẳng cho hình chóp
         function createPlanesForPyramid() {
-            // Xóa các mặt phẳng cũ
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
-            // Tạo 5 mặt phẳng
             const planeNames = ['ABCD', 'SAB', 'SBC', 'SCD', 'SDA'];
             
             for (let i = 0; i < 5; i++) {
                 const planeGeometry = new THREE.BufferGeometry();
                 let planeVertices = [];
                 
-                // Xác định các đỉnh của mặt phẳng
                 let vertexNames = [];
                 if (i === 0) vertexNames = ['A', 'B', 'C', 'D'];
                 else if (i === 1) vertexNames = ['S', 'A', 'B'];
@@ -2166,7 +1823,6 @@
                 else if (i === 3) vertexNames = ['S', 'C', 'D'];
                 else if (i === 4) vertexNames = ['S', 'D', 'A'];
                 
-                // Thêm các đỉnh vào mặt phẳng
                 vertexNames.forEach(name => {
                     const point = points[name];
                     planeVertices.push(point.x, point.y, point.z);
@@ -2174,7 +1830,6 @@
                 
                 planeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(planeVertices, 3));
                 
-                // Tạo indices cho mặt phẳng
                 const indices = [];
                 if (vertexNames.length === 3) {
                     indices.push(0, 1, 2);
@@ -2188,7 +1843,7 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.0, // Ban đầu trong suốt
+                    opacity: 0.0,
                     side: THREE.DoubleSide
                 });
                 
@@ -2200,15 +1855,13 @@
             }
         }
 
-        // Hàm tạo các điểm hiển thị (hình tròn đầu mút) với kích thước lớn hơn và hover effect
+        // Hàm tạo các điểm hiển thị
         function createPointSpheres() {
-            // Xóa các điểm cũ
             pointObjects.forEach(obj => scene.remove(obj));
             pointObjects.length = 0;
             
-            // Tạo các điểm mới với kích thước lớn hơn
             Object.keys(points).forEach(key => {
-                const pointGeometry = new THREE.SphereGeometry(0.08, 16, 16); // Tăng kích thước từ 0.05 lên 0.08
+                const pointGeometry = new THREE.SphereGeometry(0.08, 16, 16);
                 const pointMaterial = new THREE.MeshBasicMaterial({ 
                     color: 0x000000,
                     transparent: true,
@@ -2227,19 +1880,17 @@
                 scene.add(pointMesh);
                 pointObjects.push(pointMesh);
                 
-                // Thêm nhãn cho điểm - chỉ chữ không nền
                 const label = createPointLabel(key, points[key]);
                 scene.add(label);
                 pointObjects.push(label);
             });
         }
 
-        // Hàm tạo nhãn cho điểm - chỉ chữ không nền
+        // Hàm tạo nhãn cho điểm
         function createPointLabel(name, position) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             
-            // Tính toán kích thước canvas
             const modelSize = createdModels.length > 0 ? getModelSize() : 1;
             const fontSize = Math.max(12, Math.min(20, 16 / modelSize));
             const canvasSize = Math.max(32, Math.min(64, 48 / modelSize));
@@ -2247,8 +1898,7 @@
             canvas.width = canvasSize;
             canvas.height = canvasSize / 2;
             
-            // KHÔNG vẽ nền - chỉ chữ
-            context.fillStyle = 'black'; // Chữ màu đen
+            context.fillStyle = 'black';
             context.font = `bold ${fontSize}px Arial`;
             context.textAlign = 'center';
             context.textBaseline = 'middle';
@@ -2257,7 +1907,7 @@
             const texture = new THREE.CanvasTexture(canvas);
             const material = new THREE.SpriteMaterial({ 
                 map: texture,
-                transparent: true // Cho phép trong suốt
+                transparent: true
             });
             const sprite = new THREE.Sprite(material);
             sprite.position.copy(position);
@@ -2284,7 +1934,6 @@
 
         // Hàm tạo mô hình mới
         function createNewModel(shapeType) {
-            // Xóa hình cũ nếu có
             if (createdModels.length > 0) {
                 deleteMesh(createdModels[0]);
             }
@@ -2310,7 +1959,6 @@
                 case 'triangularPyramid':
                     model = createTriangularPyramid();
                     break;
-                // Đã xóa hình cầu và hình trụ
             }
             
             if (model) {
@@ -2318,175 +1966,491 @@
                 scene.add(model);
                 createdModels.push(model);
                 
-                // Cập nhật panel bên trái
                 updateLeftPanel(model);
-                
-                // Chọn hình khối mới tạo
                 selectMesh(model);
-                
-                // Cập nhật dropdown
                 updatePointDropdowns();
             }
             
             return model;
         }
 
-        // Hàm thay đổi độ dài và góc của cạnh
-        function changeEdge(edge, newLength, newAngle) {
-            const point1 = points[edge[0]];
-            const point2 = points[edge[1]];
+        // Hàm xóa hình khối
+        function deleteMesh(mesh) {
+            if (!mesh) return;
             
-            if (!point1 || !point2) {
-                alert('Một trong các điểm không tồn tại!');
-                return false;
+            scene.remove(mesh);
+            
+            const index = createdModels.indexOf(mesh);
+            if (index > -1) {
+                createdModels.splice(index, 1);
             }
             
-            const currentLength = point1.distanceTo(point2);
-            const lengthRatio = newLength / currentLength;
+            Object.keys(points).forEach(key => {
+                delete points[key];
+            });
             
-            // Tính vector từ điểm giữa đến từng điểm
-            const midPoint = new THREE.Vector3().addVectors(point1, point2).multiplyScalar(0.5);
-            const vec1 = new THREE.Vector3().subVectors(point1, midPoint).multiplyScalar(lengthRatio);
-            const vec2 = new THREE.Vector3().subVectors(point2, midPoint).multiplyScalar(lengthRatio);
+            pointObjects.forEach(obj => {
+                scene.remove(obj);
+            });
+            pointObjects.length = 0;
             
-            // Áp dụng góc xoay (nếu có)
-            if (newAngle !== undefined && newAngle !== null) {
-                const angleRad = THREE.MathUtils.degToRad(newAngle);
-                
-                // Tạo trục xoay vuông góc với vector cạnh
-                const edgeVector = new THREE.Vector3().subVectors(point2, point1).normalize();
-                let rotationAxis = new THREE.Vector3(0, 1, 0); // Mặc định là trục Y
-                
-                // Nếu vector cạnh song song với trục Y, dùng trục X
-                if (Math.abs(edgeVector.y) > 0.9) {
-                    rotationAxis = new THREE.Vector3(1, 0, 0);
-                }
-                
-                // Áp dụng phép xoay
-                vec1.applyAxisAngle(rotationAxis, angleRad);
-                vec2.applyAxisAngle(rotationAxis, angleRad);
-            }
-            
-            // Cập nhật vị trí các điểm
-            point1.copy(midPoint).add(vec1);
-            point2.copy(midPoint).add(vec2);
-            
-            // Cập nhật lại các điểm hiển thị
-            createPointSpheres();
-            
-            // Cập nhật lại các mặt phẳng
-            updatePlanes();
-            
-            // Cập nhật lại các cạnh
-            updateEdges();
-            
-            // Cập nhật nhãn độ dài cạnh
-            updateEdgeLengthLabels();
-            
-            // Cập nhật panel bên trái
-            updateLeftPanel(selectedMesh);
-            
-            return true;
-        }
-
-        // Hàm cập nhật các cạnh
-        function updateEdges() {
-            // Xóa các cạnh cũ
-            edgeObjects.forEach(obj => scene.remove(obj));
+            edgeObjects.forEach(obj => {
+                scene.remove(obj);
+            });
             edgeObjects.length = 0;
             
-            if (createdModels.length === 0) return;
+            planeObjects.forEach(obj => {
+                scene.remove(obj);
+            });
+            planeObjects.length = 0;
             
-            // Cập nhật cạnh cho hình khối được chọn
-            if (selectedMesh) {
-                const shapeType = selectedMesh.userData.shapeType;
-                let edges;
+            updateLeftPanel(null);
+            
+            if (selectedMesh === mesh) {
+                deselectMesh();
+            }
+            
+            document.getElementById('infoText').textContent = 'Đã xóa hình khối.';
+            document.getElementById('infoPanel').style.display = 'block';
+            
+            setTimeout(() => {
+                document.getElementById('infoPanel').style.display = 'none';
+            }, 2000);
+        }
+
+        // Hàm cập nhật panel bên trái với thông tin hình khối
+        function updateLeftPanel(mesh) {
+            const panel = document.getElementById('leftPanel');
+            const content = document.getElementById('shapeInfo');
+            
+            content.innerHTML = '';
+            
+            if (!mesh) {
+                content.innerHTML = '<p>Chọn một hình khối để xem thông tin</p>';
+                panel.style.display = 'block';
+                return;
+            }
+            
+            const shapeType = mesh.userData.shapeType;
+            let shapeName = '';
+            
+            switch(shapeType) {
+                case 'cube': shapeName = 'Hình lập phương'; break;
+                case 'cuboid': shapeName = 'Hình hộp chữ nhật'; break;
+                case 'tetrahedron': shapeName = 'Tứ diện S.ABC'; break;
+                case 'triangularPrism': shapeName = 'Lăng trụ đứng tam giác'; break;
+                case 'pyramid': shapeName = 'Chóp tứ giác đều'; break;
+                case 'triangularPyramid': shapeName = 'Chóp tam giác đều'; break;
+            }
+            
+            let html = `
+                <h4>${shapeName}</h4>
+                <div class="shape-details">
+                    <h5>Tọa độ điểm:</h5>
+                    <div id="pointCoordinates"></div>
+                    
+                    <h5>Độ dài cạnh:</h5>
+                    <div id="edgeLengths"></div>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            panel.style.display = 'block';
+            
+            updateShapeDetails(mesh);
+        }
+
+        // Hàm cập nhật thông tin chi tiết của hình khối
+        function updateShapeDetails(mesh) {
+            if (!mesh) return;
+            
+            const pointCoordinatesDiv = document.getElementById('pointCoordinates');
+            pointCoordinatesDiv.innerHTML = '';
+            
+            Object.keys(points).forEach(pointName => {
+                const point = points[pointName];
+                const pointDiv = document.createElement('div');
+                pointDiv.className = 'edge-item';
+                pointDiv.innerHTML = `
+                    <label>${pointName}:</label>
+                    <input type="number" value="${point.x.toFixed(2)}" step="0.1" data-point="${pointName}" data-coord="x">
+                    <input type="number" value="${point.y.toFixed(2)}" step="0.1" data-point="${pointName}" data-coord="y">
+                    <input type="number" value="${point.z.toFixed(2)}" step="0.1" data-point="${pointName}" data-coord="z">
+                `;
+                pointCoordinatesDiv.appendChild(pointDiv);
+            });
+            
+            pointCoordinatesDiv.querySelectorAll('input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const pointName = this.dataset.point;
+                    const coord = this.dataset.coord;
+                    const value = parseFloat(this.value);
+                    
+                    if (points[pointName]) {
+                        points[pointName][coord] = value;
+                        createPointSpheres();
+                        updateEdges();
+                        updatePlanes();
+                    }
+                });
+            });
+            
+            const edgeLengthsDiv = document.getElementById('edgeLengths');
+            edgeLengthsDiv.innerHTML = '';
+            
+            const shapeType = mesh.userData.shapeType;
+            let edges = [];
+            
+            switch(shapeType) {
+                case 'cube':
+                case 'cuboid':
+                    edges = [
+                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
+                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
+                    ];
+                    break;
+                case 'tetrahedron':
+                case 'triangularPyramid':
+                    edges = [
+                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                        ['A', 'S'], ['B', 'S'], ['C', 'S']
+                    ];
+                    break;
+                case 'triangularPrism':
+                    edges = [
+                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
+                        ['D', 'E'], ['E', 'F'], ['F', 'D'],
+                        ['A', 'D'], ['B', 'E'], ['C', 'F']
+                    ];
+                    break;
+                case 'pyramid':
+                    edges = [
+                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                        ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
+                    ];
+                    break;
+            }
+            
+            edges.forEach(edge => {
+                const point1 = points[edge[0]];
+                const point2 = points[edge[1]];
                 
-                // Tạo lại các cạnh dựa trên loại hình
-                switch(shapeType) {
-                    case 'cube':
-                    case 'cuboid':
-                    case 'quadrangularPrism':
-                        edges = createEdges([
-                            ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                            ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                            ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-                        ]);
-                        break;
-                    case 'tetrahedron':
-                    case 'triangularPyramid':
-                        edges = createEdges([
-                            ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                            ['A', 'S'], ['B', 'S'], ['C', 'S']
-                        ]);
-                        break;
-                    case 'triangularPrism':
-                        edges = createEdges([
-                            ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                            ['D', 'E'], ['E', 'F'], ['F', 'D'],
-                            ['A', 'D'], ['B', 'E'], ['C', 'F']
-                        ]);
-                        break;
-                    case 'pyramid':
-                        edges = createEdges([
-                            ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                            ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
-                        ]);
-                        break;
+                if (point1 && point2) {
+                    const length = point1.distanceTo(point2);
+                    const edgeDiv = document.createElement('div');
+                    edgeDiv.className = 'edge-item';
+                    edgeDiv.innerHTML = `
+                        <label>${edge[0]}${edge[1]}:</label>
+                        <input type="number" value="${length.toFixed(2)}" step="0.1" data-edge="${edge[0]}-${edge[1]}">
+                    `;
+                    edgeLengthsDiv.appendChild(edgeDiv);
+                }
+            });
+        }
+
+        // Hàm cập nhật danh sách điểm trong các dropdown
+        function updatePointDropdowns() {
+            const pointSelects = document.querySelectorAll('select[id$="Point"], select[id$="Vertex"], select[id$="StartPoint"], select[id$="EndPoint"], select[id$="Origin"]');
+            
+            pointSelects.forEach(select => {
+                const currentValue = select.value;
+                
+                while (select.firstChild) {
+                    select.removeChild(select.firstChild);
                 }
                 
-                if (edges) {
-                    scene.add(edges);
-                    edgeObjects.push(edges);
+                if (select.id.includes('Origin')) {
+                    const optionO = document.createElement('option');
+                    optionO.value = 'O';
+                    optionO.textContent = 'Gốc tọa độ O';
+                    select.appendChild(optionO);
+                }
+                
+                Object.keys(points).forEach(pointName => {
+                    const option = document.createElement('option');
+                    option.value = pointName;
+                    option.textContent = pointName;
+                    select.appendChild(option);
+                });
+                
+                if (currentValue && (points[currentValue] || currentValue === 'O')) {
+                    select.value = currentValue;
+                }
+            });
+            
+            const projectionPoint = document.getElementById('projectionPoint');
+            const segmentStart = document.getElementById('segmentStart');
+            const segmentEnd = document.getElementById('segmentEnd');
+            
+            if (projectionPoint) {
+                const currentValue = projectionPoint.value;
+                while (projectionPoint.firstChild) {
+                    projectionPoint.removeChild(projectionPoint.firstChild);
+                }
+                
+                Object.keys(points).forEach(pointName => {
+                    const option = document.createElement('option');
+                    option.value = pointName;
+                    option.textContent = pointName;
+                    projectionPoint.appendChild(option);
+                });
+                
+                if (currentValue && points[currentValue]) {
+                    projectionPoint.value = currentValue;
+                }
+            }
+            
+            if (segmentStart && segmentEnd) {
+                const currentStart = segmentStart.value;
+                const currentEnd = segmentEnd.value;
+                
+                while (segmentStart.firstChild) {
+                    segmentStart.removeChild(segmentStart.firstChild);
+                }
+                while (segmentEnd.firstChild) {
+                    segmentEnd.removeChild(segmentEnd.firstChild);
+                }
+                
+                Object.keys(points).forEach(pointName => {
+                    const option1 = document.createElement('option');
+                    option1.value = pointName;
+                    option1.textContent = pointName;
+                    segmentStart.appendChild(option1);
+                    
+                    const option2 = document.createElement('option');
+                    option2.value = pointName;
+                    option2.textContent = pointName;
+                    segmentEnd.appendChild(option2);
+                });
+                
+                if (currentStart && points[currentStart]) {
+                    segmentStart.value = currentStart;
+                }
+                if (currentEnd && points[currentEnd]) {
+                    segmentEnd.value = currentEnd;
                 }
             }
         }
 
-        // Hàm cập nhật các mặt phẳng
-        function updatePlanes() {
-            if (!selectedMesh) return;
+        // Hàm cập nhật danh sách mặt phẳng trong dropdown
+        function updatePlaneDropdowns() {
+            const planeSelects = document.querySelectorAll('select[id$="Plane"]');
             
-            const shapeType = selectedMesh.userData.shapeType;
+            planeSelects.forEach(select => {
+                const currentValue = select.value;
+                
+                while (select.firstChild) {
+                    select.removeChild(select.firstChild);
+                }
+                
+                const optionOXY = document.createElement('option');
+                optionOXY.value = 'OXY';
+                optionOXY.textContent = 'OXY';
+                select.appendChild(optionOXY);
+                
+                planeObjects.forEach(plane => {
+                    const planeName = plane.userData.name;
+                    if (planeName) {
+                        const option = document.createElement('option');
+                        option.value = planeName;
+                        option.textContent = planeName;
+                        select.appendChild(option);
+                    }
+                });
+                
+                if (currentValue) {
+                    select.value = currentValue;
+                }
+            });
+        }
+
+        // Hàm cập nhật danh sách đoạn thẳng trong các dropdown
+        function updateSegmentDropdowns() {
+            const segmentSelects = document.querySelectorAll('select[id$="Segment"], select[id$="Base"]');
             
-            if (shapeType === 'cube') {
-                createPlanesForCube(selectedMesh);
-            } else if (shapeType === 'cuboid') {
-                createPlanesForCuboid(selectedMesh);
-            } else if (['tetrahedron', 'triangularPyramid'].includes(shapeType)) {
-                createPlanesForTetrahedron();
-            } else if (shapeType === 'triangularPrism') {
-                createPlanesForTriangularPrism();
-            } else if (shapeType === 'pyramid') {
-                createPlanesForPyramid();
+            segmentSelects.forEach(select => {
+                const currentValue = select.value;
+                
+                while (select.firstChild) {
+                    select.removeChild(select.firstChild);
+                }
+                
+                const segments = [];
+                const pointNames = Object.keys(points);
+                
+                for (let i = 0; i < pointNames.length; i++) {
+                    for (let j = i + 1; j < pointNames.length; j++) {
+                        segments.push(pointNames[i] + pointNames[j]);
+                    }
+                }
+                
+                segments.forEach(segment => {
+                    const option = document.createElement('option');
+                    option.value = segment;
+                    option.textContent = segment;
+                    select.appendChild(option);
+                });
+                
+                if (currentValue && segments.includes(currentValue)) {
+                    select.value = currentValue;
+                }
+            });
+        }
+
+        // Hàm cập nhật dropdown tam giác
+        function updateTriangleDropdowns() {
+            const triangleSelect = document.getElementById('centroidTriangle');
+            const currentValue = triangleSelect.value;
+            
+            while (triangleSelect.firstChild) {
+                triangleSelect.removeChild(triangleSelect.firstChild);
+            }
+            
+            const pointNames = Object.keys(points);
+            const triangles = [];
+            
+            for (let i = 0; i < pointNames.length; i++) {
+                for (let j = i + 1; j < pointNames.length; j++) {
+                    for (let k = j + 1; k < pointNames.length; k++) {
+                        triangles.push(pointNames[i] + pointNames[j] + pointNames[k]);
+                    }
+                }
+            }
+            
+            triangles.forEach(triangle => {
+                const option = document.createElement('option');
+                option.value = triangle;
+                option.textContent = triangle;
+                triangleSelect.appendChild(option);
+            });
+            
+            if (currentValue && triangles.includes(currentValue)) {
+                triangleSelect.value = currentValue;
             }
         }
 
-        // Hàm hiển thị form chỉnh sửa cạnh
-        function showEdgeEditForm(edge, position) {
-            const point1 = points[edge[0]];
-            const point2 = points[edge[1]];
+        // Hàm xử lý sự kiện pointer
+        function onPointerEvent(event) {
+            event.preventDefault();
             
-            if (!point1 || !point2) return;
+            let clientX, clientY;
             
-            const length = point1.distanceTo(point2);
-            const canvasRect = canvas.getBoundingClientRect();
-            const edgeEditForm = document.getElementById('edgeEditForm');
+            if (event.type.includes('touch')) {
+                if (event.touches.length > 0) {
+                    clientX = event.touches[0].clientX;
+                    clientY = event.touches[0].clientY;
+                } else {
+                    return;
+                }
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
             
-            edgeEditForm.style.display = 'block';
-            edgeEditForm.style.left = (position.x * canvasRect.width / 2 + canvasRect.width / 2 - 125) + 'px';
-            edgeEditForm.style.top = (-position.y * canvasRect.height / 2 + canvasRect.height / 2 - 100) + 'px';
+            const mouse = new THREE.Vector2();
+            mouse.x = (clientX / canvas.clientWidth) * 2 - 1;
+            mouse.y = - (clientY / canvas.clientHeight) * 2 + 1;
             
-            document.getElementById('edgeLength').value = length.toFixed(2);
-            document.getElementById('edgeAngle').value = 0;
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
             
-            // Lưu thông tin cạnh được chọn
-            selectedEdge = edge;
+            if (event.type === 'click') {
+                if (isDoubleClick()) {
+                    const modelIntersects = raycaster.intersectObjects(createdModels);
+                    if (modelIntersects.length > 0) {
+                        selectMesh(modelIntersects[0].object);
+                        return;
+                    }
+                }
+                
+                const modelIntersects = raycaster.intersectObjects(createdModels);
+                if (modelIntersects.length > 0) {
+                    selectMesh(modelIntersects[0].object);
+                    return;
+                }
+                
+                const edgeIntersects = raycaster.intersectObjects(edgeObjects);
+                
+                if (edgeIntersects.length > 0) {
+                    const edge = edgeIntersects[0].object;
+                    
+                    if (activeTool === 'erase') {
+                        return;
+                    }
+                    
+                    return;
+                }
+                
+                const vectorIntersects = raycaster.intersectObjects(vectorObjects);
+                
+                if (vectorIntersects.length > 0) {
+                    const vector = vectorIntersects[0].object;
+                    
+                    if (activeTool === 'erase') {
+                        eraseObject(vector);
+                        return;
+                    }
+                    
+                    Object.keys(vectors).forEach(key => {
+                        if (vectors[key].arrow === vector) {
+                            const vec = vectors[key];
+                            document.getElementById('infoText').textContent = 
+                                `Vector ${key}: (${vec.direction.x.toFixed(2)}, ${vec.direction.y.toFixed(2)}, ${vec.direction.z.toFixed(2)})`;
+                            document.getElementById('infoPanel').style.display = 'block';
+                            
+                            setTimeout(() => {
+                                document.getElementById('infoPanel').style.display = 'none';
+                            }, 2000);
+                        }
+                    });
+                    return;
+                }
+                
+                const lineIntersects = raycaster.intersectObjects(lineObjects);
+                
+                if (lineIntersects.length > 0) {
+                    const line = lineIntersects[0].object;
+                    
+                    if (activeTool === 'erase') {
+                        eraseObject(line);
+                        return;
+                    }
+                    
+                    return;
+                }
+                
+                deselectAll();
+            }
         }
 
-        // Hàm ẩn form chỉnh sửa cạnh
-        function hideEdgeEditForm() {
-            document.getElementById('edgeEditForm').style.display = 'none';
-            selectedEdge = null;
+        // Hàm xử lý thay đổi kích thước cửa sổ
+        function onWindowResize() {
+            const canvas = document.getElementById('sceneCanvas');
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        }
+
+        // Hàm hiển thị modal tạo hình khối
+        function showCreateShapeModal() {
+            document.getElementById('createShapeModal').style.display = 'flex';
+        }
+
+        // Hàm ẩn tất cả modal
+        function hideAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
+            if (activeTool === 'erase') {
+                document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
+                activeTool = null;
+            }
+        }
+
+        // Hàm hiển thị modal đặt điểm theo tọa độ
+        function showPointByCoordModal() {
+            document.getElementById('pointByCoordModal').style.display = 'flex';
         }
 
         // Hàm thêm điểm theo tọa độ
@@ -2592,7 +2556,6 @@
                 
                 delete points[object.userData.name];
                 
-                // Cập nhật dropdown
                 updatePointDropdowns();
             } else if (object.userData.type === 'line') {
                 scene.remove(object);
@@ -2607,15 +2570,11 @@
                     vectorObjects.splice(index, 1);
                 }
                 
-                // Xóa vector khỏi danh sách
                 Object.keys(vectors).forEach(key => {
                     if (vectors[key].arrow === object) {
                         delete vectors[key];
                     }
                 });
-                
-                // Cập nhật dropdown
-                updateVectorDropdowns();
             } else if (object.userData.type === 'plane') {
                 scene.remove(object);
                 const index = planeObjects.indexOf(object);
@@ -2633,675 +2592,7 @@
             }
         }
 
-        // Hàm cập nhật danh sách điểm trong các dropdown
-        function updatePointDropdowns() {
-            const pointSelects = document.querySelectorAll('select[id$="Point"], select[id$="Vertex"], select[id$="StartPoint"], select[id$="EndPoint"], select[id$="Origin"]');
-            
-            pointSelects.forEach(select => {
-                const currentValue = select.value;
-                
-                while (select.firstChild) {
-                    select.removeChild(select.firstChild);
-                }
-                
-                // Thêm tùy chọn gốc tọa độ O
-                if (select.id.includes('Origin')) {
-                    const optionO = document.createElement('option');
-                    optionO.value = 'O';
-                    optionO.textContent = 'Gốc tọa độ O';
-                    select.appendChild(optionO);
-                }
-                
-                Object.keys(points).forEach(pointName => {
-                    const option = document.createElement('option');
-                    option.value = pointName;
-                    option.textContent = pointName;
-                    select.appendChild(option);
-                });
-                
-                if (currentValue && (points[currentValue] || currentValue === 'O')) {
-                    select.value = currentValue;
-                }
-            });
-            
-            // Cập nhật dropdown cho phần thêm điểm/đoạn thẳng
-            const projectionPoint = document.getElementById('projectionPoint');
-            const segmentStart = document.getElementById('segmentStart');
-            const segmentEnd = document.getElementById('segmentEnd');
-            
-            if (projectionPoint) {
-                const currentValue = projectionPoint.value;
-                while (projectionPoint.firstChild) {
-                    projectionPoint.removeChild(projectionPoint.firstChild);
-                }
-                
-                Object.keys(points).forEach(pointName => {
-                    const option = document.createElement('option');
-                    option.value = pointName;
-                    option.textContent = pointName;
-                    projectionPoint.appendChild(option);
-                });
-                
-                if (currentValue && points[currentValue]) {
-                    projectionPoint.value = currentValue;
-                }
-            }
-            
-            if (segmentStart && segmentEnd) {
-                const currentStart = segmentStart.value;
-                const currentEnd = segmentEnd.value;
-                
-                while (segmentStart.firstChild) {
-                    segmentStart.removeChild(segmentStart.firstChild);
-                }
-                while (segmentEnd.firstChild) {
-                    segmentEnd.removeChild(segmentEnd.firstChild);
-                }
-                
-                Object.keys(points).forEach(pointName => {
-                    const option1 = document.createElement('option');
-                    option1.value = pointName;
-                    option1.textContent = pointName;
-                    segmentStart.appendChild(option1);
-                    
-                    const option2 = document.createElement('option');
-                    option2.value = pointName;
-                    option2.textContent = pointName;
-                    segmentEnd.appendChild(option2);
-                });
-                
-                if (currentStart && points[currentStart]) {
-                    segmentStart.value = currentStart;
-                }
-                if (currentEnd && points[currentEnd]) {
-                    segmentEnd.value = currentEnd;
-                }
-            }
-        }
-
-        // Hàm cập nhật danh sách mặt phẳng trong dropdown
-        function updatePlaneDropdowns() {
-            const planeSelects = document.querySelectorAll('select[id$="Plane"]');
-            
-            planeSelects.forEach(select => {
-                const currentValue = select.value;
-                
-                while (select.firstChild) {
-                    select.removeChild(select.firstChild);
-                }
-                
-                // Thêm tùy chọn mặt phẳng OXY
-                const optionOXY = document.createElement('option');
-                optionOXY.value = 'OXY';
-                optionOXY.textContent = 'OXY';
-                select.appendChild(optionOXY);
-                
-                // Thêm các mặt phẳng từ planeObjects
-                planeObjects.forEach(plane => {
-                    const planeName = plane.userData.name;
-                    if (planeName) {
-                        const option = document.createElement('option');
-                        option.value = planeName;
-                        option.textContent = planeName;
-                        select.appendChild(option);
-                    }
-                });
-                
-                if (currentValue) {
-                    select.value = currentValue;
-                }
-            });
-        }
-
-        // Hàm cập nhật danh sách vector trong dropdown
-        function updateVectorDropdowns() {
-            const vectorSelects = document.querySelectorAll('select[id$="Vector"]');
-            
-            vectorSelects.forEach(select => {
-                const currentValue = select.value;
-                
-                while (select.firstChild) {
-                    select.removeChild(select.firstChild);
-                }
-                
-                Object.keys(vectors).forEach(vectorName => {
-                    const option = document.createElement('option');
-                    option.value = vectorName;
-                    option.textContent = vectorName;
-                    select.appendChild(option);
-                });
-                
-                if (currentValue && vectors[currentValue]) {
-                    select.value = currentValue;
-                }
-            });
-        }
-
-        // Hàm cập nhật danh sách đoạn thẳng trong các dropdown
-        function updateSegmentDropdowns() {
-            const segmentSelects = document.querySelectorAll('select[id$="Segment"], select[id$="Base"]');
-            
-            segmentSelects.forEach(select => {
-                const currentValue = select.value;
-                
-                while (select.firstChild) {
-                    select.removeChild(select.firstChild);
-                }
-                
-                const segments = [];
-                const pointNames = Object.keys(points);
-                
-                for (let i = 0; i < pointNames.length; i++) {
-                    for (let j = i + 1; j < pointNames.length; j++) {
-                        segments.push(pointNames[i] + pointNames[j]);
-                    }
-                }
-                
-                segments.forEach(segment => {
-                    const option = document.createElement('option');
-                    option.value = segment;
-                    option.textContent = segment;
-                    select.appendChild(option);
-                });
-                
-                if (currentValue && segments.includes(currentValue)) {
-                    select.value = currentValue;
-                }
-            });
-        }
-
-        // Hàm cập nhật danh sách tham chiếu cho điểm
-        function updatePointReferenceDropdown() {
-            const referenceSelect = document.getElementById('pointReference');
-            
-            const currentValue = referenceSelect.value;
-            
-            while (referenceSelect.firstChild) {
-                referenceSelect.removeChild(referenceSelect.firstChild);
-            }
-            
-            const pointType = document.getElementById('pointType').value;
-            
-            if (pointType === 'midpoint') {
-                const segments = [];
-                const pointNames = Object.keys(points);
-                
-                for (let i = 0; i < pointNames.length; i++) {
-                    for (let j = i + 1; j < pointNames.length; j++) {
-                        segments.push(pointNames[i] + pointNames[j]);
-                    }
-                }
-                
-                segments.forEach(segment => {
-                    const option = document.createElement('option');
-                    option.value = segment;
-                    option.textContent = segment;
-                    referenceSelect.appendChild(option);
-                });
-            } else if (pointType === 'centroid') {
-                const triangles = [];
-                const pointNames = Object.keys(points);
-                
-                for (let i = 0; i < pointNames.length; i++) {
-                    for (let j = i + 1; j < pointNames.length; j++) {
-                        for (let k = j + 1; k < pointNames.length; k++) {
-                            triangles.push(pointNames[i] + pointNames[j] + pointNames[k]);
-                        }
-                    }
-                }
-                
-                triangles.forEach(triangle => {
-                    const option = document.createElement('option');
-                    option.value = triangle;
-                    option.textContent = triangle;
-                    referenceSelect.appendChild(option);
-                });
-            } else if (pointType === 'projection') {
-                const pointNames = Object.keys(points);
-                
-                pointNames.forEach(pointName => {
-                    const option = document.createElement('option');
-                    option.value = pointName;
-                    option.textContent = pointName;
-                    referenceSelect.appendChild(option);
-                });
-            } else if (pointType === 'onSegment') {
-                const segments = [];
-                const pointNames = Object.keys(points);
-                
-                for (let i = 0; i < pointNames.length; i++) {
-                    for (let j = i + 1; j < pointNames.length; j++) {
-                        segments.push(pointNames[i] + pointNames[j]);
-                    }
-                }
-                
-                segments.forEach(segment => {
-                    const option = document.createElement('option');
-                    option.value = segment;
-                    option.textContent = segment;
-                    referenceSelect.appendChild(option);
-                });
-            }
-            
-            if (currentValue) {
-                referenceSelect.value = currentValue;
-            }
-        }
-
-        // Hàm xử lý sự kiện pointer (cho cả mouse và touch)
-        function onPointerEvent(event) {
-            event.preventDefault();
-            
-            let clientX, clientY;
-            
-            // Xác định tọa độ dựa trên loại sự kiện
-            if (event.type.includes('touch')) {
-                if (event.touches.length > 0) {
-                    clientX = event.touches[0].clientX;
-                    clientY = event.touches[0].clientY;
-                } else {
-                    return; // Không có touch nào
-                }
-            } else {
-                clientX = event.clientX;
-                clientY = event.clientY;
-            }
-            
-            const mouse = new THREE.Vector2();
-            mouse.x = (clientX / canvas.clientWidth) * 2 - 1;
-            mouse.y = - (clientY / canvas.clientHeight) * 2 + 1;
-            
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, camera);
-            
-            // Xử lý click thông thường
-            if (event.type === 'click') {
-                // Kiểm tra double click
-                if (isDoubleClick()) {
-                    // Xử lý double click để chọn hình khối
-                    const modelIntersects = raycaster.intersectObjects(createdModels);
-                    if (modelIntersects.length > 0) {
-                        selectMesh(modelIntersects[0].object);
-                        return;
-                    }
-                }
-                
-                // Kiểm tra xem có click vào hình khối không
-                const modelIntersects = raycaster.intersectObjects(createdModels);
-                if (modelIntersects.length > 0) {
-                    selectMesh(modelIntersects[0].object);
-                    return;
-                }
-                
-                // Kiểm tra xem có click vào đường thẳng không (cạnh của hình khối)
-                const edgeIntersects = raycaster.intersectObjects(edgeObjects);
-                
-                if (edgeIntersects.length > 0) {
-                    const edge = edgeIntersects[0].object;
-                    
-                    if (activeTool === 'erase') {
-                        // Không cho phép xóa cạnh của hình khối
-                        return;
-                    }
-                    
-                    // Tìm cạnh tương ứng
-                    const edgePoints = findEdgeByGeometry(edge.geometry);
-                    if (edgePoints) {
-                        const midpoint = new THREE.Vector3().addVectors(edgePoints[0], edgePoints[1]).multiplyScalar(0.5);
-                        showEdgeEditForm(edgePoints, midpoint);
-                        
-                        const length = edgePoints[0].distanceTo(edgePoints[1]);
-                        document.getElementById('infoText').textContent = 
-                            `Cạnh: Độ dài = ${length.toFixed(2)}`;
-                        document.getElementById('infoPanel').style.display = 'block';
-                        
-                        // Ẩn thông báo sau 2 giây
-                        setTimeout(() => {
-                            document.getElementById('infoPanel').style.display = 'none';
-                        }, 2000);
-                    }
-                    return;
-                }
-                
-                // Kiểm tra xem có click vào vector không
-                const vectorIntersects = raycaster.intersectObjects(vectorObjects);
-                
-                if (vectorIntersects.length > 0) {
-                    const vector = vectorIntersects[0].object;
-                    
-                    if (activeTool === 'erase') {
-                        eraseObject(vector);
-                        return;
-                    }
-                    
-                    // Hiển thị thông tin vector
-                    Object.keys(vectors).forEach(key => {
-                        if (vectors[key].arrow === vector) {
-                            const vec = vectors[key];
-                            document.getElementById('infoText').textContent = 
-                                `Vector ${key}: (${vec.direction.x.toFixed(2)}, ${vec.direction.y.toFixed(2)}, ${vec.direction.z.toFixed(2)})`;
-                            document.getElementById('infoPanel').style.display = 'block';
-                            
-                            // Ẩn thông báo sau 2 giây
-                            setTimeout(() => {
-                                document.getElementById('infoPanel').style.display = 'none';
-                            }, 2000);
-                        }
-                    });
-                    return;
-                }
-                
-                // Kiểm tra xem có click vào đường thẳng tự do không
-                const lineIntersects = raycaster.intersectObjects(lineObjects);
-                
-                if (lineIntersects.length > 0) {
-                    const line = lineIntersects[0].object;
-                    
-                    if (activeTool === 'erase') {
-                        eraseObject(line);
-                        return;
-                    }
-                    
-                    // Xử lý đường thẳng tự do (nếu có)
-                    return;
-                }
-                
-                // Click vào vùng trống - bỏ chọn tất cả
-                deselectAll();
-            }
-        }
-
-        // Hàm tìm cạnh dựa trên geometry
-        function findEdgeByGeometry(geometry) {
-            const positions = geometry.attributes.position.array;
-            const point1 = new THREE.Vector3(positions[0], positions[1], positions[2]);
-            const point2 = new THREE.Vector3(positions[3], positions[4], positions[5]);
-            
-            return findEdgeByPoints(point1, point2);
-        }
-
-        // Hàm tìm cạnh dựa trên hai điểm
-        function findEdgeByPoints(point1, point2) {
-            const pointNames = Object.keys(points);
-            
-            for (let i = 0; i < pointNames.length; i++) {
-                for (let j = i + 1; j < pointNames.length; j++) {
-                    const p1 = points[pointNames[i]];
-                    const p2 = points[pointNames[j]];
-                    
-                    if ((p1.equals(point1) && p2.equals(point2)) || 
-                        (p1.equals(point2) && p2.equals(point1))) {
-                        return [pointNames[i], pointNames[j]];
-                    }
-                }
-            }
-            
-            return null;
-        }
-
-        // Hàm xử lý thay đổi kích thước cửa sổ
-        function onWindowResize() {
-            const canvas = document.getElementById('sceneCanvas');
-            camera.aspect = canvas.clientWidth / canvas.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-        }
-
-        // Hàm hiển thị modal tạo hình khối
-        function showCreateShapeModal() {
-            document.getElementById('createShapeModal').style.display = 'flex';
-        }
-
-        // Hàm ẩn tất cả modal
-        function hideAllModals() {
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.style.display = 'none';
-            });
-            if (activeTool === 'erase') {
-                document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
-                activeTool = null;
-            }
-        }
-
-        // Hàm hiển thị modal đặt điểm theo tọa độ
-        function showPointByCoordModal() {
-            document.getElementById('pointByCoordModal').style.display = 'flex';
-        }
-
-        // Hàm hiển thị form thêm điểm
-        function showPointInputForm() {
-            if (!selectedPlane) {
-                alert('Vui lòng chọn một mặt phẳng trước!');
-                return;
-            }
-            
-            document.getElementById('pointInputForm').style.display = 'block';
-            updatePointReferenceDropdown();
-        }
-
-        // Hàm ẩn form thêm điểm
-        function hidePointInputForm() {
-            document.getElementById('pointInputForm').style.display = 'none';
-        }
-
-        // Hàm xóa hình khối
-        function deleteMesh(mesh) {
-            if (!mesh) return;
-            
-            // Xóa mesh khỏi scene
-            scene.remove(mesh);
-            
-            // Xóa khỏi mảng createdModels
-            const index = createdModels.indexOf(mesh);
-            if (index > -1) {
-                createdModels.splice(index, 1);
-            }
-            
-            // Xóa các điểm
-            Object.keys(points).forEach(key => {
-                delete points[key];
-            });
-            
-            // Xóa các đối tượng điểm
-            pointObjects.forEach(obj => {
-                scene.remove(obj);
-            });
-            pointObjects.length = 0;
-            
-            // Xóa các cạnh
-            edgeObjects.forEach(obj => {
-                scene.remove(obj);
-            });
-            edgeObjects.length = 0;
-            
-            // Xóa các mặt phẳng
-            planeObjects.forEach(obj => {
-                scene.remove(obj);
-            });
-            planeObjects.length = 0;
-            
-            // Xóa các nhãn độ dài
-            edgeLabels.forEach(label => {
-                scene.remove(label);
-            });
-            edgeLabels.length = 0;
-            
-            // Cập nhật danh sách hình khối trong panel bên trái
-            updateLeftPanel(null);
-            
-            // Bỏ chọn nếu đang chọn mesh này
-            if (selectedMesh === mesh) {
-                deselectMesh();
-            }
-            
-            document.getElementById('infoText').textContent = 'Đã xóa hình khối.';
-            document.getElementById('infoPanel').style.display = 'block';
-            
-            // Ẩn thông báo sau 2 giây
-            setTimeout(() => {
-                document.getElementById('infoPanel').style.display = 'none';
-            }, 2000);
-        }
-
-        // Hàm cập nhật panel bên trái với thông tin hình khối
-        function updateLeftPanel(mesh) {
-            const panel = document.getElementById('leftPanel');
-            const content = document.getElementById('shapeInfo');
-            
-            // Xóa nội dung cũ
-            content.innerHTML = '';
-            
-            if (!mesh) {
-                content.innerHTML = '<p>Chọn một hình khối để xem thông tin</p>';
-                panel.style.display = 'block';
-                leftPanelMode = 'shapeInfo';
-                return;
-            }
-            
-            const shapeType = mesh.userData.shapeType;
-            let shapeName = '';
-            
-            switch(shapeType) {
-                case 'cube': shapeName = 'Hình lập phương'; break;
-                case 'cuboid': shapeName = 'Hình hộp chữ nhật'; break;
-                case 'tetrahedron': shapeName = 'Tứ diện S.ABC'; break;
-                case 'triangularPrism': shapeName = 'Lăng trụ đứng tam giác'; break;
-                case 'pyramid': shapeName = 'Chóp tứ giác đều'; break;
-                case 'triangularPyramid': shapeName = 'Chóp tam giác đều'; break;
-            }
-            
-            // Tạo nội dung cho panel bên trái với các trường có thể chỉnh sửa
-            let html = `
-                <h4>${shapeName}</h4>
-                <div class="shape-details">
-                    <h5>Tọa độ điểm:</h5>
-                    <div id="pointCoordinates"></div>
-                    
-                    <h5>Độ dài cạnh:</h5>
-                    <div id="edgeLengths"></div>
-                </div>
-            `;
-            
-            content.innerHTML = html;
-            panel.style.display = 'block';
-            leftPanelMode = 'shapeInfo';
-            
-            // Cập nhật thông tin chi tiết
-            updateShapeDetails(mesh);
-        }
-
-        // Hàm cập nhật thông tin chi tiết của hình khối
-        function updateShapeDetails(mesh) {
-            if (!mesh) return;
-            
-            // Cập nhật tọa độ điểm
-            const pointCoordinatesDiv = document.getElementById('pointCoordinates');
-            pointCoordinatesDiv.innerHTML = '';
-            
-            Object.keys(points).forEach(pointName => {
-                const point = points[pointName];
-                const pointDiv = document.createElement('div');
-                pointDiv.className = 'edge-item';
-                pointDiv.innerHTML = `
-                    <label>${pointName}:</label>
-                    <input type="number" value="${point.x.toFixed(2)}" step="0.1" data-point="${pointName}" data-coord="x">
-                    <input type="number" value="${point.y.toFixed(2)}" step="0.1" data-point="${pointName}" data-coord="y">
-                    <input type="number" value="${point.z.toFixed(2)}" step="0.1" data-point="${pointName}" data-coord="z">
-                `;
-                pointCoordinatesDiv.appendChild(pointDiv);
-            });
-            
-            // Thêm sự kiện thay đổi tọa độ
-            pointCoordinatesDiv.querySelectorAll('input').forEach(input => {
-                input.addEventListener('change', function() {
-                    const pointName = this.dataset.point;
-                    const coord = this.dataset.coord;
-                    const value = parseFloat(this.value);
-                    
-                    if (points[pointName]) {
-                        points[pointName][coord] = value;
-                        
-                        // Cập nhật lại các điểm hiển thị
-                        createPointSpheres();
-                        
-                        // Cập nhật lại các cạnh
-                        updateEdges();
-                        
-                        // Cập nhật lại các mặt phẳng
-                        updatePlanes();
-                        
-                        // Cập nhật nhãn độ dài cạnh
-                        updateEdgeLengthLabels();
-                    }
-                });
-            });
-            
-            // Cập nhật độ dài cạnh
-            const edgeLengthsDiv = document.getElementById('edgeLengths');
-            edgeLengthsDiv.innerHTML = '';
-            
-            const shapeType = mesh.userData.shapeType;
-            let edges = [];
-            
-            // Xác định các cạnh dựa trên loại hình
-            switch(shapeType) {
-                case 'cube':
-                case 'cuboid':
-                case 'quadrangularPrism':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-                    ];
-                    break;
-                case 'tetrahedron':
-                case 'triangularPyramid':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                        ['A', 'S'], ['B', 'S'], ['C', 'S']
-                    ];
-                    break;
-                case 'triangularPrism':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                        ['D', 'E'], ['E', 'F'], ['F', 'D'],
-                        ['A', 'D'], ['B', 'E'], ['C', 'F']
-                    ];
-                    break;
-                case 'pyramid':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
-                    ];
-                    break;
-            }
-            
-            edges.forEach(edge => {
-                const point1 = points[edge[0]];
-                const point2 = points[edge[1]];
-                
-                if (point1 && point2) {
-                    const length = point1.distanceTo(point2);
-                    const edgeDiv = document.createElement('div');
-                    edgeDiv.className = 'edge-item';
-                    edgeDiv.innerHTML = `
-                        <label>${edge[0]}${edge[1]}:</label>
-                        <input type="number" value="${length.toFixed(2)}" step="0.1" data-edge="${edge[0]}-${edge[1]}">
-                    `;
-                    edgeLengthsDiv.appendChild(edgeDiv);
-                    
-                    // Thêm sự kiện thay đổi độ dài cạnh
-                    edgeDiv.querySelector('input').addEventListener('change', function() {
-                        const edgePoints = this.dataset.edge.split('-');
-                        const newLength = parseFloat(this.value);
-                        
-                        changeEdge(edgePoints, newLength, 0);
-                    });
-                }
-            });
-        }
-
-        // ========== HÀM MỚI CHO THÊM ĐIỂM/ĐOẠN THẲNG ==========
+        // ========== HÀM CHO THÊM ĐIỂM/ĐOẠN THẲNG ==========
 
         // Hàm hiển thị form thêm điểm
         function showAddPointForm() {
@@ -3309,12 +2600,8 @@
             form.classList.add('active');
             document.getElementById('addSegmentForm').classList.remove('active');
             
-            // Cập nhật dropdown
             updatePointDropdowns();
             updatePlaneDropdowns();
-            
-            // Kích hoạt xử lý thay đổi loại điểm
-            handlePointTypeChange();
         }
 
         // Hàm hiển thị form thêm đoạn thẳng
@@ -3323,7 +2610,6 @@
             form.classList.add('active');
             document.getElementById('addPointForm').classList.remove('active');
             
-            // Cập nhật dropdown
             updatePointDropdowns();
         }
 
@@ -3337,13 +2623,11 @@
         function handlePointTypeChange() {
             const pointType = document.getElementById('newPointType').value;
             
-            // Ẩn tất cả các parameter sections
             document.getElementById('projectionParams').style.display = 'none';
             document.getElementById('midpointParams').style.display = 'none';
             document.getElementById('centroidParams').style.display = 'none';
             document.getElementById('onSegmentParams').style.display = 'none';
             
-            // Hiển thị section tương ứng
             switch(pointType) {
                 case 'projection':
                     document.getElementById('projectionParams').style.display = 'block';
@@ -3436,7 +2720,6 @@
                 document.getElementById('infoText').textContent = `Đã thêm điểm ${pointName}`;
                 document.getElementById('infoPanel').style.display = 'block';
                 
-                // Ẩn thông báo sau 2 giây
                 setTimeout(() => {
                     document.getElementById('infoPanel').style.display = 'none';
                 }, 2000);
@@ -3460,7 +2743,6 @@
                 return;
             }
             
-            // Tạo geometry cho đoạn thẳng
             const geometry = new THREE.BufferGeometry();
             const vertices = new Float32Array([
                 points[startPoint].x, points[startPoint].y, points[startPoint].z,
@@ -3480,7 +2762,6 @@
             document.getElementById('infoText').textContent = `Đã thêm đoạn thẳng ${startPoint}${endPoint}`;
             document.getElementById('infoPanel').style.display = 'block';
             
-            // Ẩn thông báo sau 2 giây
             setTimeout(() => {
                 document.getElementById('infoPanel').style.display = 'none';
             }, 2000);
@@ -3491,27 +2772,22 @@
             const point = points[pointName];
             if (!point) return null;
             
-            // Nếu là mặt phẳng OXY
             if (planeName === 'OXY') {
                 return new THREE.Vector3(point.x, point.y, 0);
             }
             
-            // Tìm mặt phẳng từ planeObjects
             const plane = planeObjects.find(p => p.userData.name === planeName);
             if (!plane) return null;
             
-            // Lấy 3 điểm đầu tiên của mặt phẳng để xác định phương trình mặt phẳng
             const positions = plane.geometry.attributes.position.array;
             const p1 = new THREE.Vector3(positions[0], positions[1], positions[2]);
             const p2 = new THREE.Vector3(positions[3], positions[4], positions[5]);
             const p3 = new THREE.Vector3(positions[6], positions[7], positions[8]);
             
-            // Tính vector pháp tuyến của mặt phẳng
             const v1 = new THREE.Vector3().subVectors(p2, p1);
             const v2 = new THREE.Vector3().subVectors(p3, p1);
             const normal = new THREE.Vector3().crossVectors(v1, v2).normalize();
             
-            // Tính hình chiếu của điểm lên mặt phẳng
             const d = -normal.dot(p1);
             const t = -(normal.dot(point) + d) / normal.dot(normal);
             const projection = new THREE.Vector3();
@@ -3520,46 +2796,12 @@
             return projection;
         }
 
-        // Hàm cập nhật dropdown tam giác
-        function updateTriangleDropdowns() {
-            const triangleSelect = document.getElementById('centroidTriangle');
-            const currentValue = triangleSelect.value;
-            
-            while (triangleSelect.firstChild) {
-                triangleSelect.removeChild(triangleSelect.firstChild);
-            }
-            
-            const pointNames = Object.keys(points);
-            const triangles = [];
-            
-            // Tạo tất cả các tam giác có thể từ các điểm
-            for (let i = 0; i < pointNames.length; i++) {
-                for (let j = i + 1; j < pointNames.length; j++) {
-                    for (let k = j + 1; k < pointNames.length; k++) {
-                        triangles.push(pointNames[i] + pointNames[j] + pointNames[k]);
-                    }
-                }
-            }
-            
-            triangles.forEach(triangle => {
-                const option = document.createElement('option');
-                option.value = triangle;
-                option.textContent = triangle;
-                triangleSelect.appendChild(option);
-            });
-            
-            if (currentValue && triangles.includes(currentValue)) {
-                triangleSelect.value = currentValue;
-            }
-        }
-
-        // ========== HÀM MỚI CHO TÔ MÀU MẶT PHẲNG ==========
+        // ========== HÀM CHO TÔ MÀU MẶT PHẲNG ==========
 
         // Hàm hiển thị modal tô màu mặt phẳng
         function showColorPlaneModal() {
             document.getElementById('colorPlaneModal').style.display = 'flex';
             
-            // Đặt màu mặc định
             selectedColor = '#ff0000';
             updateColorSelection();
         }
@@ -3580,25 +2822,20 @@
                 return false;
             }
             
-            // Lấy 3 điểm đầu tiên
             const p1 = pointsArray[0];
             const p2 = pointsArray[1];
             const p3 = pointsArray[2];
             
-            // Tính vector từ p1 đến p2 và từ p1 đến p3
             const v1 = new THREE.Vector3().subVectors(p2, p1);
             const v2 = new THREE.Vector3().subVectors(p3, p1);
             
-            // Tính tích có hướng để tìm vector pháp tuyến
             const normal = new THREE.Vector3().crossVectors(v1, v2);
             
-            // Nếu vector pháp tuyến có độ dài bằng 0, các điểm thẳng hàng
             return normal.length() > 0.001;
         }
 
         // Hàm tô màu mặt phẳng
         function colorPlane(pointNames, color) {
-            // Kiểm tra xem các điểm có tồn tại không
             const pointsArray = [];
             for (let name of pointNames) {
                 if (!points[name]) {
@@ -3608,24 +2845,20 @@
                 pointsArray.push(points[name]);
             }
             
-            // Kiểm tra xem các điểm có tạo thành mặt phẳng không
             if (!isPlane(pointsArray)) {
                 alert('Các điểm không tạo thành một mặt phẳng!');
                 return false;
             }
             
-            // Tạo geometry cho mặt phẳng
             const geometry = new THREE.BufferGeometry();
             const vertices = [];
             
-            // Thêm các đỉnh vào geometry
             pointsArray.forEach(point => {
                 vertices.push(point.x, point.y, point.z);
             });
             
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
             
-            // Tạo indices cho mặt phẳng (giả sử các điểm theo thứ tự)
             const indices = [];
             for (let i = 1; i < pointsArray.length - 1; i++) {
                 indices.push(0, i, i + 1);
@@ -3634,7 +2867,6 @@
             geometry.setIndex(indices);
             geometry.computeVertexNormals();
             
-            // Chuyển đổi màu từ hex sang số
             const colorNum = parseInt(color.replace('#', ''), 16);
             
             const material = new THREE.MeshBasicMaterial({
@@ -3657,7 +2889,7 @@
             return true;
         }
 
-        // ========== HÀM MỚI CHO ẨN/HIỆN PANEL ==========
+        // ========== HÀM CHO ẨN/HIỆN PANEL ==========
 
         // Hàm ẩn/hiện panel bên trái
         function toggleLeftPanel() {
@@ -3665,12 +2897,10 @@
             const toggleIcon = document.getElementById('leftPanelToggleIcon');
             
             if (leftPanelVisible) {
-                // Ẩn panel
                 leftPanel.style.transform = 'translateX(-100%)';
                 toggleIcon.innerHTML = '&#9654;';
                 leftPanelVisible = false;
             } else {
-                // Hiện panel
                 leftPanel.style.transform = 'translateX(0)';
                 toggleIcon.innerHTML = '&#9664;';
                 leftPanelVisible = true;
@@ -3686,12 +2916,10 @@
             document.getElementById('infoText').textContent = 'Đã bỏ chọn tất cả.';
             document.getElementById('infoPanel').style.display = 'block';
             
-            // Ẩn thông báo sau 2 giây
             setTimeout(() => {
                 document.getElementById('infoPanel').style.display = 'none';
             }, 2000);
             
-            // Ẩn panel bên trái
             document.getElementById('leftPanel').style.display = 'none';
         }
 
@@ -3701,12 +2929,6 @@
             const timeSinceLastTap = currentTime - lastTapTime;
             lastTapTime = currentTime;
             return timeSinceLastTap < doubleTapDelay;
-        }
-
-        // Hàm thêm điểm đặc biệt
-        function addSpecialPoint(type, options, name) {
-            // Đây là hàm giả định, cần triển khai thực tế
-            return addPointByCoord(name, 0, 0, 0);
         }
 
         // Gán sự kiện
@@ -3731,7 +2953,6 @@
 
         // Sự kiện cho nút Quay lại
         document.getElementById('backButton').addEventListener('click', function() {
-            // Quay lại góc nhìn mặc định
             changeView('default');
         });
 
@@ -3740,7 +2961,7 @@
             showColorPlaneModal();
         });
 
-        // Sự kiện cho nút Góc nhìn - MỖI LẦN NHẤN SẼ THAY ĐỔI GÓC NHÌN
+        // Sự kiện cho nút Góc nhìn
         document.getElementById('viewButton').addEventListener('click', function() {
             viewIndex = (viewIndex + 1) % views.length;
             changeView(views[viewIndex].name);
@@ -3759,12 +2980,10 @@
         // Sự kiện cho các tùy chọn hình khối
         document.querySelectorAll('.shape-option').forEach(option => {
             option.addEventListener('click', function() {
-                // Xóa active class khỏi tất cả các option
                 document.querySelectorAll('.shape-option').forEach(opt => {
                     opt.classList.remove('active');
                 });
                 
-                // Thêm active class cho option được chọn
                 this.classList.add('active');
             });
         });
@@ -3787,26 +3006,6 @@
         document.getElementById('cancelCreateShape').addEventListener('click', function() {
             document.getElementById('createShapeModal').style.display = 'none';
         });
-
-        // Xác nhận chỉnh sửa cạnh
-        document.getElementById('confirmEdgeEdit').addEventListener('click', function() {
-            const newLength = parseFloat(document.getElementById('edgeLength').value);
-            const newAngle = parseFloat(document.getElementById('edgeAngle').value);
-            
-            if (isNaN(newLength) || newLength <= 0) {
-                alert('Vui lòng nhập độ dài hợp lệ!');
-                return;
-            }
-            
-            if (selectedEdge) {
-                changeEdge(selectedEdge, newLength, isNaN(newAngle) ? 0 : newAngle);
-            }
-            
-            hideEdgeEditForm();
-        });
-
-        // Hủy chỉnh sửa cạnh
-        document.getElementById('cancelEdgeEdit').addEventListener('click', hideEdgeEditForm);
 
         // Xác nhận đặt điểm theo tọa độ
         document.getElementById('confirmPointByCoord').addEventListener('click', function() {
@@ -3850,7 +3049,6 @@
                     return;
                 }
                 
-                // Tạo màu ngẫu nhiên cho vector
                 const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
                 const randomColor = colors[Math.floor(Math.random() * colors.length)];
                 
@@ -3866,7 +3064,6 @@
                     return;
                 }
                 
-                // Tạo màu ngẫu nhiên cho vector
                 const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
                 const randomColor = colors[Math.floor(Math.random() * colors.length)];
                 
@@ -3875,7 +3072,6 @@
             
             if (success) {
                 document.getElementById('vectorModal').style.display = 'none';
-                updateVectorDropdowns();
             }
         });
 
@@ -3889,73 +3085,7 @@
             button.addEventListener('click', hideAllModals);
         });
 
-        // Đóng modal khi nhấn nút hủy
-        document.getElementById('cancelPoint').addEventListener('click', hidePointInputForm);
-
-        // Xác nhận thêm điểm
-        document.getElementById('confirmPoint').addEventListener('click', function() {
-            const pointType = document.getElementById('pointType').value;
-            const pointName = document.getElementById('pointName').value.trim().toUpperCase();
-            
-            if (!pointName) {
-                alert('Vui lòng nhập tên điểm!');
-                return;
-            }
-            
-            if (points[pointName]) {
-                alert('Tên điểm đã tồn tại!');
-                return;
-            }
-            
-            let options = {};
-            let success = false;
-            
-            switch(pointType) {
-                case 'midpoint':
-                    const segment = document.getElementById('pointReference').value;
-                    options.segment = [segment[0], segment[1]];
-                    success = addSpecialPoint('midpoint', options, pointName);
-                    break;
-                case 'centroid':
-                    const triangle = document.getElementById('pointReference').value;
-                    options.triangle = [triangle[0], triangle[1], triangle[2]];
-                    success = addSpecialPoint('centroid', options, pointName);
-                    break;
-                case 'projection':
-                    const pointToProject = document.getElementById('pointReference').value;
-                    options.point = pointToProject;
-                    options.plane = 'OXY'; // Mặc định
-                    success = addSpecialPoint('projection', options, pointName);
-                    break;
-                case 'onSegment':
-                    const line = document.getElementById('pointReference').value;
-                    options.line = [line[0], line[1]];
-                    options.ratio = 0.5;
-                    success = addSpecialPoint('onSegment', options, pointName);
-                    break;
-            }
-            
-            if (success) {
-                hidePointInputForm();
-                updatePointDropdowns();
-                updateLeftPanel(selectedMesh);
-            }
-        });
-
-        // Cập nhật giao diện khi thay đổi loại vector
-        document.getElementById('vectorType').addEventListener('change', function() {
-            const vectorType = this.value;
-            
-            document.getElementById('vectorFromPoints').style.display = vectorType === 'fromPoints' ? 'block' : 'none';
-            document.getElementById('vectorFromCoords').style.display = vectorType === 'fromCoords' ? 'block' : 'none';
-        });
-
-        // Cập nhật giao diện khi thay đổi loại điểm
-        document.getElementById('pointType').addEventListener('change', function() {
-            updatePointReferenceDropdown();
-        });
-
-        // === SỰ KIỆN MỚI CHO THÊM ĐIỂM/ĐOẠN THẲNG ===
+        // === SỰ KIỆN CHO THÊM ĐIỂM/ĐOẠN THẲNG ===
 
         // Sự kiện cho nút thêm điểm
         document.getElementById('addPointBtn').addEventListener('click', function() {
@@ -3982,7 +3112,7 @@
             addNewSegment();
         });
 
-        // === SỰ KIỆN MỚI CHO TÔ MÀU MẶT PHẲNG ===
+        // === SỰ KIỆN CHO TÔ MÀU MẶT PHẲNG ===
 
         // Sự kiện cho lựa chọn màu
         document.querySelectorAll('.color-option').forEach(option => {
@@ -4014,7 +3144,6 @@
                 document.getElementById('infoText').textContent = `Đã tô màu mặt phẳng tạo bởi các điểm: ${pointNames.join(', ')}`;
                 document.getElementById('infoPanel').style.display = 'block';
                 
-                // Ẩn thông báo sau 2 giây
                 setTimeout(() => {
                     document.getElementById('infoPanel').style.display = 'none';
                 }, 2000);
@@ -4027,24 +3156,25 @@
             document.getElementById('planePoints').value = '';
         });
 
-        // === SỰ KIỆN MỚI CHO ẨN/HIỆN PANEL ===
+        // === SỰ KIỆN CHO ẨN/HIỆN PANEL ===
 
         // Sự kiện cho nút ẩn/hiện panel bên trái
         document.getElementById('leftPanelToggle').addEventListener('click', toggleLeftPanel);
 
+        // Sự kiện cho nút đóng panel bên trái
+        document.getElementById('closeLeftPanel').addEventListener('click', function() {
+            document.getElementById('leftPanel').style.display = 'none';
+        });
+
         // === THÊM SỰ KIỆN BÀN PHÍM ===
         document.addEventListener('keydown', function(event) {
-            // Bỏ chọn tất cả khi nhấn ESC
             if (event.key === 'Escape') {
                 deselectAll();
             }
             
-            // Reset góc nhìn khi nhấn R (chỉ khi không có hình khối được chọn)
             if (event.key === 'r' || event.key === 'R') {
                 if (selectedMesh) {
-                    // Nếu có hình khối được chọn, không làm gì cả
                 } else {
-                    // Nếu không có hình khối được chọn, reset camera
                     controls.reset();
                 }
             }
@@ -4052,7 +3182,6 @@
 
         window.addEventListener('resize', onWindowResize);
         
-        // Thêm sự kiện cho cả mouse và touch
         canvas.addEventListener('click', onPointerEvent, false);
         canvas.addEventListener('touchstart', onPointerEvent, false);
         canvas.addEventListener('touchend', function(e) {
