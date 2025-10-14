@@ -540,74 +540,6 @@
             margin-left: 10px;
         }
 
-        /* Perpendicular styles */
-        .perpendicular-section {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-
-        .perpendicular-list {
-            margin-top: 10px;
-            margin-bottom: 15px;
-        }
-
-        .perpendicular-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-
-        .perpendicular-item button {
-            background: none;
-            border: none;
-            color: #ff6b6b;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        /* Perpendicular condition styles */
-        .perpendicular-condition {
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-        }
-
-        .condition-row {
-            margin-bottom: 10px;
-        }
-
-        .condition-input {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .condition-input input {
-            flex: 1;
-        }
-
-        .perpendicular-toggle {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .toggle-option {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .toggle-option input {
-            width: auto;
-        }
-
         /* Edge length labels */
         .edge-length-label {
             position: absolute;
@@ -664,56 +596,6 @@
             background: #e7f1ff;
             border-color: #3A86FF;
             box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
-        }
-
-        /* Donation section styles */
-        .donation-section {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-
-        .donation-toggle {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .donation-conditions {
-            margin-top: 15px;
-        }
-
-        .donation-condition {
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        .condition-line {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .condition-line input {
-            width: 60px;
-        }
-
-        .condition-line select {
-            width: 120px;
-        }
-
-        .add-condition-btn {
-            background: #3A86FF;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 5px;
         }
 
         /* Add Point/Segment Section */
@@ -986,8 +868,8 @@
                             <select id="pointType">
                                 <option value="midpoint">Trung điểm</option>
                                 <option value="centroid">Trọng tâm</option>
-                                <option value="onLine">Nằm trên</option>
-                                <option value="intersection">Giao của</option>
+                                <option value="projection">Hình chiếu</option>
+                                <option value="onSegment">Điểm trên đoạn</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -1142,14 +1024,7 @@
                     <img src="http://example.com/triangular-pyramid.png" alt="Chóp tam giác đều">
                     <span>Chóp tam giác đều</span>
                 </div>
-                <div class="shape-option" data-shape="sphere">
-                    <img src="http://example.com/sphere.png" alt="Hình cầu">
-                    <span>Hình cầu</span>
-                </div>
-                <div class="shape-option" data-shape="cylinder">
-                    <img src="http://example.com/cylinder.png" alt="Hình trụ">
-                    <span>Hình trụ</span>
-                </div>
+                <!-- Đã xóa hình trụ và hình cầu -->
             </div>
             <div class="action-buttons">
                 <button class="secondary-button" id="cancelCreateShape">Hủy</button>
@@ -1421,7 +1296,9 @@
             { name: 'front', displayName: 'Trước (OXZ)', position: [0, 10, 0] },
             { name: 'right', displayName: 'Phải (OYZ)', position: [10, 0, 0] },
             { name: 'isometric', displayName: 'Trục đo', position: [5, 5, 5] },
-            { name: 'back', displayName: 'Sau', position: [0, -10, 0] }
+            { name: 'back', displayName: 'Sau', position: [0, -10, 0] },
+            { name: 'left', displayName: 'Trái', position: [-10, 0, 0] },
+            { name: 'bottom', displayName: 'Dưới', position: [0, 0, -10] }
         ];
 
         // === BIẾN MỚI CHO TÔ MÀU MẶT PHẲNG ===
@@ -1459,6 +1336,14 @@
                     camera.position.set(0, -10, 0);
                     camera.lookAt(0, 0, 0);
                     break;
+                case 'left':
+                    camera.position.set(-10, 0, 0);
+                    camera.lookAt(0, 0, 0);
+                    break;
+                case 'bottom':
+                    camera.position.set(0, 0, -10);
+                    camera.lookAt(0, 0, 0);
+                    break;
             }
             
             controls.target.set(0, 0, 0);
@@ -1482,6 +1367,8 @@
                 case 'right': return 'Phải (OYZ)';
                 case 'isometric': return 'Trục đo';
                 case 'back': return 'Sau';
+                case 'left': return 'Trái';
+                case 'bottom': return 'Dưới';
                 default: return 'Mặc định';
             }
         }
@@ -1643,16 +1530,6 @@
                         ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
                     ];
                     break;
-                case 'sphere':
-                    // Hình cầu không có cạnh
-                    break;
-                case 'cylinder':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-                    ];
-                    break;
             }
             
             // Tạo nhãn cho từng cạnh
@@ -1764,11 +1641,12 @@
             const geometry = new THREE.BufferGeometry();
             
             // Tọa độ các đỉnh của tứ diện - A, B, C trong mặt phẳng OXY, S trên trục OZ
+            // Tứ diện không có cặp cạnh vuông góc
             const vertices = new Float32Array([
                 0, 0, 0,           // A - gốc tọa độ
                 FIXED_LENGTH, 0, 0,           // B - trên trục OX
-                0, FIXED_LENGTH, 0,           // C - trên trục OY
-                0, 0, FIXED_LENGTH            // S - trên trục OZ
+                0.5, FIXED_LENGTH, 0,           // C - không vuông góc với A và B
+                0.3, 0.3, FIXED_LENGTH            // S - không vuông góc với bất kỳ cạnh nào
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -1794,8 +1672,8 @@
             // Thêm các điểm đỉnh
             points['A'] = new THREE.Vector3(0, 0, 0);
             points['B'] = new THREE.Vector3(FIXED_LENGTH, 0, 0);
-            points['C'] = new THREE.Vector3(0, FIXED_LENGTH, 0);
-            points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
+            points['C'] = new THREE.Vector3(0.5, FIXED_LENGTH, 0);
+            points['S'] = new THREE.Vector3(0.3, 0.3, FIXED_LENGTH);
             
             // Tạo các cạnh
             const tetraEdges = [
@@ -2016,79 +1894,6 @@
             return new THREE.Mesh(geometry, material);
         }
 
-        // Hàm tạo hình cầu
-        function createSphere() {
-            const geometry = new THREE.SphereGeometry(FIXED_LENGTH/2, 32, 32);
-            const material = new THREE.MeshBasicMaterial({ 
-                color: 0x3A86FF, 
-                wireframe: false,
-                transparent: true,
-                opacity: 0.7
-            });
-            const sphere = new THREE.Mesh(geometry, material);
-            
-            // Đặt hình cầu sao cho tiếp xúc với mặt phẳng OXY
-            sphere.position.z = FIXED_LENGTH/2;
-            
-            // Thêm điểm tâm
-            points['O'] = new THREE.Vector3(0, 0, FIXED_LENGTH/2);
-            
-            // Tạo các điểm hiển thị
-            createPointSpheres();
-            
-            // Hình cầu không có cạnh hoặc mặt phẳng xác định
-            updateEdgeLengthLabels();
-            
-            return sphere;
-        }
-
-        // Hàm tạo hình trụ
-        function createCylinder() {
-            const geometry = new THREE.CylinderGeometry(FIXED_LENGTH/2, FIXED_LENGTH/2, FIXED_LENGTH, 32);
-            const material = new THREE.MeshBasicMaterial({ 
-                color: 0x3A86FF, 
-                wireframe: false,
-                transparent: true,
-                opacity: 0.7
-            });
-            const cylinder = new THREE.Mesh(geometry, material);
-            
-            // Đặt hình trụ sao cho mặt dưới nằm trong OXY (z=0)
-            cylinder.position.z = FIXED_LENGTH / 2;
-            
-            // Thêm các điểm đỉnh (xấp xỉ)
-            const half = FIXED_LENGTH / 2;
-            points['A'] = new THREE.Vector3(-FIXED_LENGTH/2, -half, 0);
-            points['B'] = new THREE.Vector3(FIXED_LENGTH/2, -half, 0);
-            points['C'] = new THREE.Vector3(FIXED_LENGTH/2, half, 0);
-            points['D'] = new THREE.Vector3(-FIXED_LENGTH/2, half, 0);
-            points['E'] = new THREE.Vector3(-FIXED_LENGTH/2, -half, FIXED_LENGTH);
-            points['F'] = new THREE.Vector3(FIXED_LENGTH/2, -half, FIXED_LENGTH);
-            points['G'] = new THREE.Vector3(FIXED_LENGTH/2, half, FIXED_LENGTH);
-            points['H'] = new THREE.Vector3(-FIXED_LENGTH/2, half, FIXED_LENGTH);
-            
-            // Tạo các cạnh (xấp xỉ)
-            const cylinderEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Đáy dưới
-                ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'], // Đáy trên
-                ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']  // Cạnh bên
-            ];
-            const edges = createEdges(cylinderEdges);
-            scene.add(edges);
-            edgeObjects.push(edges);
-            
-            // Tạo các điểm hiển thị
-            createPointSpheres();
-            
-            // Tạo các mặt phẳng
-            createPlanesForCylinder();
-            
-            // Tạo nhãn độ dài cạnh
-            updateEdgeLengthLabels();
-            
-            return cylinder;
-        }
-
         // Hàm tạo các mặt phẳng cho hình lập phương (có thể chọn được)
         function createPlanesForCube(cube) {
             // Xóa các mặt phẳng cũ
@@ -2175,10 +1980,11 @@
             geometry.setIndex([0, 1, 2, 0, 2, 3]); // Tạo 2 tam giác cho mặt phẳng
             geometry.computeVertexNormals();
             
+            // Mặt phẳng ban đầu không có màu
             const material = new THREE.MeshBasicMaterial({
                 color: 0xffffff,
                 transparent: true,
-                opacity: 0.3,
+                opacity: 0.0, // Ban đầu trong suốt
                 side: THREE.DoubleSide
             });
             
@@ -2188,7 +1994,8 @@
                 name: planeName,
                 selectable: true,
                 originalColor: 0xffffff,
-                isSelected: false
+                isSelected: false,
+                isColored: false
             };
             
             return plane;
@@ -2226,7 +2033,7 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.3,
+                    opacity: 0.0, // Ban đầu trong suốt
                     side: THREE.DoubleSide
                 });
                 
@@ -2271,7 +2078,7 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.3,
+                    opacity: 0.0, // Ban đầu trong suốt
                     side: THREE.DoubleSide
                 });
                 
@@ -2326,7 +2133,7 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.3,
+                    opacity: 0.0, // Ban đầu trong suốt
                     side: THREE.DoubleSide
                 });
                 
@@ -2381,7 +2188,7 @@
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.3,
+                    opacity: 0.0, // Ban đầu trong suốt
                     side: THREE.DoubleSide
                 });
                 
@@ -2391,84 +2198,6 @@
                 scene.add(plane);
                 planeObjects.push(plane);
             }
-        }
-
-        // Hàm tạo các mặt phẳng cho hình trụ
-        function createPlanesForCylinder() {
-            // Xóa các mặt phẳng cũ
-            planeObjects.forEach(obj => scene.remove(obj));
-            planeObjects.length = 0;
-            
-            // Tạo 6 mặt phẳng cho hình trụ (xấp xỉ)
-            const half = FIXED_LENGTH / 2;
-            const planes = [
-                // Mặt dưới (ABCD) - NẰM TRONG OXY
-                {
-                    name: 'ABCD',
-                    vertices: [
-                        -FIXED_LENGTH/2, -half, 0,  // A
-                        FIXED_LENGTH/2, -half, 0,   // B
-                        FIXED_LENGTH/2, half, 0,    // C
-                        -FIXED_LENGTH/2, half, 0    // D
-                    ]
-                },
-                // Mặt trên (EFGH)
-                {
-                    name: 'EFGH', 
-                    vertices: [
-                        -FIXED_LENGTH/2, -half, FIXED_LENGTH,   // E
-                        FIXED_LENGTH/2, -half, FIXED_LENGTH,    // F
-                        FIXED_LENGTH/2, half, FIXED_LENGTH,     // G
-                        -FIXED_LENGTH/2, half, FIXED_LENGTH     // H
-                    ]
-                },
-                // Mặt trước (ADHE)
-                {
-                    name: 'ADHE',
-                    vertices: [
-                        -FIXED_LENGTH/2, -half, 0,  // A
-                        -FIXED_LENGTH/2, -half, FIXED_LENGTH,   // E  
-                        -FIXED_LENGTH/2, half, FIXED_LENGTH,    // H
-                        -FIXED_LENGTH/2, half, 0    // D
-                    ]
-                },
-                // Mặt sau (BCGF)
-                {
-                    name: 'BCGF',
-                    vertices: [
-                        FIXED_LENGTH/2, -half, 0,   // B
-                        FIXED_LENGTH/2, -half, FIXED_LENGTH,    // F
-                        FIXED_LENGTH/2, half, FIXED_LENGTH,     // G
-                        FIXED_LENGTH/2, half, 0     // C
-                    ]
-                },
-                // Mặt trái (ABFE)
-                {
-                    name: 'ABFE', 
-                    vertices: [
-                        -FIXED_LENGTH/2, -half, 0,  // A
-                        FIXED_LENGTH/2, -half, 0,   // B
-                        FIXED_LENGTH/2, -half, FIXED_LENGTH,    // F
-                        -FIXED_LENGTH/2, -half, FIXED_LENGTH    // E
-                    ]
-                },
-                // Mặt phải (DCGH)
-                {
-                    name: 'DCGH',
-                    vertices: [
-                        -FIXED_LENGTH/2, half, 0,   // D
-                        FIXED_LENGTH/2, half, 0,    // C
-                        FIXED_LENGTH/2, half, FIXED_LENGTH,     // G
-                        -FIXED_LENGTH/2, half, FIXED_LENGTH     // H
-                    ]
-                }
-            ];
-            
-            planes.forEach(planeData => {
-                const plane = createSelectablePlane(planeData.vertices, planeData.name);
-                scene.add(plane);
-                planeObjects.push(plane);
-            });
         }
 
         // Hàm tạo các điểm hiển thị (hình tròn đầu mút) với kích thước lớn hơn và hover effect
@@ -2581,12 +2310,7 @@
                 case 'triangularPyramid':
                     model = createTriangularPyramid();
                     break;
-                case 'sphere':
-                    model = createSphere();
-                    break;
-                case 'cylinder':
-                    model = createCylinder();
-                    break;
+                // Đã xóa hình cầu và hình trụ
             }
             
             if (model) {
@@ -2709,16 +2433,6 @@
                             ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
                         ]);
                         break;
-                    case 'sphere':
-                        // Hình cầu không có cạnh
-                        break;
-                    case 'cylinder':
-                        edges = createEdges([
-                            ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                            ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                            ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-                        ]);
-                        break;
                 }
                 
                 if (edges) {
@@ -2744,8 +2458,6 @@
                 createPlanesForTriangularPrism();
             } else if (shapeType === 'pyramid') {
                 createPlanesForPyramid();
-            } else if (shapeType === 'cylinder') {
-                createPlanesForCylinder();
             }
         }
 
@@ -3144,23 +2856,16 @@
                     option.textContent = triangle;
                     referenceSelect.appendChild(option);
                 });
-            } else if (pointType === 'onLine') {
-                const segments = [];
+            } else if (pointType === 'projection') {
                 const pointNames = Object.keys(points);
                 
-                for (let i = 0; i < pointNames.length; i++) {
-                    for (let j = i + 1; j < pointNames.length; j++) {
-                        segments.push(pointNames[i] + pointNames[j]);
-                    }
-                }
-                
-                segments.forEach(segment => {
+                pointNames.forEach(pointName => {
                     const option = document.createElement('option');
-                    option.value = segment;
-                    option.textContent = segment;
+                    option.value = pointName;
+                    option.textContent = pointName;
                     referenceSelect.appendChild(option);
                 });
-            } else if (pointType === 'intersection') {
+            } else if (pointType === 'onSegment') {
                 const segments = [];
                 const pointNames = Object.keys(points);
                 
@@ -3463,8 +3168,6 @@
                 case 'triangularPrism': shapeName = 'Lăng trụ đứng tam giác'; break;
                 case 'pyramid': shapeName = 'Chóp tứ giác đều'; break;
                 case 'triangularPyramid': shapeName = 'Chóp tam giác đều'; break;
-                case 'sphere': shapeName = 'Hình cầu'; break;
-                case 'cylinder': shapeName = 'Hình trụ'; break;
             }
             
             // Tạo nội dung cho panel bên trái với các trường có thể chỉnh sửa
@@ -3476,26 +3179,6 @@
                     
                     <h5>Độ dài cạnh:</h5>
                     <div id="edgeLengths"></div>
-                    
-                    <div class="perpendicular-section">
-                        <h5>Vuông góc:</h5>
-                        <div class="perpendicular-toggle">
-                            <div class="toggle-option">
-                                <input type="radio" id="perpendicularYes" name="perpendicular" value="yes" checked>
-                                <label for="perpendicularYes">Có</label>
-                            </div>
-                            <div class="toggle-option">
-                                <input type="radio" id="perpendicularNo" name="perpendicular" value="no">
-                                <label for="perpendicularNo">Không</label>
-                            </div>
-                        </div>
-                        <div id="perpendicularDetails">
-                            <div class="perpendicular-list" id="perpendicularList">
-                                <!-- Danh sách các yếu tố vuông góc sẽ được thêm động -->
-                            </div>
-                            <button id="addPerpendicularBtn" class="add-condition-btn">Thêm vuông góc</button>
-                        </div>
-                    </div>
                 </div>
             `;
             
@@ -3505,96 +3188,6 @@
             
             // Cập nhật thông tin chi tiết
             updateShapeDetails(mesh);
-            
-            // Thêm sự kiện cho nút vuông góc
-            document.getElementById('perpendicularYes').addEventListener('change', function() {
-                document.getElementById('perpendicularDetails').style.display = this.checked ? 'block' : 'none';
-                if (this.checked) {
-                    // Nếu chọn "Có", đảm bảo có ít nhất một điều kiện vuông góc
-                    if (perpendicularConditions.length === 0) {
-                        addPerpendicularCondition();
-                    }
-                } else {
-                    // Nếu chọn "Không", xóa tất cả điều kiện vuông góc
-                    perpendicularConditions = [];
-                    updatePerpendicularList();
-                    // Điều chỉnh các thông tin về độ dài và tọa độ để không còn vuông góc
-                    adjustForNoPerpendicular();
-                }
-            });
-            
-            document.getElementById('perpendicularNo').addEventListener('change', function() {
-                document.getElementById('perpendicularDetails').style.display = this.checked ? 'none' : 'block';
-                if (this.checked) {
-                    // Nếu chọn "Không", xóa tất cả điều kiện vuông góc
-                    perpendicularConditions = [];
-                    updatePerpendicularList();
-                    // Điều chỉnh các thông tin về độ dài và tọa độ để không còn vuông góc
-                    adjustForNoPerpendicular();
-                }
-            });
-            
-            document.getElementById('addPerpendicularBtn').addEventListener('click', function() {
-                addPerpendicularCondition();
-            });
-        }
-
-        // Hàm điều chỉnh hình khối khi không có vuông góc
-        function adjustForNoPerpendicular() {
-            if (!selectedMesh) return;
-            
-            const shapeType = selectedMesh.userData.shapeType;
-            
-            // Điều chỉnh tọa độ để không còn vuông góc
-            switch(shapeType) {
-                case 'cube':
-                case 'cuboid':
-                    // Biến hình lập phương/hộp chữ nhật thành hình bình hành
-                    points['B'].x += 0.2;
-                    points['C'].x += 0.2;
-                    points['F'].x += 0.2;
-                    points['G'].x += 0.2;
-                    break;
-                case 'tetrahedron':
-                case 'triangularPyramid':
-                    // Dịch chuyển điểm S để không còn vuông góc
-                    points['S'].x += 0.2;
-                    points['S'].y += 0.1;
-                    break;
-                case 'triangularPrism':
-                    // Dịch chuyển mặt trên
-                    points['D'].x += 0.2;
-                    points['E'].x += 0.2;
-                    points['F'].x += 0.2;
-                    break;
-                case 'pyramid':
-                    // Dịch chuyển đỉnh S
-                    points['S'].x += 0.2;
-                    points['S'].y += 0.1;
-                    break;
-                case 'cylinder':
-                    // Biến hình trụ thành hình trụ xiên
-                    points['E'].x += 0.2;
-                    points['F'].x += 0.2;
-                    points['G'].x += 0.2;
-                    points['H'].x += 0.2;
-                    break;
-            }
-            
-            // Cập nhật lại các điểm hiển thị
-            createPointSpheres();
-            
-            // Cập nhật lại các cạnh
-            updateEdges();
-            
-            // Cập nhật lại các mặt phẳng
-            updatePlanes();
-            
-            // Cập nhật nhãn độ dài cạnh
-            updateEdgeLengthLabels();
-            
-            // Cập nhật panel bên trái
-            updateLeftPanel(selectedMesh);
         }
 
         // Hàm cập nhật thông tin chi tiết của hình khối
@@ -3681,16 +3274,6 @@
                         ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
                     ];
                     break;
-                case 'sphere':
-                    // Hình cầu không có cạnh
-                    break;
-                case 'cylinder':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-                    ];
-                    break;
             }
             
             edges.forEach(edge => {
@@ -3716,150 +3299,6 @@
                     });
                 }
             });
-            
-            // Cập nhật danh sách vuông góc
-            updatePerpendicularList();
-        }
-
-        // Hàm cập nhật danh sách vuông góc
-        function updatePerpendicularList() {
-            const perpendicularList = document.getElementById('perpendicularList');
-            perpendicularList.innerHTML = '';
-            
-            perpendicularConditions.forEach((condition, index) => {
-                const conditionDiv = document.createElement('div');
-                conditionDiv.className = 'perpendicular-item';
-                conditionDiv.innerHTML = `
-                    <span>${condition.edge1} ⊥ ${condition.edge2}</span>
-                    <button class="remove-perpendicular" data-index="${index}">X</button>
-                `;
-                perpendicularList.appendChild(conditionDiv);
-            });
-            
-            // Thêm sự kiện xóa vuông góc
-            perpendicularList.querySelectorAll('.remove-perpendicular').forEach(button => {
-                button.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    perpendicularConditions.splice(index, 1);
-                    updatePerpendicularList();
-                });
-            });
-        }
-
-        // Hàm thêm điều kiện vuông góc
-        function addPerpendicularCondition() {
-            // Tạo form thêm vuông góc
-            const formHtml = `
-                <div class="perpendicular-condition">
-                    <div class="condition-input">
-                        <select id="perpendicularEdge1">
-                            <!-- Các cạnh sẽ được thêm động -->
-                        </select>
-                        <span>⊥</span>
-                        <select id="perpendicularEdge2">
-                            <!-- Các cạnh sẽ được thêm động -->
-                        </select>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="secondary-button" id="cancelPerpendicular">Hủy</button>
-                        <button class="primary-button" id="confirmPerpendicular">Thêm</button>
-                    </div>
-                </div>
-            `;
-            
-            const perpendicularList = document.getElementById('perpendicularList');
-            perpendicularList.innerHTML += formHtml;
-            
-            // Cập nhật dropdown cho các cạnh
-            updateEdgeDropdowns();
-            
-            // Thêm sự kiện cho nút
-            document.getElementById('cancelPerpendicular').addEventListener('click', function() {
-                updatePerpendicularList();
-            });
-            
-            document.getElementById('confirmPerpendicular').addEventListener('click', function() {
-                const edge1 = document.getElementById('perpendicularEdge1').value;
-                const edge2 = document.getElementById('perpendicularEdge2').value;
-                
-                if (edge1 && edge2 && edge1 !== edge2) {
-                    perpendicularConditions.push({
-                        edge1: edge1,
-                        edge2: edge2
-                    });
-                    updatePerpendicularList();
-                } else {
-                    alert('Vui lòng chọn hai cạnh khác nhau!');
-                }
-            });
-        }
-
-        // Hàm cập nhật dropdown cho các cạnh
-        function updateEdgeDropdowns() {
-            const edge1Select = document.getElementById('perpendicularEdge1');
-            const edge2Select = document.getElementById('perpendicularEdge2');
-            
-            if (!edge1Select || !edge2Select) return;
-            
-            // Xóa các tùy chọn cũ
-            edge1Select.innerHTML = '';
-            edge2Select.innerHTML = '';
-            
-            // Thêm các cạnh có sẵn
-            const shapeType = selectedMesh.userData.shapeType;
-            let edges = [];
-            
-            // Xác định các cạnh dựa trên loại hình
-            switch(shapeType) {
-                case 'cube':
-                case 'cuboid':
-                case 'quadrangularPrism':
-                    edges = [
-                        'AB', 'BC', 'CD', 'DA',
-                        'EF', 'FG', 'GH', 'HE',
-                        'AE', 'BF', 'CG', 'DH'
-                    ];
-                    break;
-                case 'tetrahedron':
-                case 'triangularPyramid':
-                    edges = [
-                        'AB', 'BC', 'CA',
-                        'AS', 'BS', 'CS'
-                    ];
-                    break;
-                case 'triangularPrism':
-                    edges = [
-                        'AB', 'BC', 'CA',
-                        'DE', 'EF', 'FD',
-                        'AD', 'BE', 'CF'
-                    ];
-                    break;
-                case 'pyramid':
-                    edges = [
-                        'AB', 'BC', 'CD', 'DA',
-                        'AS', 'BS', 'CS', 'DS'
-                    ];
-                    break;
-                case 'cylinder':
-                    edges = [
-                        'AB', 'BC', 'CD', 'DA',
-                        'EF', 'FG', 'GH', 'HE',
-                        'AE', 'BF', 'CG', 'DH'
-                    ];
-                    break;
-            }
-            
-            edges.forEach(edge => {
-                const option1 = document.createElement('option');
-                option1.value = edge;
-                option1.textContent = edge;
-                edge1Select.appendChild(option1);
-                
-                const option2 = document.createElement('option');
-                option2.value = edge;
-                option2.textContent = edge;
-                edge2Select.appendChild(option2);
-            });
         }
 
         // ========== HÀM MỚI CHO THÊM ĐIỂM/ĐOẠN THẲNG ==========
@@ -3873,6 +3312,9 @@
             // Cập nhật dropdown
             updatePointDropdowns();
             updatePlaneDropdowns();
+            
+            // Kích hoạt xử lý thay đổi loại điểm
+            handlePointTypeChange();
         }
 
         // Hàm hiển thị form thêm đoạn thẳng
@@ -4479,16 +3921,17 @@
                     options.triangle = [triangle[0], triangle[1], triangle[2]];
                     success = addSpecialPoint('centroid', options, pointName);
                     break;
-                case 'onLine':
+                case 'projection':
+                    const pointToProject = document.getElementById('pointReference').value;
+                    options.point = pointToProject;
+                    options.plane = 'OXY'; // Mặc định
+                    success = addSpecialPoint('projection', options, pointName);
+                    break;
+                case 'onSegment':
                     const line = document.getElementById('pointReference').value;
                     options.line = [line[0], line[1]];
                     options.ratio = 0.5;
-                    success = addSpecialPoint('onLine', options, pointName);
-                    break;
-                case 'intersection':
-                    const firstSegment = document.getElementById('pointReference').value;
-                    options.segment = [firstSegment[0], firstSegment[1]];
-                    success = addSpecialPoint('midpoint', options, pointName);
+                    success = addSpecialPoint('onSegment', options, pointName);
                     break;
             }
             
