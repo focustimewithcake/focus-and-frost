@@ -1466,6 +1466,11 @@
             
             document.getElementById('infoText').textContent = `Đã chuyển sang góc nhìn: ${getViewName(viewType)}`;
             document.getElementById('infoPanel').style.display = 'block';
+            
+            // Ẩn thông báo sau 2 giây
+            setTimeout(() => {
+                document.getElementById('infoPanel').style.display = 'none';
+            }, 2000);
         }
 
         // Hàm lấy tên góc nhìn
@@ -1488,6 +1493,11 @@
             document.getElementById('infoText').textContent = `Đã chọn hình khối.`;
             document.getElementById('infoPanel').style.display = 'block';
             
+            // Ẩn thông báo sau 2 giây
+            setTimeout(() => {
+                document.getElementById('infoPanel').style.display = 'none';
+            }, 2000);
+            
             // Hiển thị thông tin chi tiết trong panel bên trái
             updateLeftPanel(mesh);
             
@@ -1498,6 +1508,7 @@
             updatePointDropdowns();
             updateSegmentDropdowns();
             updateTriangleDropdowns();
+            updatePlaneDropdowns();
         }
 
         // Hàm bỏ chọn hình khối
@@ -2996,6 +3007,40 @@
             }
         }
 
+        // Hàm cập nhật danh sách mặt phẳng trong dropdown
+        function updatePlaneDropdowns() {
+            const planeSelects = document.querySelectorAll('select[id$="Plane"]');
+            
+            planeSelects.forEach(select => {
+                const currentValue = select.value;
+                
+                while (select.firstChild) {
+                    select.removeChild(select.firstChild);
+                }
+                
+                // Thêm tùy chọn mặt phẳng OXY
+                const optionOXY = document.createElement('option');
+                optionOXY.value = 'OXY';
+                optionOXY.textContent = 'OXY';
+                select.appendChild(optionOXY);
+                
+                // Thêm các mặt phẳng từ planeObjects
+                planeObjects.forEach(plane => {
+                    const planeName = plane.userData.name;
+                    if (planeName) {
+                        const option = document.createElement('option');
+                        option.value = planeName;
+                        option.textContent = planeName;
+                        select.appendChild(option);
+                    }
+                });
+                
+                if (currentValue) {
+                    select.value = currentValue;
+                }
+            });
+        }
+
         // Hàm cập nhật danh sách vector trong dropdown
         function updateVectorDropdowns() {
             const vectorSelects = document.querySelectorAll('select[id$="Vector"]');
@@ -3204,6 +3249,11 @@
                         document.getElementById('infoText').textContent = 
                             `Cạnh: Độ dài = ${length.toFixed(2)}`;
                         document.getElementById('infoPanel').style.display = 'block';
+                        
+                        // Ẩn thông báo sau 2 giây
+                        setTimeout(() => {
+                            document.getElementById('infoPanel').style.display = 'none';
+                        }, 2000);
                     }
                     return;
                 }
@@ -3226,6 +3276,11 @@
                             document.getElementById('infoText').textContent = 
                                 `Vector ${key}: (${vec.direction.x.toFixed(2)}, ${vec.direction.y.toFixed(2)}, ${vec.direction.z.toFixed(2)})`;
                             document.getElementById('infoPanel').style.display = 'block';
+                            
+                            // Ẩn thông báo sau 2 giây
+                            setTimeout(() => {
+                                document.getElementById('infoPanel').style.display = 'none';
+                            }, 2000);
                         }
                     });
                     return;
@@ -3376,6 +3431,11 @@
             
             document.getElementById('infoText').textContent = 'Đã xóa hình khối.';
             document.getElementById('infoPanel').style.display = 'block';
+            
+            // Ẩn thông báo sau 2 giây
+            setTimeout(() => {
+                document.getElementById('infoPanel').style.display = 'none';
+            }, 2000);
         }
 
         // Hàm cập nhật panel bên trái với thông tin hình khối
@@ -3421,15 +3481,15 @@
                         <h5>Vuông góc:</h5>
                         <div class="perpendicular-toggle">
                             <div class="toggle-option">
-                                <input type="radio" id="perpendicularYes" name="perpendicular" value="yes">
+                                <input type="radio" id="perpendicularYes" name="perpendicular" value="yes" checked>
                                 <label for="perpendicularYes">Có</label>
                             </div>
                             <div class="toggle-option">
-                                <input type="radio" id="perpendicularNo" name="perpendicular" value="no" checked>
+                                <input type="radio" id="perpendicularNo" name="perpendicular" value="no">
                                 <label for="perpendicularNo">Không</label>
                             </div>
                         </div>
-                        <div id="perpendicularDetails" style="display: none;">
+                        <div id="perpendicularDetails">
                             <div class="perpendicular-list" id="perpendicularList">
                                 <!-- Danh sách các yếu tố vuông góc sẽ được thêm động -->
                             </div>
@@ -3449,15 +3509,92 @@
             // Thêm sự kiện cho nút vuông góc
             document.getElementById('perpendicularYes').addEventListener('change', function() {
                 document.getElementById('perpendicularDetails').style.display = this.checked ? 'block' : 'none';
+                if (this.checked) {
+                    // Nếu chọn "Có", đảm bảo có ít nhất một điều kiện vuông góc
+                    if (perpendicularConditions.length === 0) {
+                        addPerpendicularCondition();
+                    }
+                } else {
+                    // Nếu chọn "Không", xóa tất cả điều kiện vuông góc
+                    perpendicularConditions = [];
+                    updatePerpendicularList();
+                    // Điều chỉnh các thông tin về độ dài và tọa độ để không còn vuông góc
+                    adjustForNoPerpendicular();
+                }
             });
             
             document.getElementById('perpendicularNo').addEventListener('change', function() {
                 document.getElementById('perpendicularDetails').style.display = this.checked ? 'none' : 'block';
+                if (this.checked) {
+                    // Nếu chọn "Không", xóa tất cả điều kiện vuông góc
+                    perpendicularConditions = [];
+                    updatePerpendicularList();
+                    // Điều chỉnh các thông tin về độ dài và tọa độ để không còn vuông góc
+                    adjustForNoPerpendicular();
+                }
             });
             
             document.getElementById('addPerpendicularBtn').addEventListener('click', function() {
                 addPerpendicularCondition();
             });
+        }
+
+        // Hàm điều chỉnh hình khối khi không có vuông góc
+        function adjustForNoPerpendicular() {
+            if (!selectedMesh) return;
+            
+            const shapeType = selectedMesh.userData.shapeType;
+            
+            // Điều chỉnh tọa độ để không còn vuông góc
+            switch(shapeType) {
+                case 'cube':
+                case 'cuboid':
+                    // Biến hình lập phương/hộp chữ nhật thành hình bình hành
+                    points['B'].x += 0.2;
+                    points['C'].x += 0.2;
+                    points['F'].x += 0.2;
+                    points['G'].x += 0.2;
+                    break;
+                case 'tetrahedron':
+                case 'triangularPyramid':
+                    // Dịch chuyển điểm S để không còn vuông góc
+                    points['S'].x += 0.2;
+                    points['S'].y += 0.1;
+                    break;
+                case 'triangularPrism':
+                    // Dịch chuyển mặt trên
+                    points['D'].x += 0.2;
+                    points['E'].x += 0.2;
+                    points['F'].x += 0.2;
+                    break;
+                case 'pyramid':
+                    // Dịch chuyển đỉnh S
+                    points['S'].x += 0.2;
+                    points['S'].y += 0.1;
+                    break;
+                case 'cylinder':
+                    // Biến hình trụ thành hình trụ xiên
+                    points['E'].x += 0.2;
+                    points['F'].x += 0.2;
+                    points['G'].x += 0.2;
+                    points['H'].x += 0.2;
+                    break;
+            }
+            
+            // Cập nhật lại các điểm hiển thị
+            createPointSpheres();
+            
+            // Cập nhật lại các cạnh
+            updateEdges();
+            
+            // Cập nhật lại các mặt phẳng
+            updatePlanes();
+            
+            // Cập nhật nhãn độ dài cạnh
+            updateEdgeLengthLabels();
+            
+            // Cập nhật panel bên trái
+            updateLeftPanel(selectedMesh);
         }
 
         // Hàm cập nhật thông tin chi tiết của hình khối
@@ -3725,44 +3862,6 @@
             });
         }
 
-        // Hàm thay đổi góc nhìn
-        function changeView(viewType) {
-            currentView = viewType;
-            
-            switch(viewType) {
-                case 'default':
-                    camera.position.set(5, 5, 5);
-                    camera.lookAt(0, 0, 0);
-                    break;
-                case 'top':
-                    camera.position.set(0, 0, 10);
-                    camera.lookAt(0, 0, 0);
-                    break;
-                case 'front':
-                    camera.position.set(0, 10, 0);
-                    camera.lookAt(0, 0, 0);
-                    break;
-                case 'right':
-                    camera.position.set(10, 0, 0);
-                    camera.lookAt(0, 0, 0);
-                    break;
-                case 'isometric':
-                    camera.position.set(5, 5, 5);
-                    camera.lookAt(0, 0, 0);
-                    break;
-                case 'back':
-                    camera.position.set(0, -10, 0);
-                    camera.lookAt(0, 0, 0);
-                    break;
-            }
-            
-            controls.target.set(0, 0, 0);
-            controls.update();
-            
-            document.getElementById('infoText').textContent = `Đã chuyển sang góc nhìn: ${getViewName(viewType)}`;
-            document.getElementById('infoPanel').style.display = 'block';
-        }
-
         // ========== HÀM MỚI CHO THÊM ĐIỂM/ĐOẠN THẲNG ==========
 
         // Hàm hiển thị form thêm điểm
@@ -3773,6 +3872,7 @@
             
             // Cập nhật dropdown
             updatePointDropdowns();
+            updatePlaneDropdowns();
         }
 
         // Hàm hiển thị form thêm đoạn thẳng
@@ -3893,6 +3993,11 @@
                 
                 document.getElementById('infoText').textContent = `Đã thêm điểm ${pointName}`;
                 document.getElementById('infoPanel').style.display = 'block';
+                
+                // Ẩn thông báo sau 2 giây
+                setTimeout(() => {
+                    document.getElementById('infoPanel').style.display = 'none';
+                }, 2000);
             } else {
                 alert('Không thể thêm điểm. Vui lòng kiểm tra lại thông tin!');
             }
@@ -3932,6 +4037,11 @@
             
             document.getElementById('infoText').textContent = `Đã thêm đoạn thẳng ${startPoint}${endPoint}`;
             document.getElementById('infoPanel').style.display = 'block';
+            
+            // Ẩn thông báo sau 2 giây
+            setTimeout(() => {
+                document.getElementById('infoPanel').style.display = 'none';
+            }, 2000);
         }
 
         // Hàm tính hình chiếu của điểm lên mặt phẳng
@@ -3939,9 +4049,33 @@
             const point = points[pointName];
             if (!point) return null;
             
-            // Đơn giản hóa: giả sử chiếu lên mặt phẳng OXY (z=0)
-            // Trong thực tế, cần xác định mặt phẳng cụ thể từ planeName
-            return new THREE.Vector3(point.x, point.y, 0);
+            // Nếu là mặt phẳng OXY
+            if (planeName === 'OXY') {
+                return new THREE.Vector3(point.x, point.y, 0);
+            }
+            
+            // Tìm mặt phẳng từ planeObjects
+            const plane = planeObjects.find(p => p.userData.name === planeName);
+            if (!plane) return null;
+            
+            // Lấy 3 điểm đầu tiên của mặt phẳng để xác định phương trình mặt phẳng
+            const positions = plane.geometry.attributes.position.array;
+            const p1 = new THREE.Vector3(positions[0], positions[1], positions[2]);
+            const p2 = new THREE.Vector3(positions[3], positions[4], positions[5]);
+            const p3 = new THREE.Vector3(positions[6], positions[7], positions[8]);
+            
+            // Tính vector pháp tuyến của mặt phẳng
+            const v1 = new THREE.Vector3().subVectors(p2, p1);
+            const v2 = new THREE.Vector3().subVectors(p3, p1);
+            const normal = new THREE.Vector3().crossVectors(v1, v2).normalize();
+            
+            // Tính hình chiếu của điểm lên mặt phẳng
+            const d = -normal.dot(p1);
+            const t = -(normal.dot(point) + d) / normal.dot(normal);
+            const projection = new THREE.Vector3();
+            projection.copy(point).add(normal.multiplyScalar(t));
+            
+            return projection;
         }
 
         // Hàm cập nhật dropdown tam giác
@@ -4099,6 +4233,38 @@
                 toggleIcon.innerHTML = '&#9664;';
                 leftPanelVisible = true;
             }
+        }
+
+        // Hàm bỏ chọn tất cả
+        function deselectAll() {
+            selectedMesh = null;
+            selectedEdge = null;
+            selectedPlane = null;
+            
+            document.getElementById('infoText').textContent = 'Đã bỏ chọn tất cả.';
+            document.getElementById('infoPanel').style.display = 'block';
+            
+            // Ẩn thông báo sau 2 giây
+            setTimeout(() => {
+                document.getElementById('infoPanel').style.display = 'none';
+            }, 2000);
+            
+            // Ẩn panel bên trái
+            document.getElementById('leftPanel').style.display = 'none';
+        }
+
+        // Hàm kiểm tra double click
+        function isDoubleClick() {
+            const currentTime = new Date().getTime();
+            const timeSinceLastTap = currentTime - lastTapTime;
+            lastTapTime = currentTime;
+            return timeSinceLastTap < doubleTapDelay;
+        }
+
+        // Hàm thêm điểm đặc biệt
+        function addSpecialPoint(type, options, name) {
+            // Đây là hàm giả định, cần triển khai thực tế
+            return addPointByCoord(name, 0, 0, 0);
         }
 
         // Gán sự kiện
@@ -4404,6 +4570,11 @@
                 
                 document.getElementById('infoText').textContent = `Đã tô màu mặt phẳng tạo bởi các điểm: ${pointNames.join(', ')}`;
                 document.getElementById('infoPanel').style.display = 'block';
+                
+                // Ẩn thông báo sau 2 giây
+                setTimeout(() => {
+                    document.getElementById('infoPanel').style.display = 'none';
+                }, 2000);
             }
         });
 
