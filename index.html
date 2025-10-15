@@ -7,7 +7,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <style>
-        /* Các style CSS giữ nguyên như trước */
         * {
             margin: 0;
             padding: 0;
@@ -23,7 +22,641 @@
             touch-action: none;
         }
 
-        /* ... (giữ nguyên tất cả CSS hiện có) ... */
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(90deg, #3A86FF 0%, #2a75f0 100%);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .header-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        section {
+            width: 100%;
+            position: relative;
+        }
+
+        #sceneCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+        }
+
+        .toolbar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 12px 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        .tool-button {
+            background: linear-gradient(to bottom, #3A86FF, #2a75f0);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-button.active {
+            background: linear-gradient(to bottom, #FF6B6B, #ff5252);
+            transform: translateY(-2px);
+        }
+
+        .tool-button span {
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            color: #3A86FF;
+            font-size: 1.4rem;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+            transition: color 0.3s;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        .shape-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .shape-option {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .shape-option:hover {
+            background-color: #e9ecef;
+            border-color: #3A86FF;
+        }
+
+        .shape-option.active {
+            background-color: #e7f1ff;
+            border-color: #3A86FF;
+            box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+        }
+
+        .shape-option span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.3s;
+            text-transform: uppercase;
+        }
+
+        select:focus, input:focus {
+            border-color: #3A86FF;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .primary-button {
+            background: linear-gradient(to bottom, #3A86FF, #2a75f0);
+            color: white;
+        }
+
+        .primary-button:hover {
+            background: linear-gradient(to bottom, #2a75f0, #1d68e0);
+        }
+
+        .secondary-button {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .secondary-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        #infoPanel {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            display: none;
+            backdrop-filter: blur(5px);
+            border-left: 4px solid #3A86FF;
+            z-index: 100;
+            text-align: center;
+        }
+
+        #infoPanel h3 {
+            color: #3A86FF;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        #infoPanel p {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .tutorial {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 250px;
+            backdrop-filter: blur(5px);
+            border-left: 4px solid #FF6B6B;
+            display: none;
+        }
+
+        .tutorial h3 {
+            color: #FF6B6B;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .tutorial ul {
+            padding-left: 20px;
+        }
+
+        .tutorial li {
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Side panels */
+        .side-panel {
+            position: absolute;
+            top: 15vh; /* Di chuyển lên cao hơn */
+            width: 300px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            padding: 15px;
+            backdrop-filter: blur(5px);
+            z-index: 50;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .left-panel {
+            left: 15px;
+        }
+
+        .right-panel {
+            right: 15px;
+        }
+
+        .side-panel h3 {
+            color: #3A86FF;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .side-panel .close-side-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        /* Shape list styles */
+        .shape-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .shape-list-item {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .shape-list-item:hover {
+            background-color: #e9ecef;
+            border-color: #3A86FF;
+        }
+
+        .shape-list-item.active {
+            background-color: #e7f1ff;
+            border-color: #3A86FF;
+            box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+        }
+
+        .shape-details {
+            margin-top: 15px;
+        }
+
+        .edge-list {
+            margin-top: 15px;
+        }
+
+        .edge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .edge-item label {
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .edge-item input {
+            width: 80px;
+            margin-left: 10px;
+        }
+
+        /* Panel toggle buttons */
+        .panel-toggle {
+            position: absolute;
+            top: 15vh; /* Di chuyển lên cao hơn */
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 40;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .panel-toggle:hover {
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        .left-panel-toggle {
+            left: 15px;
+        }
+
+        .right-panel-toggle {
+            right: 15px;
+        }
+
+        .panel-toggle.hidden {
+            display: none;
+        }
+
+        /* Color palette */
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: #333;
+        }
+
+        /* Right panel sections */
+        .right-panel-section {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .right-panel-section.active {
+            display: block;
+        }
+
+        .right-panel-option {
+            background: #3A86FF;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .right-panel-option:hover {
+            background: #2a75f0;
+        }
+
+        /* NEW STYLES FOR RIGHT PANEL TABS */
+        .right-panel-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+
+        .right-panel-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .right-panel-tab.active {
+            background: #3A86FF;
+            color: white;
+        }
+
+        .right-panel-tab-content {
+            display: none;
+        }
+
+        .right-panel-tab-content.active {
+            display: block;
+        }
+
+        /* NEW STYLES FOR SHOW RIGHT PANEL BUTTON */
+        .show-right-panel-button {
+            background: #3A86FF;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 10px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .show-right-panel-button:hover {
+            background: #2a75f0;
+        }
+
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 95%;
+                bottom: 10px;
+            }
+            
+            .tool-button {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .tool-button span {
+                font-size: 0.7rem;
+            }
+            
+            .shape-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tutorial {
+                display: none;
+            }
+            
+            header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .side-panel {
+                width: 90%;
+                left: 5%;
+                right: 5%;
+            }
+
+            .right-panel-tabs {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .shape-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 20px 15px;
+            }
+            
+            .toolbar {
+                gap: 5px;
+                padding: 10px;
+            }
+            
+            .tool-button {
+                width: 55px;
+                height: 55px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -155,7 +788,7 @@
                             <input type="text" id="firstEdge" placeholder="AB">
                         </div>
                         <div class="form-group">
-                            <label for="secondEdge">Cạnh thứ hai (ví dụ: CD):</label>
+                            <label for="secondEdge">Cạnh thứ hai (ví dụ: CD):</div>
                             <input type="text" id="secondEdge" placeholder="CD">
                         </div>
                         <div class="action-buttons">
@@ -2637,8 +3270,6 @@
         document.getElementById('closeRightPanel').addEventListener('click', function() {
             toggleRightPanel();
         });
-
-        // ĐÃ XÓA SỰ KIỆN CHO NÚT "Hiện panel thêm phần tử"
 
         // Sự kiện cho nút toggle panel bên phải
         document.getElementById('rightPanelToggle').addEventListener('click', function() {
