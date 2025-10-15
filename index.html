@@ -732,6 +732,61 @@
             border: 1px solid #ff0000;
         }
 
+        /* NEW STYLES FOR RIGHT PANEL TABS */
+        .right-panel-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+
+        .right-panel-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .right-panel-tab.active {
+            background: #3A86FF;
+            color: white;
+        }
+
+        .right-panel-tab-content {
+            display: none;
+        }
+
+        .right-panel-tab-content.active {
+            display: block;
+        }
+
+        /* NEW STYLES FOR COLOR PLANE FORM */
+        .color-plane-single-input {
+            margin-bottom: 15px;
+        }
+
+        /* NEW STYLES FOR SHOW RIGHT PANEL BUTTON */
+        .show-right-panel-button {
+            background: #3A86FF;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 10px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .show-right-panel-button:hover {
+            background: #2a75f0;
+        }
+
         @media (max-width: 768px) {
             .toolbar {
                 flex-wrap: wrap;
@@ -775,6 +830,10 @@
                 width: 90%;
                 left: 5%;
                 right: 5%;
+            }
+
+            .right-panel-tabs {
+                flex-direction: column;
             }
         }
 
@@ -869,21 +928,26 @@
                     <div class="shape-info" id="shapeInfo">
                         <p>Chọn một hình khối để xem thông tin</p>
                     </div>
+                    
+                    <!-- Nút hiện panel thêm phần tử -->
+                    <button class="show-right-panel-button" id="showRightPanelButton">
+                        Hiện panel thêm phần tử
+                    </button>
                 </div>
 
                 <div class="side-panel right-panel" id="rightPanel">
                     <h3>Thêm phần tử</h3>
                     <button class="close-side-panel" id="closeRightPanel">&times;</button>
                     
-                    <div class="right-panel-main" id="rightPanelMain">
-                        <button class="right-panel-option" id="addPointOption">Thêm điểm</button>
-                        <button class="right-panel-option" id="perpendicularOption">Vuông góc</button>
-                        <button class="right-panel-option" id="addSegmentOption">Nối đoạn thẳng</button>
+                    <!-- Các tab ngang -->
+                    <div class="right-panel-tabs">
+                        <button class="right-panel-tab active" data-tab="addPointTab">Thêm điểm</button>
+                        <button class="right-panel-tab" data-tab="perpendicularTab">Vuông góc</button>
+                        <button class="right-panel-tab" data-tab="addSegmentTab">Đoạn thẳng</button>
                     </div>
-
-                    <!-- Form thêm điểm -->
-                    <div class="right-panel-section" id="addPointSection">
-                        <h4>Thêm điểm</h4>
+                    
+                    <!-- Nội dung tab Thêm điểm -->
+                    <div class="right-panel-tab-content active" id="addPointTab">
                         <div class="form-group">
                             <label for="newPointType">Loại điểm:</label>
                             <select id="newPointType">
@@ -923,8 +987,8 @@
                         </div>
                     </div>
 
-                    <!-- Form vuông góc -->
-                    <div class="right-panel-section" id="perpendicularSection">
+                    <!-- Nội dung tab Vuông góc -->
+                    <div class="right-panel-tab-content" id="perpendicularTab">
                         <h4>Kiểm tra vuông góc</h4>
                         <div class="form-group">
                             <label for="firstEdge">Cạnh thứ nhất (ví dụ: AB):</label>
@@ -940,8 +1004,8 @@
                         </div>
                     </div>
 
-                    <!-- Form nối đoạn thẳng -->
-                    <div class="right-panel-section" id="addSegmentSection">
+                    <!-- Nội dung tab Đoạn thẳng -->
+                    <div class="right-panel-tab-content" id="addSegmentTab">
                         <h4>Nối đoạn thẳng</h4>
                         <div class="form-group">
                             <label for="segmentStart">Điểm đầu:</label>
@@ -1090,8 +1154,8 @@
                 <button class="close-button">&times;</button>
             </div>
             <div class="form-group">
-                <label for="planePoints">Nhập các điểm tạo thành mặt phẳng (tối thiểu 3 điểm, cách nhau bằng dấu phẩy):</label>
-                <input type="text" id="planePoints" placeholder="Ví dụ: A,B,C">
+                <label for="planePoints">Nhập các điểm tạo thành mặt phẳng (ví dụ: ABC):</label>
+                <input type="text" id="planePoints" placeholder="ABC">
                 <p id="planeValidationMessage" style="color: red; margin-top: 5px; display: none;"></p>
             </div>
             <div class="form-group">
@@ -1167,10 +1231,15 @@
         scene.add(createAxisLabel('Y', new THREE.Vector3(0, 3.5, 0), '#00ff00'));
         scene.add(createAxisLabel('Z', new THREE.Vector3(0, 0, 3.5), '#0000ff'));
 
-        // Mặt phẳng tọa độ OXY
-        const gridHelper = new THREE.GridHelper(10, 10);
+        // Mặt phẳng tọa độ OXY - ĐÃ CHỈNH SỬA ĐỂ LÀM MỜ
+        const gridHelper = new THREE.GridHelper(10, 10, 0x888888, 0xcccccc);
         gridHelper.position.set(0, 0, 0);
         gridHelper.rotation.x = -Math.PI/2;
+        
+        // Làm mờ tấm lưới bằng cách điều chỉnh material
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.3; // Điều chỉnh độ mờ ở đây (0.0 - 1.0)
+        
         scene.add(gridHelper);
 
         // Ánh sáng
@@ -2668,45 +2737,6 @@
 
         // ========== HÀM CHO THÊM ĐIỂM/ĐOẠN THẲNG ==========
 
-        // Hàm hiển thị form thêm điểm trong panel bên phải
-        function showAddPointSection() {
-            document.getElementById('rightPanelMain').style.display = 'none';
-            document.getElementById('addPointSection').classList.add('active');
-            document.getElementById('perpendicularSection').classList.remove('active');
-            document.getElementById('addSegmentSection').classList.remove('active');
-            
-            updatePointDropdowns();
-            updatePlaneDropdowns();
-            updateSegmentDropdowns();
-            updateTriangleDropdowns();
-        }
-
-        // Hàm hiển thị form vuông góc trong panel bên phải
-        function showPerpendicularSection() {
-            document.getElementById('rightPanelMain').style.display = 'none';
-            document.getElementById('addPointSection').classList.remove('active');
-            document.getElementById('perpendicularSection').classList.add('active');
-            document.getElementById('addSegmentSection').classList.remove('active');
-        }
-
-        // Hàm hiển thị form nối đoạn thẳng trong panel bên phải
-        function showAddSegmentSection() {
-            document.getElementById('rightPanelMain').style.display = 'none';
-            document.getElementById('addPointSection').classList.remove('active');
-            document.getElementById('perpendicularSection').classList.remove('active');
-            document.getElementById('addSegmentSection').classList.add('active');
-            
-            updatePointDropdowns();
-        }
-
-        // Hàm quay lại menu chính của panel bên phải
-        function backToRightPanelMain() {
-            document.getElementById('rightPanelMain').style.display = 'block';
-            document.getElementById('addPointSection').classList.remove('active');
-            document.getElementById('perpendicularSection').classList.remove('active');
-            document.getElementById('addSegmentSection').classList.remove('active');
-        }
-
         // Hàm xử lý thay đổi loại điểm
         function handlePointTypeChange() {
             const pointType = document.getElementById('newPointType').value;
@@ -2800,7 +2830,6 @@
             }
             
             if (success) {
-                backToRightPanelMain();
                 document.getElementById('newPointName').value = '';
                 updatePointDropdowns();
                 updateLeftPanel(selectedMesh);
@@ -2844,7 +2873,6 @@
             scene.add(line);
             lineObjects.push(line);
             
-            backToRightPanelMain();
             updatePointDropdowns();
             
             document.getElementById('infoText').textContent = `Đã thêm đoạn thẳng ${startPoint}${endPoint}`;
@@ -2897,8 +2925,6 @@
             setTimeout(() => {
                 document.getElementById('infoPanel').style.display = 'none';
             }, 3000);
-            
-            backToRightPanelMain();
         }
 
         // Hàm thêm ký hiệu vuông góc
@@ -3111,12 +3137,15 @@
         // Hàm ẩn/hiện panel bên phải
         function toggleRightPanel() {
             const rightPanel = document.getElementById('rightPanel');
+            const showButton = document.getElementById('showRightPanelButton');
             
             if (rightPanelVisible) {
                 rightPanel.style.display = 'none';
+                showButton.style.display = 'block';
                 rightPanelVisible = false;
             } else {
                 rightPanel.style.display = 'block';
+                showButton.style.display = 'none';
                 rightPanelVisible = true;
             }
         }
@@ -3143,6 +3172,35 @@
             const timeSinceLastTap = currentTime - lastTapTime;
             lastTapTime = currentTime;
             return timeSinceLastTap < doubleTapDelay;
+        }
+
+        // Hàm chuyển đổi tab trong panel bên phải
+        function switchRightPanelTab(tabName) {
+            // Ẩn tất cả các tab
+            document.querySelectorAll('.right-panel-tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Xóa active class từ tất cả các tab
+            document.querySelectorAll('.right-panel-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Hiện tab được chọn
+            document.getElementById(tabName).classList.add('active');
+            
+            // Thêm active class cho tab được click
+            event.target.classList.add('active');
+            
+            // Cập nhật dropdowns nếu cần
+            if (tabName === 'addPointTab') {
+                updatePointDropdowns();
+                updatePlaneDropdowns();
+                updateSegmentDropdowns();
+                updateTriangleDropdowns();
+            } else if (tabName === 'addSegmentTab') {
+                updatePointDropdowns();
+            }
         }
 
         // Gán sự kiện
@@ -3301,19 +3359,12 @@
 
         // === SỰ KIỆN CHO PANEL BÊN PHẢI ===
 
-        // Sự kiện cho nút thêm điểm trong panel bên phải
-        document.getElementById('addPointOption').addEventListener('click', function() {
-            showAddPointSection();
-        });
-
-        // Sự kiện cho nút vuông góc trong panel bên phải
-        document.getElementById('perpendicularOption').addEventListener('click', function() {
-            showPerpendicularSection();
-        });
-
-        // Sự kiện cho nút nối đoạn thẳng trong panel bên phải
-        document.getElementById('addSegmentOption').addEventListener('click', function() {
-            showAddSegmentSection();
+        // Sự kiện cho các tab trong panel bên phải
+        document.querySelectorAll('.right-panel-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                switchRightPanelTab(tabName);
+            });
         });
 
         // Sự kiện cho thay đổi loại điểm
@@ -3328,7 +3379,7 @@
 
         // Sự kiện cho hủy thêm điểm
         document.getElementById('cancelAddPoint').addEventListener('click', function() {
-            backToRightPanelMain();
+            document.getElementById('newPointName').value = '';
         });
 
         // Sự kiện cho xác nhận kiểm tra vuông góc
@@ -3338,7 +3389,8 @@
 
         // Sự kiện cho hủy kiểm tra vuông góc
         document.getElementById('cancelPerpendicular').addEventListener('click', function() {
-            backToRightPanelMain();
+            document.getElementById('firstEdge').value = '';
+            document.getElementById('secondEdge').value = '';
         });
 
         // Sự kiện cho xác nhận thêm đoạn thẳng
@@ -3348,13 +3400,18 @@
 
         // Sự kiện cho hủy thêm đoạn thẳng
         document.getElementById('cancelAddSegment').addEventListener('click', function() {
-            backToRightPanelMain();
+            document.getElementById('segmentStart').value = '';
+            document.getElementById('segmentEnd').value = '';
         });
 
         // Sự kiện cho nút đóng panel bên phải
         document.getElementById('closeRightPanel').addEventListener('click', function() {
-            document.getElementById('rightPanel').style.display = 'none';
-            rightPanelVisible = false;
+            toggleRightPanel();
+        });
+
+        // Sự kiện cho nút hiện panel bên phải
+        document.getElementById('showRightPanelButton').addEventListener('click', function() {
+            toggleRightPanel();
         });
 
         // === SỰ KIỆN CHO TÔ MÀU MẶT PHẲNG ===
@@ -3375,7 +3432,8 @@
                 return;
             }
             
-            const pointNames = pointInput.split(',').map(p => p.trim());
+            // Tách chuỗi thành mảng các ký tự (ví dụ: "ABC" thành ['A','B','C'])
+            const pointNames = pointInput.split('').filter(char => char !== ' ' && char !== ',');
             
             if (pointNames.length < 3) {
                 alert('Vui lòng nhập ít nhất 3 điểm!');
