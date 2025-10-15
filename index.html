@@ -1066,7 +1066,7 @@
         const planeObjects = [];
         const edgeObjects = [];
         const vectorObjects = [];
-        const coloredPlanes = [];
+        const coloredPlanes = []; // Lưu các mặt phẳng đã tô màu
         let activeTool = null;
         let selectedPoints = [];
         let selectedLine = null;
@@ -1225,16 +1225,23 @@
 
         // Hàm tạo hình lập phương (ĐÃ XÓA ĐƯỜNG CHÉO)
         function createCube() {
+            // Sử dụng EdgesGeometry để tạo các cạnh mà không có đường chéo
             const geometry = new THREE.BoxGeometry(FIXED_LENGTH, FIXED_LENGTH, FIXED_LENGTH);
+            const edgesGeometry = new THREE.EdgesGeometry(geometry);
+            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+            
+            // Tạo mesh trong suốt để chọn
             const material = new THREE.MeshBasicMaterial({ 
                 color: 0x3A86FF, 
-                wireframe: true, // Chuyển sang wireframe để không có màu trên các mặt
+                wireframe: false,
                 transparent: true,
-                opacity: 0.7
+                opacity: 0.0
             });
             const cube = new THREE.Mesh(geometry, material);
             
             cube.position.z = FIXED_LENGTH / 2;
+            edges.position.z = FIXED_LENGTH / 2;
             
             const half = FIXED_LENGTH / 2;
             points['A'] = new THREE.Vector3(-half, -half, 0);
@@ -1246,13 +1253,6 @@
             points['G'] = new THREE.Vector3(half, half, FIXED_LENGTH);
             points['H'] = new THREE.Vector3(-half, half, FIXED_LENGTH);
             
-            // ĐÃ XÓA CÁC ĐƯỜNG CHÉO
-            const cubeEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-            ];
-            const edges = createEdges(cubeEdges);
             scene.add(edges);
             edgeObjects.push(edges);
             
@@ -1268,16 +1268,22 @@
             const height = FIXED_LENGTH * 1.5;
             const depth = FIXED_LENGTH * 0.8;
             
+            // Sử dụng EdgesGeometry để tạo các cạnh mà không có đường chéo
             const geometry = new THREE.BoxGeometry(width, height, depth);
+            const edgesGeometry = new THREE.EdgesGeometry(geometry);
+            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+            
             const material = new THREE.MeshBasicMaterial({ 
                 color: 0x3A86FF, 
-                wireframe: true, // Chuyển sang wireframe để không có màu trên các mặt
+                wireframe: false,
                 transparent: true,
-                opacity: 0.7
+                opacity: 0.0
             });
             const cuboid = new THREE.Mesh(geometry, material);
             
             cuboid.position.z = depth / 2;
+            edges.position.z = depth / 2;
             
             const halfWidth = width / 2;
             const halfHeight = height / 2;
@@ -1292,13 +1298,6 @@
             points['G'] = new THREE.Vector3(halfWidth, halfHeight, depth);
             points['H'] = new THREE.Vector3(-halfWidth, halfHeight, depth);
             
-            // ĐÃ XÓA CÁC ĐƯỜNG CHÉO
-            const cuboidEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-            ];
-            const edges = createEdges(cuboidEdges);
             scene.add(edges);
             edgeObjects.push(edges);
             
@@ -1344,11 +1343,11 @@
             points['C'] = new THREE.Vector3(0.5, FIXED_LENGTH, 0);
             points['S'] = new THREE.Vector3(0.3, 0.3, FIXED_LENGTH);
             
-            const tetraEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                ['A', 'S'], ['B', 'S'], ['C', 'S']
-            ];
-            const edges = createEdges(tetraEdges);
+            // Sử dụng EdgesGeometry để tạo các cạnh
+            const edgesGeometry = new THREE.EdgesGeometry(geometry);
+            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+            
             scene.add(edges);
             edgeObjects.push(edges);
             
@@ -1402,12 +1401,11 @@
             points['E'] = new THREE.Vector3(FIXED_LENGTH, 0, FIXED_LENGTH);
             points['F'] = new THREE.Vector3(FIXED_LENGTH/2, height, FIXED_LENGTH);
             
-            const prismEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                ['D', 'E'], ['E', 'F'], ['F', 'D'],
-                ['A', 'D'], ['B', 'E'], ['C', 'F']
-            ];
-            const edges = createEdges(prismEdges);
+            // Sử dụng EdgesGeometry để tạo các cạnh
+            const edgesGeometry = new THREE.EdgesGeometry(geometry);
+            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+            
             scene.add(edges);
             edgeObjects.push(edges);
             
@@ -1456,11 +1454,11 @@
             points['D'] = new THREE.Vector3(-FIXED_LENGTH/2, FIXED_LENGTH/2, 0);
             points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
             
-            const pyramidEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
-            ];
-            const edges = createEdges(pyramidEdges);
+            // Sử dụng EdgesGeometry để tạo các cạnh
+            const edgesGeometry = new THREE.EdgesGeometry(geometry);
+            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+            
             scene.add(edges);
             edgeObjects.push(edges);
             
@@ -1506,11 +1504,11 @@
             points['C'] = new THREE.Vector3(FIXED_LENGTH/2, height, 0);
             points['S'] = new THREE.Vector3(FIXED_LENGTH/2, height/3, FIXED_LENGTH);
             
-            const tetraEdges = [
-                ['A', 'B'], ['B', 'C'], ['C', 'A'],
-                ['A', 'S'], ['B', 'S'], ['C', 'S']
-            ];
-            const edges = createEdges(tetraEdges);
+            // Sử dụng EdgesGeometry để tạo các cạnh
+            const edgesGeometry = new THREE.EdgesGeometry(geometry);
+            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+            
             scene.add(edges);
             edgeObjects.push(edges);
             
@@ -1878,6 +1876,8 @@
 
         // Hàm tạo mô hình mới
         function createNewModel(shapeType) {
+            // CHỈ xóa các đối tượng liên quan đến hình khối cũ
+            // KHÔNG xóa các mặt phẳng đã tô màu
             if (createdModels.length > 0) {
                 deleteMesh(createdModels[0]);
             }
@@ -1933,7 +1933,7 @@
             }
         }
 
-        // Hàm xóa hình khối
+        // Hàm xóa hình khối (SỬA ĐỔI: KHÔNG xóa các mặt phẳng đã tô màu)
         function deleteMesh(mesh) {
             if (!mesh) return;
             
@@ -2536,6 +2536,12 @@
                 const index = edgeObjects.indexOf(object);
                 if (index > -1) {
                     edgeObjects.splice(index, 1);
+                }
+            } else if (object.userData.type === 'coloredPlane') {
+                scene.remove(object);
+                const index = coloredPlanes.indexOf(object);
+                if (index > -1) {
+                    coloredPlanes.splice(index, 1);
                 }
             }
         }
