@@ -357,7 +357,7 @@
         /* Side panels */
         .side-panel {
             position: absolute;
-            top: 15vh; /* Di chuyển lên cao hơn */
+            top: 15vh;
             width: 300px;
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 8px;
@@ -455,7 +455,7 @@
         /* Panel toggle buttons */
         .panel-toggle {
             position: absolute;
-            top: 15vh; /* Di chuyển lên cao hơn */
+            top: 15vh;
             width: 30px;
             height: 30px;
             background-color: rgba(255, 255, 255, 0.95);
@@ -570,6 +570,37 @@
             display: block;
         }
 
+        /* History modal styles */
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .history-item {
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            background-color: #f5f5f5;
+            border-color: #3A86FF;
+        }
+
+        .history-item .history-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .history-item .history-date {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
         /* NEW STYLES FOR SHOW RIGHT PANEL BUTTON */
         .show-right-panel-button {
             background: #3A86FF;
@@ -665,6 +696,9 @@
             <div class="header-controls">
                 <button class="header-button" id="backButton">Quay lại</button>
                 <button class="header-button" id="colorPlaneButton">Tô màu mặt phẳng</button>
+                <!-- THÊM NÚT LƯU HÌNH VÀ KHO LỊCH SỬ -->
+                <button class="header-button" id="saveButton">Lưu hình</button>
+                <button class="header-button" id="historyButton">Kho lịch sử</button>
             </div>
             <div class="header-controls">
                 <button class="header-button" id="viewButton">Góc nhìn</button>
@@ -724,15 +758,13 @@
                     <div class="shape-info" id="shapeInfo">
                         <p>Chọn một hình khối để xem thông tin</p>
                     </div>
-                    
-                    <!-- ĐÃ XÓA NÚT "Hiện panel thêm phần tử" -->
                 </div>
 
                 <div class="side-panel right-panel" id="rightPanel">
                     <h3>Thêm phần tử</h3>
                     <button class="close-side-panel" id="closeRightPanel">&times;</button>
                     
-                    <!-- Các tab ngang - ĐÃ XÓA TAB VUÔNG GÓC -->
+                    <!-- Các tab ngang -->
                     <div class="right-panel-tabs">
                         <button class="right-panel-tab active" data-tab="addPointTab">Thêm điểm</button>
                         <button class="right-panel-tab" data-tab="addSegmentTab">Đoạn thẳng</button>
@@ -953,8 +985,26 @@
         </div>
     </div>
 
+    <!-- MODAL KHO LỊCH SỬ - MỚI THÊM -->
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Kho lịch sử</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- Danh sách các hình đã lưu sẽ được hiển thị ở đây -->
+            </div>
+            <div class="action-buttons">
+                <button class="secondary-button" id="closeHistoryModal">Đóng</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Khởi tạo scene, camera, renderer
+        // === PHẦN JAVASCRIPT - XỬ LÝ CHỨC NĂNG ===
+        
+        // KHỞI TẠO MÔI TRƯỜNG 3D
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xf4f7ff);
 
@@ -1006,14 +1056,14 @@
         scene.add(createAxisLabel('Y', new THREE.Vector3(0, 3.5, 0), '#00ff00'));
         scene.add(createAxisLabel('Z', new THREE.Vector3(0, 0, 3.5), '#0000ff'));
 
-        // Mặt phẳng tọa độ OXY - ĐÃ CHỈNH SỬA ĐỂ LÀM MỜ
+        // Mặt phẳng tọa độ OXY
         const gridHelper = new THREE.GridHelper(10, 10, 0x888888, 0xcccccc);
         gridHelper.position.set(0, 0, 0);
         gridHelper.rotation.x = -Math.PI/2;
         
-        // Làm mờ tấm lưới bằng cách điều chỉnh material
+        // Làm mờ tấm lưới
         gridHelper.material.transparent = true;
-        gridHelper.material.opacity = 0.3; // Điều chỉnh độ mờ ở đây (0.0 - 1.0)
+        gridHelper.material.opacity = 0.3;
         
         scene.add(gridHelper);
 
@@ -1038,7 +1088,7 @@
         controls.panSpeed = 0.5;
         controls.zoomSpeed = 0.5;
 
-        // Biến lưu trữ các đối tượng
+        // BIẾN LƯU TRỮ DỮ LIỆU
         const createdModels = [];
         const points = {};
         const vectors = {};
@@ -1081,6 +1131,10 @@
         // Biến cho ẩn/hiện panel
         let leftPanelVisible = true;
         let rightPanelVisible = true;
+
+        // Biến cho lưu và tải hình
+        let savedShapes = JSON.parse(localStorage.getItem('savedShapes')) || [];
+        let saveCounter = savedShapes.length;
 
         // Hàm hiển thị thông báo
         function showInfo(message) {
@@ -1205,7 +1259,7 @@
             return arrowHelper;
         }
 
-        // Hàm tạo hình lập phương (ĐÃ XÓA ĐƯỜNG CHÉO)
+        // Hàm tạo hình lập phương
         function createCube() {
             // Sử dụng EdgesGeometry để tạo các cạnh mà không có đường chéo
             const geometry = new THREE.BoxGeometry(FIXED_LENGTH, FIXED_LENGTH, FIXED_LENGTH);
@@ -1244,7 +1298,7 @@
             return cube;
         }
 
-        // Hàm tạo hộp chữ nhật với các cạnh không bằng nhau (ĐÃ XÓA ĐƯỜNG CHÉO)
+        // Hàm tạo hộp chữ nhật với các cạnh không bằng nhau
         function createCuboid() {
             const width = FIXED_LENGTH;
             const height = FIXED_LENGTH * 1.5;
@@ -1961,7 +2015,7 @@
             showInfo('Đã xóa hình khối.');
         }
 
-        // Hàm cập nhật panel bên trái với thông tin hình khối (ĐÃ XÓA NÚT HIỆN PANEL THÊM PHẦN TỬ)
+        // Hàm cập nhật panel bên trái với thông tin hình khối
         function updateLeftPanel(mesh) {
             const panel = document.getElementById('leftPanel');
             const content = document.getElementById('shapeInfo');
@@ -2706,7 +2760,7 @@
             return projection;
         }
 
-        // ========== HÀM CHO TÔ MÀU MẶT PHẲNG ==========
+        // ========== HÀM CHO TÔ MÀU MẶT PHẲNG (ĐÃ SỬA LỖI BIẾN DẠNG) ==========
 
         // Hàm hiển thị modal tô màu mặt phẳng
         function showColorPlaneModal() {
@@ -2744,7 +2798,43 @@
             return normal.length() > 0.001;
         }
 
-        // Hàm tô màu mặt phẳng (CẢI THIỆN ĐỘ ỔN ĐỊNH)
+        // Hàm sắp xếp các điểm theo thứ tự để tạo mặt phẳng đúng
+        function sortPointsForPlane(pointsArray) {
+            if (pointsArray.length < 3) return pointsArray;
+            
+            // Tìm trung tâm của các điểm
+            const center = new THREE.Vector3();
+            pointsArray.forEach(point => center.add(point));
+            center.divideScalar(pointsArray.length);
+            
+            // Tạo vector pháp tuyến của mặt phẳng
+            const normal = new THREE.Vector3();
+            const v1 = new THREE.Vector3().subVectors(pointsArray[1], pointsArray[0]);
+            const v2 = new THREE.Vector3().subVectors(pointsArray[2], pointsArray[0]);
+            normal.crossVectors(v1, v2).normalize();
+            
+            // Tạo vector tham chiếu (hướng từ tâm đến điểm đầu tiên)
+            const refVector = new THREE.Vector3().subVectors(pointsArray[0], center).normalize();
+            
+            // Tạo vector vuông góc với pháp tuyến và vector tham chiếu
+            const upVector = new THREE.Vector3().crossVectors(normal, refVector).normalize();
+            
+            // Sắp xếp các điểm theo góc
+            pointsArray.sort((a, b) => {
+                const vecA = new THREE.Vector3().subVectors(a, center);
+                const vecB = new THREE.Vector3().subVectors(b, center);
+                
+                // Tính góc giữa vector và vector tham chiếu
+                const angleA = Math.atan2(vecA.dot(upVector), vecA.dot(refVector));
+                const angleB = Math.atan2(vecB.dot(upVector), vecB.dot(refVector));
+                
+                return angleA - angleB;
+            });
+            
+            return pointsArray;
+        }
+
+        // Hàm tô màu mặt phẳng (ĐÃ SỬA LỖI BIẾN DẠNG)
         function colorPlane(pointNames, color) {
             const pointsArray = [];
             for (let name of pointNames) {
@@ -2760,17 +2850,21 @@
                 return false;
             }
             
+            // Sắp xếp các điểm để tạo mặt phẳng đúng
+            const sortedPoints = sortPointsForPlane(pointsArray);
+            
             const geometry = new THREE.BufferGeometry();
             const vertices = [];
             
-            pointsArray.forEach(point => {
+            sortedPoints.forEach(point => {
                 vertices.push(point.x, point.y, point.z);
             });
             
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
             
+            // Tạo các tam giác cho đa giác
             const indices = [];
-            for (let i = 1; i < pointsArray.length - 1; i++) {
+            for (let i = 1; i < sortedPoints.length - 1; i++) {
                 indices.push(0, i, i + 1);
             }
             
@@ -2779,14 +2873,14 @@
             
             const colorNum = parseInt(color.replace('#', ''), 16);
             
-            // CẢI THIỆN: Sử dụng depthWrite: true và depthTest: true để tăng độ ổn định
-            const material = new THREE.MeshBasicMaterial({
+            // Sử dụng MeshStandardMaterial để có hiệu ứng 3D tốt hơn
+            const material = new THREE.MeshStandardMaterial({
                 color: colorNum,
                 transparent: true,
-                opacity: 0.5, // Độ mờ vừa phải để có thể nhìn thấy các đối tượng phía sau
+                opacity: 0.5,
                 side: THREE.DoubleSide,
-                depthWrite: true,  // CẢI THIỆN: Sử dụng depthWrite để tăng độ ổn định
-                depthTest: true   // CẢI THIỆN: Sử dụng depthTest để tăng độ ổn định
+                depthWrite: true,
+                depthTest: true
             });
             
             const plane = new THREE.Mesh(geometry, material);
@@ -2800,6 +2894,120 @@
             coloredPlanes.push(plane);
             
             return true;
+        }
+
+        // ========== HÀM CHO LƯU VÀ TẢI HÌNH (MỚI THÊM) ==========
+
+        // Hàm lưu hình hiện tại
+        function saveCurrentShape() {
+            if (createdModels.length === 0) {
+                alert('Không có hình nào để lưu!');
+                return;
+            }
+            
+            const shapeData = {
+                id: Date.now(),
+                name: `Hình ${++saveCounter}`,
+                date: new Date().toLocaleString(),
+                points: {},
+                shapeType: createdModels[0].userData.shapeType,
+                coloredPlanes: []
+            };
+            
+            // Lưu các điểm
+            Object.keys(points).forEach(key => {
+                shapeData.points[key] = {
+                    x: points[key].x,
+                    y: points[key].y,
+                    z: points[key].z
+                };
+            });
+            
+            // Lưu các mặt phẳng đã tô màu
+            coloredPlanes.forEach(plane => {
+                shapeData.coloredPlanes.push({
+                    points: plane.userData.points,
+                    color: plane.userData.color
+                });
+            });
+            
+            // Thêm vào danh sách đã lưu
+            savedShapes.push(shapeData);
+            
+            // Lưu vào localStorage
+            localStorage.setItem('savedShapes', JSON.stringify(savedShapes));
+            
+            showInfo(`Đã lưu hình: ${shapeData.name}`);
+        }
+
+        // Hàm hiển thị modal kho lịch sử
+        function showHistoryModal() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            if (savedShapes.length === 0) {
+                historyList.innerHTML = '<p>Chưa có hình nào được lưu</p>';
+            } else {
+                savedShapes.forEach(shape => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `
+                        <div class="history-name">${shape.name}</div>
+                        <div class="history-date">${shape.date}</div>
+                    `;
+                    historyItem.addEventListener('click', () => {
+                        loadShape(shape);
+                        document.getElementById('historyModal').style.display = 'none';
+                    });
+                    historyList.appendChild(historyItem);
+                });
+            }
+            
+            document.getElementById('historyModal').style.display = 'flex';
+        }
+
+        // Hàm tải hình đã lưu
+        function loadShape(shapeData) {
+            // Xóa hình hiện tại
+            if (createdModels.length > 0) {
+                deleteMesh(createdModels[0]);
+            }
+            
+            // Xóa các mặt phẳng đã tô màu
+            coloredPlanes.forEach(plane => {
+                scene.remove(plane);
+            });
+            coloredPlanes.length = 0;
+            
+            // Tạo hình khối mới
+            const model = createNewModel(shapeData.shapeType);
+            
+            // Cập nhật các điểm từ dữ liệu đã lưu
+            Object.keys(shapeData.points).forEach(key => {
+                if (points[key]) {
+                    points[key].set(
+                        shapeData.points[key].x,
+                        shapeData.points[key].y,
+                        shapeData.points[key].z
+                    );
+                }
+            });
+            
+            // Tạo lại các điểm hiển thị
+            createPointSpheres();
+            
+            // Tạo lại các cạnh
+            updateEdges();
+            
+            // Tạo lại các mặt phẳng
+            updatePlanes();
+            
+            // Tô lại các mặt phẳng đã lưu
+            shapeData.coloredPlanes.forEach(planeData => {
+                colorPlane(planeData.points, planeData.color);
+            });
+            
+            showInfo(`Đã tải hình: ${shapeData.name}`);
         }
 
         // ========== HÀM CHO ẨN/HIỆN PANEL ==========
@@ -2988,6 +3196,16 @@
             showColorPlaneModal();
         });
 
+        // SỰ KIỆN MỚI: Nút Lưu hình
+        document.getElementById('saveButton').addEventListener('click', function() {
+            saveCurrentShape();
+        });
+
+        // SỰ KIỆN MỚI: Nút Kho lịch sử
+        document.getElementById('historyButton').addEventListener('click', function() {
+            showHistoryModal();
+        });
+
         // Sự kiện cho nút Góc nhìn
         document.getElementById('viewButton').addEventListener('click', function() {
             viewIndex = (viewIndex + 1) % views.length;
@@ -3112,6 +3330,11 @@
         // Đóng modal khi nhấn nút đóng
         document.querySelectorAll('.close-button').forEach(button => {
             button.addEventListener('click', hideAllModals);
+        });
+
+        // SỰ KIỆN MỚI: Đóng modal lịch sử
+        document.getElementById('closeHistoryModal').addEventListener('click', function() {
+            document.getElementById('historyModal').style.display = 'none';
         });
 
         // === SỰ KIỆN CHO PANEL BÊN PHẢI ===
