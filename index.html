@@ -732,10 +732,9 @@
                     <h3>Thêm phần tử</h3>
                     <button class="close-side-panel" id="closeRightPanel">&times;</button>
                     
-                    <!-- Các tab ngang -->
+                    <!-- Các tab ngang - ĐÃ XÓA TAB VUÔNG GÓC -->
                     <div class="right-panel-tabs">
                         <button class="right-panel-tab active" data-tab="addPointTab">Thêm điểm</button>
-                        <button class="right-panel-tab" data-tab="perpendicularTab">Vuông góc</button>
                         <button class="right-panel-tab" data-tab="addSegmentTab">Đoạn thẳng</button>
                     </div>
                     
@@ -777,23 +776,6 @@
                         <div class="action-buttons">
                             <button class="secondary-button" id="cancelAddPoint">Hủy</button>
                             <button class="primary-button" id="confirmAddPoint">Thêm điểm</button>
-                        </div>
-                    </div>
-
-                    <!-- Nội dung tab Vuông góc -->
-                    <div class="right-panel-tab-content" id="perpendicularTab">
-                        <h4>Kiểm tra vuông góc</h4>
-                        <div class="form-group">
-                            <label for="firstEdge">Cạnh thứ nhất (ví dụ: AB):</label>
-                            <input type="text" id="firstEdge" placeholder="AB">
-                        </div>
-                        <div class="form-group">
-                            <label for="secondEdge">Cạnh thứ hai (ví dụ: CD):</div>
-                            <input type="text" id="secondEdge" placeholder="CD">
-                        </div>
-                        <div class="action-buttons">
-                            <button class="secondary-button" id="cancelPerpendicular">Hủy</button>
-                            <button class="primary-button" id="confirmPerpendicular">Kiểm tra</button>
                         </div>
                     </div>
 
@@ -1797,7 +1779,7 @@
             }
         }
 
-        // Hàm tạo các điểm hiển thị
+        // Hàm tạo các điểm hiển thị (CẢI THIỆN ĐỘ ỔN ĐỊNH)
         function createPointSpheres() {
             pointObjects.forEach(obj => scene.remove(obj));
             pointObjects.length = 0;
@@ -1819,6 +1801,10 @@
                     originalColor: 0x000000,
                     isSelected: false
                 };
+                
+                // CẢI THIỆN: Thêm renderOrder để đảm bảo điểm luôn hiển thị trên các đối tượng khác
+                pointMesh.renderOrder = 1;
+                
                 scene.add(pointMesh);
                 pointObjects.push(pointMesh);
                 
@@ -1856,6 +1842,9 @@
             sprite.position.y += 0.15;
             sprite.scale.set(0.8, 0.4, 1);
             sprite.userData = { type: 'label', name: name };
+            
+            // CẢI THIỆN: Thêm renderOrder để đảm bảo nhãn luôn hiển thị trên các đối tượng khác
+            sprite.renderOrder = 2;
             
             return sprite;
         }
@@ -2426,6 +2415,10 @@
                 originalColor: 0x000000,
                 isSelected: false
             };
+            
+            // CẢI THIỆN: Thêm renderOrder để đảm bảo điểm luôn hiển thị trên các đối tượng khác
+            pointMesh.renderOrder = 1;
+            
             scene.add(pointMesh);
             pointObjects.push(pointMesh);
             
@@ -2684,111 +2677,6 @@
             showInfo(`Đã thêm đoạn thẳng ${startPoint}${endPoint}`);
         }
 
-        // Hàm kiểm tra vuông góc
-        function checkPerpendicular() {
-            const firstEdge = document.getElementById('firstEdge').value.trim().toUpperCase();
-            const secondEdge = document.getElementById('secondEdge').value.trim().toUpperCase();
-            
-            if (firstEdge.length !== 2 || secondEdge.length !== 2) {
-                alert('Vui lòng nhập đúng định dạng cạnh (ví dụ: AB)');
-                return;
-            }
-            
-            const point1A = points[firstEdge[0]];
-            const point1B = points[firstEdge[1]];
-            const point2A = points[secondEdge[0]];
-            const point2B = points[secondEdge[1]];
-            
-            if (!point1A || !point1B || !point2A || !point2B) {
-                alert('Một trong các điểm không tồn tại!');
-                return;
-            }
-            
-            // Tính vector của hai cạnh
-            const vector1 = new THREE.Vector3().subVectors(point1B, point1A);
-            const vector2 = new THREE.Vector3().subVectors(point2B, point2A);
-            
-            // Kiểm tra vuông góc bằng tích vô hướng
-            const dotProduct = vector1.dot(vector2);
-            const isPerpendicular = Math.abs(dotProduct) < 0.001; // Ngưỡng cho phép sai số
-            
-            if (isPerpendicular) {
-                showInfo(`Cạnh ${firstEdge} và ${secondEdge} vuông góc với nhau`);
-                
-                // Thêm ký hiệu vuông góc tại giao điểm (nếu có)
-                addPerpendicularIndicator(firstEdge, secondEdge);
-            } else {
-                showInfo(`Cạnh ${firstEdge} và ${secondEdge} không vuông góc với nhau`);
-            }
-        }
-
-        // Hàm thêm ký hiệu vuông góc
-        function addPerpendicularIndicator(edge1, edge2) {
-            // Tìm giao điểm của hai cạnh (nếu có)
-            const point1A = points[edge1[0]];
-            const point1B = points[edge1[1]];
-            const point2A = points[edge2[0]];
-            const point2B = points[edge2[1]];
-            
-            let intersectionPoint = null;
-            
-            // Kiểm tra xem hai cạnh có chung điểm không
-            if (edge1[0] === edge2[0] || edge1[0] === edge2[1]) {
-                intersectionPoint = point1A;
-            } else if (edge1[1] === edge2[0] || edge1[1] === edge2[1]) {
-                intersectionPoint = point1B;
-            }
-            
-            if (intersectionPoint) {
-                // Tạo ký hiệu vuông góc (hình vuông nhỏ)
-                const indicatorGeometry = new THREE.BufferGeometry();
-                const size = 0.1;
-                const vertices = new Float32Array([
-                    intersectionPoint.x, intersectionPoint.y, intersectionPoint.z,
-                    intersectionPoint.x + size, intersectionPoint.y, intersectionPoint.z,
-                    intersectionPoint.x + size, intersectionPoint.y + size, intersectionPoint.z,
-                    intersectionPoint.x, intersectionPoint.y + size, intersectionPoint.z
-                ]);
-                
-                indicatorGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-                indicatorGeometry.setIndex([0, 1, 1, 2, 2, 3, 3, 0]);
-                
-                const indicatorMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
-                const indicator = new THREE.LineSegments(indicatorGeometry, indicatorMaterial);
-                
-                scene.add(indicator);
-                
-                // Thêm vào danh sách để có thể xóa sau này
-                lineObjects.push(indicator);
-                
-                // Thêm nhãn vuông góc
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.width = 32;
-                canvas.height = 32;
-                
-                context.fillStyle = 'rgba(255, 0, 0, 0.8)';
-                context.font = 'bold 20px Arial';
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-                context.fillText('⊥', canvas.width / 2, canvas.height / 2);
-                
-                const texture = new THREE.CanvasTexture(canvas);
-                const material = new THREE.SpriteMaterial({ 
-                    map: texture,
-                    transparent: true
-                });
-                const sprite = new THREE.Sprite(material);
-                sprite.position.copy(intersectionPoint);
-                sprite.position.y += 0.2;
-                sprite.scale.set(0.5, 0.5, 1);
-                sprite.userData = { type: 'perpendicular', edges: [edge1, edge2] };
-                
-                scene.add(sprite);
-                pointObjects.push(sprite);
-            }
-        }
-
         // Hàm tính hình chiếu của điểm lên mặt phẳng
         function calculatePointProjection(pointName, planeName) {
             const point = points[pointName];
@@ -2856,7 +2744,7 @@
             return normal.length() > 0.001;
         }
 
-        // Hàm tô màu mặt phẳng (ĐÃ CẬP NHẬT ĐỂ CÓ THỂ NHÌN THẤY Ở MỌI GÓC ĐỘ)
+        // Hàm tô màu mặt phẳng (CẢI THIỆN ĐỘ ỔN ĐỊNH)
         function colorPlane(pointNames, color) {
             const pointsArray = [];
             for (let name of pointNames) {
@@ -2891,13 +2779,14 @@
             
             const colorNum = parseInt(color.replace('#', ''), 16);
             
-            // ĐÃ CẬP NHẬT: Sử dụng DoubleSide để có thể nhìn thấy từ cả hai phía
+            // CẢI THIỆN: Sử dụng depthWrite: true và depthTest: true để tăng độ ổn định
             const material = new THREE.MeshBasicMaterial({
                 color: colorNum,
                 transparent: true,
                 opacity: 0.5, // Độ mờ vừa phải để có thể nhìn thấy các đối tượng phía sau
                 side: THREE.DoubleSide,
-                depthWrite: false // Giúp mặt phẳng không che khuất các đối tượng khác khi xoay
+                depthWrite: true,  // CẢI THIỆN: Sử dụng depthWrite để tăng độ ổn định
+                depthTest: true   // CẢI THIỆN: Sử dụng depthTest để tăng độ ổn định
             });
             
             const plane = new THREE.Mesh(geometry, material);
@@ -3248,17 +3137,6 @@
         // Sự kiện cho hủy thêm điểm
         document.getElementById('cancelAddPoint').addEventListener('click', function() {
             document.getElementById('newPointName').value = '';
-        });
-
-        // Sự kiện cho xác nhận kiểm tra vuông góc
-        document.getElementById('confirmPerpendicular').addEventListener('click', function() {
-            checkPerpendicular();
-        });
-
-        // Sự kiện cho hủy kiểm tra vuông góc
-        document.getElementById('cancelPerpendicular').addEventListener('click', function() {
-            document.getElementById('firstEdge').value = '';
-            document.getElementById('secondEdge').value = '';
         });
 
         // Sự kiện cho xác nhận thêm đoạn thẳng
