@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Công cụ Vẽ Hình Không Gian 3D</title>
+    <title>Công cụ Vẽ Hình Không Gian hỗ trợ giảng dạy dành cho máy tính</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <style>
@@ -2779,14 +2779,14 @@
             
             const colorNum = parseInt(color.replace('#', ''), 16);
             
-            // CẢI THIỆN: Sử dụng depthWrite: true và depthTest: true để tăng độ ổn định
+            // CẢI THIỆN: Sử dụng depthWrite: false và renderOrder để tăng độ ổn định
             const material = new THREE.MeshBasicMaterial({
                 color: colorNum,
                 transparent: true,
-                opacity: 0.5, // Độ mờ vừa phải để có thể nhìn thấy các đối tượng phía sau
+                opacity: 0.5,
                 side: THREE.DoubleSide,
-                depthWrite: true,  // CẢI THIỆN: Sử dụng depthWrite để tăng độ ổn định
-                depthTest: true   // CẢI THIỆN: Sử dụng depthTest để tăng độ ổn định
+                depthWrite: false,  // CẢI THIỆN: Sử dụng depthWrite: false để tránh vấn đề với các đối tượng trong suốt
+                depthTest: true
             });
             
             const plane = new THREE.Mesh(geometry, material);
@@ -2795,6 +2795,9 @@
                 points: pointNames,
                 color: color
             };
+            
+            // CẢI THIỆN: Đặt renderOrder để mặt phẳng tô màu được vẽ sau các đối tượng khác
+            plane.renderOrder = 1;
             
             scene.add(plane);
             coloredPlanes.push(plane);
