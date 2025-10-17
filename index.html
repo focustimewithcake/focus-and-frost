@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Công cụ Vẽ Hình Không Gian hỗ trợ giảng dạy dành cho máy tính</title>
+    <title>Công cụ Vẽ Hình Không Gian 3D</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <style>
@@ -357,7 +357,7 @@
         /* Side panels */
         .side-panel {
             position: absolute;
-            top: 15vh; /* Di chuyển lên cao hơn */
+            top: 15vh;
             width: 300px;
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 8px;
@@ -455,7 +455,7 @@
         /* Panel toggle buttons */
         .panel-toggle {
             position: absolute;
-            top: 15vh; /* Di chuyển lên cao hơn */
+            top: 15vh;
             width: 30px;
             height: 30px;
             background-color: rgba(255, 255, 255, 0.95);
@@ -570,6 +570,37 @@
             display: block;
         }
 
+        /* History modal styles */
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .history-item {
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            background-color: #f5f5f5;
+            border-color: #3A86FF;
+        }
+
+        .history-item .history-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .history-item .history-date {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
         /* NEW STYLES FOR SHOW RIGHT PANEL BUTTON */
         .show-right-panel-button {
             background: #3A86FF;
@@ -586,6 +617,39 @@
 
         .show-right-panel-button:hover {
             background: #2a75f0;
+        }
+
+        /* Pattern selection */
+        .pattern-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .pattern-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .pattern-option:hover {
+            border-color: #3A86FF;
+        }
+
+        .pattern-option.selected {
+            border-color: #3A86FF;
+            background-color: #e7f1ff;
+        }
+
+        .pattern-preview {
+            width: 100%;
+            height: 40px;
+            margin-bottom: 5px;
+            border-radius: 4px;
         }
 
         @media (max-width: 768px) {
@@ -664,7 +728,10 @@
         <header>
             <div class="header-controls">
                 <button class="header-button" id="backButton">Quay lại</button>
-                <button class="header-button" id="colorPlaneButton">Tô màu mặt phẳng</button>
+                <!-- THÊM NÚT IN ĐẬM -->
+                <button class="header-button" id="boldButton">In đậm</button>
+                <button class="header-button" id="saveButton">Lưu hình</button>
+                <button class="header-button" id="historyButton">Kho lịch sử</button>
             </div>
             <div class="header-controls">
                 <button class="header-button" id="viewButton">Góc nhìn</button>
@@ -724,15 +791,13 @@
                     <div class="shape-info" id="shapeInfo">
                         <p>Chọn một hình khối để xem thông tin</p>
                     </div>
-                    
-                    <!-- ĐÃ XÓA NÚT "Hiện panel thêm phần tử" -->
                 </div>
 
                 <div class="side-panel right-panel" id="rightPanel">
                     <h3>Thêm phần tử</h3>
                     <button class="close-side-panel" id="closeRightPanel">&times;</button>
                     
-                    <!-- Các tab ngang - ĐÃ XÓA TAB VUÔNG GÓC -->
+                    <!-- Các tab ngang -->
                     <div class="right-panel-tabs">
                         <button class="right-panel-tab active" data-tab="addPointTab">Thêm điểm</button>
                         <button class="right-panel-tab" data-tab="addSegmentTab">Đoạn thẳng</button>
@@ -921,17 +986,17 @@
         </div>
     </div>
 
-    <!-- Modal tô màu mặt phẳng -->
-    <div class="modal" id="colorPlaneModal">
+    <!-- MODAL IN ĐẬM MẶT PHẲNG - MỚI THÊM -->
+    <div class="modal" id="boldModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Tô màu mặt phẳng</h2>
+                <h2>In đậm mặt phẳng</h2>
                 <button class="close-button">&times;</button>
             </div>
             <div class="form-group">
-                <label for="planePoints">Nhập các điểm tạo thành mặt phẳng (ví dụ: ABC):</label>
-                <input type="text" id="planePoints" placeholder="ABC">
-                <p id="planeValidationMessage" style="color: red; margin-top: 5px; display: none;"></p>
+                <label for="boldPlanePoints">Nhập các điểm tạo thành mặt phẳng (ví dụ: ABC):</label>
+                <input type="text" id="boldPlanePoints" placeholder="ABC">
+                <p id="boldValidationMessage" style="color: red; margin-top: 5px; display: none;"></p>
             </div>
             <div class="form-group">
                 <label>Chọn màu:</label>
@@ -946,15 +1011,46 @@
                     <div class="color-option" style="background-color: #800080;" data-color="#800080"></div>
                 </div>
             </div>
+            <div class="form-group">
+                <label>Chọn kiểu tô:</label>
+                <div class="pattern-options">
+                    <div class="pattern-option" data-pattern="dots">
+                        <div class="pattern-preview" style="background: repeating-radial-gradient(circle, currentColor 0px, currentColor 2px, transparent 2px, transparent 6px);"></div>
+                        <span>Chấm chấm</span>
+                    </div>
+                    <div class="pattern-option" data-pattern="lines">
+                        <div class="pattern-preview" style="background: repeating-linear-gradient(45deg, currentColor 0px, currentColor 2px, transparent 2px, transparent 6px);"></div>
+                        <span>Gạch gạch</span>
+                    </div>
+                </div>
+            </div>
             <div class="action-buttons">
-                <button class="secondary-button" id="cancelColorPlane">Hủy</button>
-                <button class="primary-button" id="confirmColorPlane">Tô màu</button>
+                <button class="secondary-button" id="cancelBold">Hủy</button>
+                <button class="primary-button" id="confirmBold">In đậm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL KHO LỊCH SỬ -->
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Kho lịch sử</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- Danh sách các hình đã lưu sẽ được hiển thị ở đây -->
+            </div>
+            <div class="action-buttons">
+                <button class="secondary-button" id="closeHistoryModal">Đóng</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Khởi tạo scene, camera, renderer
+        // === PHẦN JAVASCRIPT - XỬ LÝ CHỨC NĂNG ===
+        
+        // KHỞI TẠO MÔI TRƯỜNG 3D
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xf4f7ff);
 
@@ -1006,14 +1102,14 @@
         scene.add(createAxisLabel('Y', new THREE.Vector3(0, 3.5, 0), '#00ff00'));
         scene.add(createAxisLabel('Z', new THREE.Vector3(0, 0, 3.5), '#0000ff'));
 
-        // Mặt phẳng tọa độ OXY - ĐÃ CHỈNH SỬA ĐỂ LÀM MỜ
+        // Mặt phẳng tọa độ OXY
         const gridHelper = new THREE.GridHelper(10, 10, 0x888888, 0xcccccc);
         gridHelper.position.set(0, 0, 0);
         gridHelper.rotation.x = -Math.PI/2;
         
-        // Làm mờ tấm lưới bằng cách điều chỉnh material
+        // Làm mờ tấm lưới
         gridHelper.material.transparent = true;
-        gridHelper.material.opacity = 0.3; // Điều chỉnh độ mờ ở đây (0.0 - 1.0)
+        gridHelper.material.opacity = 0.3;
         
         scene.add(gridHelper);
 
@@ -1038,7 +1134,7 @@
         controls.panSpeed = 0.5;
         controls.zoomSpeed = 0.5;
 
-        // Biến lưu trữ các đối tượng
+        // BIẾN LƯU TRỮ DỮ LIỆU
         const createdModels = [];
         const points = {};
         const vectors = {};
@@ -1048,7 +1144,7 @@
         const planeObjects = [];
         const edgeObjects = [];
         const vectorObjects = [];
-        const coloredPlanes = []; // Lưu các mặt phẳng đã tô màu
+        const boldPlanes = []; // Lưu các mặt phẳng in đậm
         let activeTool = null;
         let selectedPoints = [];
         let selectedLine = null;
@@ -1075,12 +1171,17 @@
             { name: 'back', displayName: 'Sau', position: [0, -10, 0] }
         ];
 
-        // Biến cho tô màu mặt phẳng
+        // Biến cho in đậm mặt phẳng
         let selectedColor = '#ff0000';
+        let selectedPattern = 'dots';
 
         // Biến cho ẩn/hiện panel
         let leftPanelVisible = true;
         let rightPanelVisible = true;
+
+        // Biến cho lưu và tải hình
+        let savedShapes = JSON.parse(localStorage.getItem('savedShapes')) || [];
+        let saveCounter = savedShapes.length;
 
         // Hàm hiển thị thông báo
         function showInfo(message) {
@@ -1205,7 +1306,7 @@
             return arrowHelper;
         }
 
-        // Hàm tạo hình lập phương (ĐÃ XÓA ĐƯỜNG CHÉO)
+        // Hàm tạo hình lập phương
         function createCube() {
             // Sử dụng EdgesGeometry để tạo các cạnh mà không có đường chéo
             const geometry = new THREE.BoxGeometry(FIXED_LENGTH, FIXED_LENGTH, FIXED_LENGTH);
@@ -1244,7 +1345,7 @@
             return cube;
         }
 
-        // Hàm tạo hộp chữ nhật với các cạnh không bằng nhau (ĐÃ XÓA ĐƯỜNG CHÉO)
+        // Hàm tạo hộp chữ nhật với các cạnh không bằng nhau
         function createCuboid() {
             const width = FIXED_LENGTH;
             const height = FIXED_LENGTH * 1.5;
@@ -1578,13 +1679,11 @@
             geometry.setIndex([0, 1, 2, 0, 2, 3]);
             geometry.computeVertexNormals();
             
-            // SỬA LỖI: Đặt depthWrite: false để mặt phẳng trong suốt không che mặt phẳng đã tô màu
             const material = new THREE.MeshBasicMaterial({
                 color: 0xffffff, // Màu trắng (không màu)
                 transparent: true,
                 opacity: 0.0,    // Hoàn toàn trong suốt ban đầu
-                side: THREE.DoubleSide,
-                depthWrite: false  // QUAN TRỌNG: Không ghi vào buffer chiều sâu
+                side: THREE.DoubleSide
             });
             
             const plane = new THREE.Mesh(geometry, material);
@@ -1625,13 +1724,11 @@
                 planeGeometry.setIndex([0, 1, 2]);
                 planeGeometry.computeVertexNormals();
                 
-                // SỬA LỖI: Đặt depthWrite: false
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
                     opacity: 0.0,
-                    side: THREE.DoubleSide,
-                    depthWrite: false  // QUAN TRỌNG: Không ghi vào buffer chiều sâu
+                    side: THREE.DoubleSide
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -1668,13 +1765,11 @@
                 planeGeometry.setIndex([0, 1, 2]);
                 planeGeometry.computeVertexNormals();
                 
-                // SỬA LỖI: Đặt depthWrite: false
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
                     opacity: 0.0,
-                    side: THREE.DoubleSide,
-                    depthWrite: false  // QUAN TRỌNG: Không ghi vào buffer chiều sâu
+                    side: THREE.DoubleSide
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -1720,13 +1815,11 @@
                 planeGeometry.setIndex(indices);
                 planeGeometry.computeVertexNormals();
                 
-                // SỬA LỖI: Đặt depthWrite: false
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
                     opacity: 0.0,
-                    side: THREE.DoubleSide,
-                    depthWrite: false  // QUAN TRỌNG: Không ghi vào buffer chiều sâu
+                    side: THREE.DoubleSide
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -1772,13 +1865,11 @@
                 planeGeometry.setIndex(indices);
                 planeGeometry.computeVertexNormals();
                 
-                // SỬA LỖI: Đặt depthWrite: false
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
                     opacity: 0.0,
-                    side: THREE.DoubleSide,
-                    depthWrite: false  // QUAN TRỌNG: Không ghi vào buffer chiều sâu
+                    side: THREE.DoubleSide
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -1876,7 +1967,7 @@
         // Hàm tạo mô hình mới
         function createNewModel(shapeType) {
             // CHỈ xóa các đối tượng liên quan đến hình khối cũ
-            // KHÔNG xóa các mặt phẳng đã tô màu
+            // KHÔNG xóa các mặt phẳng in đậm
             if (createdModels.length > 0) {
                 deleteMesh(createdModels[0]);
             }
@@ -1932,7 +2023,7 @@
             }
         }
 
-        // Hàm xóa hình khối (SỬA ĐỔI: KHÔNG xóa các mặt phẳng đã tô màu)
+        // Hàm xóa hình khối (SỬA ĐỔI: KHÔNG xóa các mặt phẳng in đậm)
         function deleteMesh(mesh) {
             if (!mesh) return;
             
@@ -1971,7 +2062,7 @@
             showInfo('Đã xóa hình khối.');
         }
 
-        // Hàm cập nhật panel bên trái với thông tin hình khối (ĐÃ XÓA NÚT HIỆN PANEL THÊM PHẦN TỬ)
+        // Hàm cập nhật panel bên trái với thông tin hình khối
         function updateLeftPanel(mesh) {
             const panel = document.getElementById('leftPanel');
             const content = document.getElementById('shapeInfo');
@@ -2540,11 +2631,11 @@
                 if (index > -1) {
                     edgeObjects.splice(index, 1);
                 }
-            } else if (object.userData.type === 'coloredPlane') {
+            } else if (object.userData.type === 'boldPlane') {
                 scene.remove(object);
-                const index = coloredPlanes.indexOf(object);
+                const index = boldPlanes.indexOf(object);
                 if (index > -1) {
-                    coloredPlanes.splice(index, 1);
+                    boldPlanes.splice(index, 1);
                 }
             }
         }
@@ -2716,14 +2807,16 @@
             return projection;
         }
 
-        // ========== HÀM CHO TÔ MÀU MẶT PHẲNG ==========
+        // ========== HÀM CHO IN ĐẬM MẶT PHẲNG (MỚI THÊM) ==========
 
-        // Hàm hiển thị modal tô màu mặt phẳng
-        function showColorPlaneModal() {
-            document.getElementById('colorPlaneModal').style.display = 'flex';
+        // Hàm hiển thị modal in đậm mặt phẳng
+        function showBoldModal() {
+            document.getElementById('boldModal').style.display = 'flex';
             
             selectedColor = '#ff0000';
+            selectedPattern = 'dots';
             updateColorSelection();
+            updatePatternSelection();
         }
 
         // Hàm cập nhật lựa chọn màu
@@ -2731,6 +2824,16 @@
             document.querySelectorAll('.color-option').forEach(option => {
                 option.classList.remove('selected');
                 if (option.dataset.color === selectedColor) {
+                    option.classList.add('selected');
+                }
+            });
+        }
+
+        // Hàm cập nhật lựa chọn pattern
+        function updatePatternSelection() {
+            document.querySelectorAll('.pattern-option').forEach(option => {
+                option.classList.remove('selected');
+                if (option.dataset.pattern === selectedPattern) {
                     option.classList.add('selected');
                 }
             });
@@ -2754,8 +2857,92 @@
             return normal.length() > 0.001;
         }
 
-        // Hàm tô màu mặt phẳng (SỬA LỖI HIỂN THỊ)
-        function colorPlane(pointNames, color) {
+        // Hàm sắp xếp các điểm theo thứ tự để tạo mặt phẳng đúng
+        function sortPointsForPlane(pointsArray) {
+            if (pointsArray.length < 3) return pointsArray;
+            
+            // Tìm trung tâm của các điểm
+            const center = new THREE.Vector3();
+            pointsArray.forEach(point => center.add(point));
+            center.divideScalar(pointsArray.length);
+            
+            // Tạo vector pháp tuyến của mặt phẳng
+            const normal = new THREE.Vector3();
+            const v1 = new THREE.Vector3().subVectors(pointsArray[1], pointsArray[0]);
+            const v2 = new THREE.Vector3().subVectors(pointsArray[2], pointsArray[0]);
+            normal.crossVectors(v1, v2).normalize();
+            
+            // Tạo vector tham chiếu (hướng từ tâm đến điểm đầu tiên)
+            const refVector = new THREE.Vector3().subVectors(pointsArray[0], center).normalize();
+            
+            // Tạo vector vuông góc với pháp tuyến và vector tham chiếu
+            const upVector = new THREE.Vector3().crossVectors(normal, refVector).normalize();
+            
+            // Sắp xếp các điểm theo góc
+            pointsArray.sort((a, b) => {
+                const vecA = new THREE.Vector3().subVectors(a, center);
+                const vecB = new THREE.Vector3().subVectors(b, center);
+                
+                // Tính góc giữa vector và vector tham chiếu
+                const angleA = Math.atan2(vecA.dot(upVector), vecA.dot(refVector));
+                const angleB = Math.atan2(vecB.dot(upVector), vecB.dot(refVector));
+                
+                return angleA - angleB;
+            });
+            
+            return pointsArray;
+        }
+
+        // Hàm tạo texture pattern
+        function createPatternTexture(color, patternType, size = 64) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const context = canvas.getContext('2d');
+            
+            // Màu nền trong suốt
+            context.fillStyle = 'transparent';
+            context.fillRect(0, 0, size, size);
+            
+            // Đặt màu pattern
+            context.fillStyle = color;
+            context.strokeStyle = color;
+            context.lineWidth = 2;
+            
+            if (patternType === 'dots') {
+                // Tạo pattern chấm chấm
+                const dotRadius = size / 8;
+                const spacing = size / 4;
+                
+                for (let x = spacing; x < size; x += spacing) {
+                    for (let y = spacing; y < size; y += spacing) {
+                        context.beginPath();
+                        context.arc(x, y, dotRadius, 0, 2 * Math.PI);
+                        context.fill();
+                    }
+                }
+            } else if (patternType === 'lines') {
+                // Tạo pattern gạch gạch
+                const lineSpacing = size / 8;
+                
+                for (let i = 0; i < size; i += lineSpacing) {
+                    context.beginPath();
+                    context.moveTo(i, 0);
+                    context.lineTo(i, size);
+                    context.stroke();
+                    
+                    context.beginPath();
+                    context.moveTo(0, i);
+                    context.lineTo(size, i);
+                    context.stroke();
+                }
+            }
+            
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // Hàm in đậm mặt phẳng
+        function boldPlane(pointNames, color, patternType) {
             const pointsArray = [];
             for (let name of pointNames) {
                 if (!points[name]) {
@@ -2770,67 +2957,167 @@
                 return false;
             }
             
+            // Sắp xếp các điểm để tạo mặt phẳng đúng
+            const sortedPoints = sortPointsForPlane(pointsArray);
+            
             const geometry = new THREE.BufferGeometry();
             const vertices = [];
             
-            pointsArray.forEach(point => {
+            sortedPoints.forEach(point => {
                 vertices.push(point.x, point.y, point.z);
             });
             
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
             
+            // Tạo các tam giác cho đa giác
             const indices = [];
-            for (let i = 1; i < pointsArray.length - 1; i++) {
+            for (let i = 1; i < sortedPoints.length - 1; i++) {
                 indices.push(0, i, i + 1);
             }
             
             geometry.setIndex(indices);
-            
-            // SỬA LỖI 2: Tính toán normal chính xác cho mặt phẳng
-            // Tính normal từ 3 điểm đầu
-            const p1 = pointsArray[0];
-            const p2 = pointsArray[1];
-            const p3 = pointsArray[2];
-            
-            const v1 = new THREE.Vector3().subVectors(p2, p1);
-            const v2 = new THREE.Vector3().subVectors(p3, p1);
-            const normal = new THREE.Vector3().crossVectors(v1, v2).normalize();
-            
-            // Tạo mảng normal cho tất cả các đỉnh
-            const normals = [];
-            for (let i = 0; i < pointsArray.length; i++) {
-                normals.push(normal.x, normal.y, normal.z);
-            }
-            
-            geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
             geometry.computeVertexNormals();
             
-            const colorNum = parseInt(color.replace('#', ''), 16);
+            // Tạo texture pattern
+            const texture = createPatternTexture(color, patternType);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(4, 4);
             
-            // SỬA LỖI: Sử dụng depthWrite: false và renderOrder để tăng độ ổn định
             const material = new THREE.MeshBasicMaterial({
-                color: colorNum,
+                map: texture,
                 transparent: true,
-                opacity: 0.5,
-                side: THREE.DoubleSide,
-                depthWrite: false,  // SỬA LỖI: Sử dụng depthWrite: false để tránh vấn đề với các đối tượng trong suốt
-                depthTest: true
+                opacity: 0.7,
+                side: THREE.DoubleSide
             });
             
             const plane = new THREE.Mesh(geometry, material);
             plane.userData = {
-                type: 'coloredPlane',
+                type: 'boldPlane',
                 points: pointNames,
-                color: color
+                color: color,
+                pattern: patternType
             };
             
-            // SỬA LỖI: Đặt renderOrder để mặt phẳng tô màu được vẽ sau các đối tượng khác
-            plane.renderOrder = 1;
-            
             scene.add(plane);
-            coloredPlanes.push(plane);
+            boldPlanes.push(plane);
             
             return true;
+        }
+
+        // ========== HÀM CHO LƯU VÀ TẢI HÌNH ==========
+
+        // Hàm lưu hình hiện tại
+        function saveCurrentShape() {
+            if (createdModels.length === 0) {
+                alert('Không có hình nào để lưu!');
+                return;
+            }
+            
+            const shapeData = {
+                id: Date.now(),
+                name: `Hình ${++saveCounter}`,
+                date: new Date().toLocaleString(),
+                points: {},
+                shapeType: createdModels[0].userData.shapeType,
+                boldPlanes: []
+            };
+            
+            // Lưu các điểm
+            Object.keys(points).forEach(key => {
+                shapeData.points[key] = {
+                    x: points[key].x,
+                    y: points[key].y,
+                    z: points[key].z
+                };
+            });
+            
+            // Lưu các mặt phẳng in đậm
+            boldPlanes.forEach(plane => {
+                shapeData.boldPlanes.push({
+                    points: plane.userData.points,
+                    color: plane.userData.color,
+                    pattern: plane.userData.pattern
+                });
+            });
+            
+            // Thêm vào danh sách đã lưu
+            savedShapes.push(shapeData);
+            
+            // Lưu vào localStorage
+            localStorage.setItem('savedShapes', JSON.stringify(savedShapes));
+            
+            showInfo(`Đã lưu hình: ${shapeData.name}`);
+        }
+
+        // Hàm hiển thị modal kho lịch sử
+        function showHistoryModal() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            if (savedShapes.length === 0) {
+                historyList.innerHTML = '<p>Chưa có hình nào được lưu</p>';
+            } else {
+                savedShapes.forEach(shape => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `
+                        <div class="history-name">${shape.name}</div>
+                        <div class="history-date">${shape.date}</div>
+                    `;
+                    historyItem.addEventListener('click', () => {
+                        loadShape(shape);
+                        document.getElementById('historyModal').style.display = 'none';
+                    });
+                    historyList.appendChild(historyItem);
+                });
+            }
+            
+            document.getElementById('historyModal').style.display = 'flex';
+        }
+
+        // Hàm tải hình đã lưu
+        function loadShape(shapeData) {
+            // Xóa hình hiện tại
+            if (createdModels.length > 0) {
+                deleteMesh(createdModels[0]);
+            }
+            
+            // Xóa các mặt phẳng in đậm
+            boldPlanes.forEach(plane => {
+                scene.remove(plane);
+            });
+            boldPlanes.length = 0;
+            
+            // Tạo hình khối mới
+            const model = createNewModel(shapeData.shapeType);
+            
+            // Cập nhật các điểm từ dữ liệu đã lưu
+            Object.keys(shapeData.points).forEach(key => {
+                if (points[key]) {
+                    points[key].set(
+                        shapeData.points[key].x,
+                        shapeData.points[key].y,
+                        shapeData.points[key].z
+                    );
+                }
+            });
+            
+            // Tạo lại các điểm hiển thị
+            createPointSpheres();
+            
+            // Tạo lại các cạnh
+            updateEdges();
+            
+            // Tạo lại các mặt phẳng
+            updatePlanes();
+            
+            // Tạo lại các mặt phẳng in đậm đã lưu
+            shapeData.boldPlanes.forEach(planeData => {
+                boldPlane(planeData.points, planeData.color, planeData.pattern);
+            });
+            
+            showInfo(`Đã tải hình: ${shapeData.name}`);
         }
 
         // ========== HÀM CHO ẨN/HIỆN PANEL ==========
@@ -3014,9 +3301,19 @@
             changeView('default');
         });
 
-        // Sự kiện cho nút Tô màu mặt phẳng
-        document.getElementById('colorPlaneButton').addEventListener('click', function() {
-            showColorPlaneModal();
+        // SỰ KIỆN MỚI: Nút In đậm
+        document.getElementById('boldButton').addEventListener('click', function() {
+            showBoldModal();
+        });
+
+        // SỰ KIỆN: Nút Lưu hình
+        document.getElementById('saveButton').addEventListener('click', function() {
+            saveCurrentShape();
+        });
+
+        // SỰ KIỆN: Nút Kho lịch sử
+        document.getElementById('historyButton').addEventListener('click', function() {
+            showHistoryModal();
         });
 
         // Sự kiện cho nút Góc nhìn
@@ -3145,6 +3442,11 @@
             button.addEventListener('click', hideAllModals);
         });
 
+        // SỰ KIỆN: Đóng modal lịch sử
+        document.getElementById('closeHistoryModal').addEventListener('click', function() {
+            document.getElementById('historyModal').style.display = 'none';
+        });
+
         // === SỰ KIỆN CHO PANEL BÊN PHẢI ===
 
         // Sự kiện cho các tab trong panel bên phải
@@ -3191,7 +3493,7 @@
             toggleRightPanel();
         });
 
-        // === SỰ KIỆN CHO TÔ MÀU MẶT PHẲNG ===
+        // === SỰ KIỆN CHO IN ĐẬM MẶT PHẲNG (MỚI THÊM) ===
 
         // Sự kiện cho lựa chọn màu
         document.querySelectorAll('.color-option').forEach(option => {
@@ -3201,16 +3503,23 @@
             });
         });
 
-        // Sự kiện cho xác nhận tô màu mặt phẳng
-        document.getElementById('confirmColorPlane').addEventListener('click', function() {
-            const pointInput = document.getElementById('planePoints').value.trim().toUpperCase();
+        // Sự kiện cho lựa chọn pattern
+        document.querySelectorAll('.pattern-option').forEach(option => {
+            option.addEventListener('click', function() {
+                selectedPattern = this.dataset.pattern;
+                updatePatternSelection();
+            });
+        });
+
+        // Sự kiện cho xác nhận in đậm mặt phẳng
+        document.getElementById('confirmBold').addEventListener('click', function() {
+            const pointInput = document.getElementById('boldPlanePoints').value.trim().toUpperCase();
             if (!pointInput) {
                 alert('Vui lòng nhập các điểm!');
                 return;
             }
             
             // Tách chuỗi thành mảng các ký tự (ví dụ: "ABC" thành ['A','B','C'])
-            // Cho phép nhập không cần theo thứ tự, ví dụ "EFBC" cũng được chấp nhận
             const pointNames = pointInput.split('').filter(char => char !== ' ' && char !== ',');
             
             if (pointNames.length < 3) {
@@ -3218,18 +3527,18 @@
                 return;
             }
             
-            if (colorPlane(pointNames, selectedColor)) {
-                document.getElementById('colorPlaneModal').style.display = 'none';
-                document.getElementById('planePoints').value = '';
+            if (boldPlane(pointNames, selectedColor, selectedPattern)) {
+                document.getElementById('boldModal').style.display = 'none';
+                document.getElementById('boldPlanePoints').value = '';
                 
-                showInfo(`Đã tô màu mặt phẳng tạo bởi các điểm: ${pointNames.join(', ')}`);
+                showInfo(`Đã in đậm mặt phẳng tạo bởi các điểm: ${pointNames.join(', ')}`);
             }
         });
 
-        // Sự kiện cho hủy tô màu mặt phẳng
-        document.getElementById('cancelColorPlane').addEventListener('click', function() {
-            document.getElementById('colorPlaneModal').style.display = 'none';
-            document.getElementById('planePoints').value = '';
+        // Sự kiện cho hủy in đậm mặt phẳng
+        document.getElementById('cancelBold').addEventListener('click', function() {
+            document.getElementById('boldModal').style.display = 'none';
+            document.getElementById('boldPlanePoints').value = '';
         });
 
         // === SỰ KIỆN CHO ẨN/HIỆN PANEL ===
