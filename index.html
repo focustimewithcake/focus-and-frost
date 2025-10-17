@@ -1578,11 +1578,13 @@
             geometry.setIndex([0, 1, 2, 0, 2, 3]);
             geometry.computeVertexNormals();
             
+            // SỬA LỖI: Đặt depthWrite: false để mặt phẳng trong suốt không che mặt phẳng đã tô màu
             const material = new THREE.MeshBasicMaterial({
                 color: 0xffffff, // Màu trắng (không màu)
                 transparent: true,
                 opacity: 0.0,    // Hoàn toàn trong suốt ban đầu
-                side: THREE.DoubleSide
+                side: THREE.DoubleSide,
+                depthWrite: false  // QUAN TRỌNG: Không ghi vào buffer chiều sâu
             });
             
             const plane = new THREE.Mesh(geometry, material);
@@ -1623,11 +1625,13 @@
                 planeGeometry.setIndex([0, 1, 2]);
                 planeGeometry.computeVertexNormals();
                 
+                // SỬA LỖI: Đặt depthWrite: false
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
                     opacity: 0.0,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    depthWrite: false  // QUAN TRỌNG: Không ghi vào buffer chiều sâu
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -1664,11 +1668,13 @@
                 planeGeometry.setIndex([0, 1, 2]);
                 planeGeometry.computeVertexNormals();
                 
+                // SỬA LỖI: Đặt depthWrite: false
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
                     opacity: 0.0,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    depthWrite: false  // QUAN TRỌNG: Không ghi vào buffer chiều sâu
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -1714,11 +1720,13 @@
                 planeGeometry.setIndex(indices);
                 planeGeometry.computeVertexNormals();
                 
+                // SỬA LỖI: Đặt depthWrite: false
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
                     opacity: 0.0,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    depthWrite: false  // QUAN TRỌNG: Không ghi vào buffer chiều sâu
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -1764,11 +1772,13 @@
                 planeGeometry.setIndex(indices);
                 planeGeometry.computeVertexNormals();
                 
+                // SỬA LỖI: Đặt depthWrite: false
                 const planeMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
                     opacity: 0.0,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    depthWrite: false  // QUAN TRỌNG: Không ghi vào buffer chiều sâu
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -2744,7 +2754,7 @@
             return normal.length() > 0.001;
         }
 
-        // Hàm tô màu mặt phẳng (CẢI THIỆN ĐỘ ỔN ĐỊNH)
+        // Hàm tô màu mặt phẳng (SỬA LỖI HIỂN THỊ)
         function colorPlane(pointNames, color) {
             const pointsArray = [];
             for (let name of pointNames) {
@@ -2775,17 +2785,35 @@
             }
             
             geometry.setIndex(indices);
+            
+            // SỬA LỖI 2: Tính toán normal chính xác cho mặt phẳng
+            // Tính normal từ 3 điểm đầu
+            const p1 = pointsArray[0];
+            const p2 = pointsArray[1];
+            const p3 = pointsArray[2];
+            
+            const v1 = new THREE.Vector3().subVectors(p2, p1);
+            const v2 = new THREE.Vector3().subVectors(p3, p1);
+            const normal = new THREE.Vector3().crossVectors(v1, v2).normalize();
+            
+            // Tạo mảng normal cho tất cả các đỉnh
+            const normals = [];
+            for (let i = 0; i < pointsArray.length; i++) {
+                normals.push(normal.x, normal.y, normal.z);
+            }
+            
+            geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
             geometry.computeVertexNormals();
             
             const colorNum = parseInt(color.replace('#', ''), 16);
             
-            // CẢI THIỆN: Sử dụng depthWrite: false và renderOrder để tăng độ ổn định
+            // SỬA LỖI: Sử dụng depthWrite: false và renderOrder để tăng độ ổn định
             const material = new THREE.MeshBasicMaterial({
                 color: colorNum,
                 transparent: true,
                 opacity: 0.5,
                 side: THREE.DoubleSide,
-                depthWrite: false,  // CẢI THIỆN: Sử dụng depthWrite: false để tránh vấn đề với các đối tượng trong suốt
+                depthWrite: false,  // SỬA LỖI: Sử dụng depthWrite: false để tránh vấn đề với các đối tượng trong suốt
                 depthTest: true
             });
             
@@ -2796,7 +2824,7 @@
                 color: color
             };
             
-            // CẢI THIỆN: Đặt renderOrder để mặt phẳng tô màu được vẽ sau các đối tượng khác
+            // SỬA LỖI: Đặt renderOrder để mặt phẳng tô màu được vẽ sau các đối tượng khác
             plane.renderOrder = 1;
             
             scene.add(plane);
