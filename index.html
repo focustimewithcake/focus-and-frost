@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <style>
+        /* CSS giữ nguyên như trước */
         * {
             margin: 0;
             padding: 0;
@@ -357,7 +358,7 @@
         /* Side panels */
         .side-panel {
             position: absolute;
-            top: 15vh; /* Di chuyển lên cao hơn */
+            top: 15vh;
             width: 300px;
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 8px;
@@ -455,7 +456,7 @@
         /* Panel toggle buttons */
         .panel-toggle {
             position: absolute;
-            top: 15vh; /* Di chuyển lên cao hơn */
+            top: 15vh;
             width: 30px;
             height: 30px;
             background-color: rgba(255, 255, 255, 0.95);
@@ -588,21 +589,65 @@
             background: #2a75f0;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .toolbar {
                 flex-wrap: wrap;
                 justify-content: center;
                 width: 95%;
                 bottom: 10px;
+                padding: 10px;
             }
             
             .tool-button {
-                width: 60px;
-                height: 60px;
+                width: 80px;
+                height: 80px;
+                margin: 5px;
             }
             
             .tool-button span {
-                font-size: 0.7rem;
+                font-size: 0.8rem;
+            }
+            
+            .side-panel {
+                width: 280px;
+                top: 10vh;
+            }
+            
+            .modal-content {
+                width: 95%;
+                max-width: 450px;
+                padding: 20px;
+            }
+            
+            header {
+                flex-direction: row;
+                padding: 10px 15px;
+            }
+            
+            .header-controls {
+                gap: 8px;
+            }
+            
+            .header-button {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .toolbar {
+                bottom: 5px;
+                padding: 8px;
+            }
+            
+            .tool-button {
+                width: 70px;
+                height: 70px;
+                margin: 3px;
+            }
+            
+            .tool-button span {
+                font-size: 0.75rem;
             }
             
             .shape-grid {
@@ -621,40 +666,190 @@
                 width: 90%;
                 left: 5%;
                 right: 5%;
+                top: 5vh;
+            }
+            
+            .panel-toggle {
+                top: 5vh;
             }
 
             .right-panel-tabs {
                 flex-direction: column;
             }
+            
+            .modal-content {
+                width: 98%;
+                padding: 15px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .action-buttons button {
+                padding: 10px;
+            }
         }
 
         @media (max-width: 480px) {
+            .toolbar {
+                width: 98%;
+                bottom: 2px;
+                padding: 5px;
+            }
+            
+            .tool-button {
+                width: 60px;
+                height: 60px;
+                margin: 2px;
+                padding: 5px;
+            }
+            
+            .tool-button span {
+                font-size: 0.7rem;
+            }
+            
             .shape-grid {
                 grid-template-columns: 1fr;
             }
             
             .modal-content {
-                padding: 20px 15px;
+                padding: 15px 10px;
+                width: 98%;
             }
             
-            .toolbar {
-                gap: 5px;
-                padding: 10px;
-            }
-            
-            .tool-button {
-                width: 55px;
-                height: 55px;
-            }
-
             header {
                 flex-direction: column;
                 gap: 10px;
+                padding: 8px 10px;
             }
 
             .header-controls {
                 width: 100%;
                 justify-content: center;
+                gap: 5px;
+            }
+            
+            .header-button {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .side-panel {
+                width: 95%;
+                left: 2.5%;
+                right: 2.5%;
+                top: 2vh;
+                padding: 10px;
+            }
+            
+            .panel-toggle {
+                top: 2vh;
+            }
+            
+            .form-group {
+                margin-bottom: 10px;
+            }
+            
+            label {
+                font-size: 0.9rem;
+                margin-bottom: 5px;
+            }
+            
+            select, input {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
+            
+            .color-palette {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 5px;
+            }
+            
+            .color-option {
+                width: 25px;
+                height: 25px;
+            }
+            
+            #infoPanel {
+                top: 10px;
+                padding: 10px 15px;
+                max-width: 90%;
+            }
+            
+            #infoPanel h3 {
+                font-size: 1rem;
+            }
+            
+            #infoPanel p {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .tool-button {
+                width: 55px;
+                height: 55px;
+            }
+            
+            .tool-button span {
+                font-size: 0.65rem;
+            }
+            
+            .header-button {
+                padding: 5px 8px;
+                font-size: 0.75rem;
+            }
+            
+            .modal-content {
+                padding: 10px 8px;
+            }
+            
+            .shape-option {
+                padding: 10px 5px;
+            }
+            
+            .shape-option span {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* CẢI THIỆN TƯƠNG TÁC CẢM ỨNG */
+        .tool-button, 
+        .header-button, 
+        .shape-option, 
+        .color-option,
+        .action-buttons button,
+        .right-panel-tab {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* Đảm bảo các nút có kích thước tối thiểu để dễ chạm */
+        @media (max-width: 768px) {
+            .tool-button, 
+            .header-button, 
+            .shape-option, 
+            .color-option,
+            .action-buttons button,
+            .right-panel-tab {
+                min-height: 44px;
+            }
+        }
+
+        /* Ngăn chặn zoom không mong muốn trên iOS */
+        @media (max-width: 768px) {
+            .modal-content,
+            .side-panel {
+                touch-action: pan-y;
             }
         }
     </style>
@@ -724,8 +919,6 @@
                     <div class="shape-info" id="shapeInfo">
                         <p>Chọn một hình khối để xem thông tin</p>
                     </div>
-                    
-                    <!-- ĐÃ XÓA NÚT "Hiện panel thêm phần tử" -->
                 </div>
 
                 <div class="side-panel right-panel" id="rightPanel">
@@ -1013,7 +1206,7 @@
         
         // Làm mờ tấm lưới bằng cách điều chỉnh material
         gridHelper.material.transparent = true;
-        gridHelper.material.opacity = 0.3; // Điều chỉnh độ mờ ở đây (0.0 - 1.0)
+        gridHelper.material.opacity = 0.3;
         
         scene.add(gridHelper);
 
@@ -1144,30 +1337,6 @@
                 case 'back': return 'Sau';
                 default: return 'Mặc định';
             }
-        }
-
-        // Hàm chọn hình khối
-        function selectMesh(mesh) {
-            selectedMesh = mesh;
-            
-            showInfo(`Đã chọn hình khối.`);
-            
-            updateLeftPanel(mesh);
-            document.getElementById('leftPanel').style.display = 'block';
-            
-            updatePointDropdowns();
-            updateSegmentDropdowns();
-            updateTriangleDropdowns();
-            updatePlaneDropdowns();
-        }
-
-        // Hàm bỏ chọn hình khối
-        function deselectMesh() {
-            selectedMesh = null;
-            
-            showInfo('Đã bỏ chọn hình khối.');
-            
-            document.getElementById('leftPanel').style.display = 'none';
         }
 
         // Hàm tạo các cạnh cho hình khối
@@ -1779,7 +1948,7 @@
             }
         }
 
-        // Hàm tạo các điểm hiển thị (CẢI THIỆN ĐỘ ỔN ĐỊNH)
+        // Hàm tạo các điểm hiển thị
         function createPointSpheres() {
             pointObjects.forEach(obj => scene.remove(obj));
             pointObjects.length = 0;
@@ -1802,8 +1971,8 @@
                     isSelected: false
                 };
                 
-                // CẢI THIỆN: Thêm renderOrder để đảm bảo điểm luôn hiển thị trên các đối tượng khác
-                pointMesh.renderOrder = 1;
+                // Đặt renderOrder cao để điểm luôn hiển thị trên các mặt phẳng
+                pointMesh.renderOrder = 3;
                 
                 scene.add(pointMesh);
                 pointObjects.push(pointMesh);
@@ -1843,8 +2012,8 @@
             sprite.scale.set(0.8, 0.4, 1);
             sprite.userData = { type: 'label', name: name };
             
-            // CẢI THIỆN: Thêm renderOrder để đảm bảo nhãn luôn hiển thị trên các đối tượng khác
-            sprite.renderOrder = 2;
+            // Đặt renderOrder cao hơn để nhãn luôn hiển thị trên các điểm
+            sprite.renderOrder = 4;
             
             return sprite;
         }
@@ -1961,7 +2130,7 @@
             showInfo('Đã xóa hình khối.');
         }
 
-        // Hàm cập nhật panel bên trái với thông tin hình khối (ĐÃ XÓA NÚT HIỆN PANEL THÊM PHẦN TỬ)
+        // Hàm cập nhật panel bên trái với thông tin hình khối
         function updateLeftPanel(mesh) {
             const panel = document.getElementById('leftPanel');
             const content = document.getElementById('shapeInfo');
@@ -2416,8 +2585,8 @@
                 isSelected: false
             };
             
-            // CẢI THIỆN: Thêm renderOrder để đảm bảo điểm luôn hiển thị trên các đối tượng khác
-            pointMesh.renderOrder = 1;
+            // Đặt renderOrder cao để điểm luôn hiển thị trên các mặt phẳng
+            pointMesh.renderOrder = 3;
             
             scene.add(pointMesh);
             pointObjects.push(pointMesh);
@@ -2779,14 +2948,17 @@
             
             const colorNum = parseInt(color.replace('#', ''), 16);
             
-            // CẢI THIỆN: Sử dụng depthWrite: false và renderOrder để tăng độ ổn định
+            // CẢI THIỆN: Sử dụng material với opacity ổn định và renderOrder cao
             const material = new THREE.MeshBasicMaterial({
                 color: colorNum,
                 transparent: true,
-                opacity: 0.5,
+                opacity: 0.7, // Tăng opacity để màu sắc ổn định hơn
                 side: THREE.DoubleSide,
-                depthWrite: false,  // CẢI THIỆN: Sử dụng depthWrite: false để tránh vấn đề với các đối tượng trong suốt
-                depthTest: true
+                depthWrite: false, // Ngăn ghi depth để không bị che bởi các mặt phẳng khác
+                depthTest: true,   // Vẫn kiểm tra depth để không bị che bởi các đối tượng gần camera hơn
+                polygonOffset: true, // Thêm offset để tránh z-fighting
+                polygonOffsetFactor: 1,
+                polygonOffsetUnits: 1
             });
             
             const plane = new THREE.Mesh(geometry, material);
@@ -2796,8 +2968,8 @@
                 color: color
             };
             
-            // CẢI THIỆN: Đặt renderOrder để mặt phẳng tô màu được vẽ sau các đối tượng khác
-            plane.renderOrder = 1;
+            // CẢI THIỆN: Đặt renderOrder cao để mặt phẳng tô màu được vẽ sau các đối tượng khác
+            plane.renderOrder = 2; // Cao hơn các mặt phẳng thường (0) nhưng thấp hơn điểm (3)
             
             scene.add(plane);
             coloredPlanes.push(plane);
