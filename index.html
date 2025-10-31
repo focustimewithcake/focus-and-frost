@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Công cụ Vẽ Hình Không Gian hỗ trợ giảng dạy trên máy tính</title>
-    <!-- thu vien do hoa -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <style>
@@ -571,71 +570,71 @@
             display: block;
         }
 
-        /* NEW STYLES FOR SAVED SHAPES LIST */
-        .saved-shapes-section {
-            margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
-
-        .saved-shapes-list {
-            max-height: 200px;
+        /* History modal styles */
+        .history-list {
+            max-height: 300px;
             overflow-y: auto;
-            margin-top: 10px;
+            margin-bottom: 20px;
         }
 
-        .saved-shape-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 10px;
-            margin-bottom: 5px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
+        .history-item {
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .saved-shape-item:hover {
-            background-color: #e9ecef;
+        .history-item:hover {
+            background-color: #f5f5f5;
+            border-color: #3A86FF;
         }
 
-        .saved-shape-item.active {
-            background-color: #e7f1ff;
-            border: 1px solid #3A86FF;
-        }
-
-        .saved-shape-name {
+        .history-item .history-name {
             font-weight: 500;
+            margin-bottom: 5px;
         }
 
-        .saved-shape-actions {
-            display: flex;
-            gap: 5px;
+        .history-item .history-date {
+            font-size: 0.8rem;
+            color: #777;
         }
 
-        .saved-shape-action {
-            background: none;
+        /* NEW STYLES FOR SHOW RIGHT PANEL BUTTON */
+        .show-right-panel-button {
+            background: #3A86FF;
+            color: white;
             border: none;
-            cursor: pointer;
-            font-size: 14px;
-            color: #777;
-            transition: color 0.3s;
-        }
-
-        .saved-shape-action:hover {
-            color: #333;
-        }
-
-        .saved-shape-action.delete:hover {
-            color: #ff5252;
-        }
-
-        .saved-shapes-empty {
-            text-align: center;
-            color: #777;
-            font-style: italic;
             padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 10px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .show-right-panel-button:hover {
+            background: #2a75f0;
+        }
+
+        /* Mobile warning */
+        #mobileWarning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            text-align: center;
+            padding: 20px;
+            flex-direction: column;
         }
 
         @media (max-width: 768px) {
@@ -676,10 +675,6 @@
             .right-panel-tabs {
                 flex-direction: column;
             }
-
-            .header-controls {
-                flex-wrap: wrap;
-            }
         }
 
         @media (max-width: 480px) {
@@ -714,12 +709,18 @@
     </style>
 </head>
 <body>
+    <!-- Cảnh báo thiết bị di động -->
+    <div id="mobileWarning">
+        <h2>Ứng dụng không hỗ trợ trên thiết bị di động</h2>
+        <p>Vui lòng sử dụng máy tính để truy cập ứng dụng này.</p>
+    </div>
+
     <div id="app">
         <header>
             <div class="header-controls">
                 <button class="header-button" id="backButton">Quay lại</button>
                 <button class="header-button" id="colorPlaneButton">Tô màu mặt phẳng</button>
-                <!-- ĐÃ XÓA NÚT KHO LỊCH SỬ VÀ THAY THẾ BẰNG NÚT LƯU HÌNH ĐƠN GIẢN -->
+                <!-- ĐÃ XÓA NÚT KHO LỊCH SỬ -->
                 <button class="header-button" id="saveButton">Lưu hình</button>
             </div>
             <div class="header-controls">
@@ -779,14 +780,6 @@
                     <button class="close-side-panel" id="closeLeftPanel">&times;</button>
                     <div class="shape-info" id="shapeInfo">
                         <p>Chọn một hình khối để xem thông tin</p>
-                    </div>
-
-                    <!-- PHẦN MỚI: DANH SÁCH CÁC HÌNH ĐÃ LƯU -->
-                    <div class="saved-shapes-section">
-                        <h4>Hình đã lưu</h4>
-                        <div class="saved-shapes-list" id="savedShapesList">
-                            <div class="saved-shapes-empty">Chưa có hình nào được lưu</div>
-                        </div>
                     </div>
                 </div>
 
@@ -1023,8 +1016,8 @@
                 <button class="close-button">&times;</button>
             </div>
             <div class="form-group">
-                <label for="saveShapeName">Tên hình:</label>
-                <input type="text" id="saveShapeName" placeholder="Nhập tên cho hình của bạn">
+                <label for="savedShapeName">Tên hình:</label>
+                <input type="text" id="savedShapeName" placeholder="Nhập tên cho hình">
             </div>
             <div class="action-buttons">
                 <button class="secondary-button" id="cancelSaveShape">Hủy</button>
@@ -1034,6 +1027,17 @@
     </div>
 
     <script>
+        // === KIỂM TRA THIẾT BỊ DI ĐỘNG ===
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        // Nếu là thiết bị di động, hiển thị cảnh báo và ẩn ứng dụng
+        if (isMobileDevice()) {
+            document.getElementById('mobileWarning').style.display = 'flex';
+            document.getElementById('app').style.display = 'none';
+        }
+
         // === PHẦN JAVASCRIPT - XỬ LÝ CHỨC NĂNG ===
         
         // KHỞI TẠO MÔI TRƯỜNG 3D
@@ -1164,7 +1168,7 @@
         let leftPanelVisible = true;
         let rightPanelVisible = true;
 
-        // Biến cho lưu và tải hình - ĐÃ THAY ĐỔI: Lưu trong localStorage nhưng không có chức năng lịch sử
+        // Biến cho lưu và tải hình
         let savedShapes = JSON.parse(localStorage.getItem('savedShapes')) || [];
 
         // Hàm hiển thị thông báo
@@ -2451,7 +2455,7 @@
             const canvas = document.getElementById('sceneCanvas');
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            renderer.setSize(c canvas.clientWidth, canvas.clientHeight);
         }
 
         // Hàm hiển thị modal tạo hình khối
@@ -2927,23 +2931,21 @@
             return true;
         }
 
-        // ========== HÀM CHO LƯU VÀ TẢI HÌNH (ĐÃ CẢI TIẾN) ==========
+        // ========== HÀM CHO LƯU HÌNH (MỚI THÊM) ==========
 
         // Hàm hiển thị modal lưu hình
         function showSaveShapeModal() {
-            if (createdModels.length === 0) {
-                alert('Không có hình nào để lưu!');
-                return;
-            }
-            
-            document.getElementById('saveShapeName').value = '';
             document.getElementById('saveShapeModal').style.display = 'flex';
         }
 
         // Hàm lưu hình hiện tại
         function saveCurrentShape() {
-            const shapeName = document.getElementById('saveShapeName').value.trim();
+            if (createdModels.length === 0) {
+                alert('Không có hình nào để lưu!');
+                return;
+            }
             
+            const shapeName = document.getElementById('savedShapeName').value.trim();
             if (!shapeName) {
                 alert('Vui lòng nhập tên cho hình!');
                 return;
@@ -2981,16 +2983,39 @@
             // Lưu vào localStorage
             localStorage.setItem('savedShapes', JSON.stringify(savedShapes));
             
-            // Cập nhật danh sách hình đã lưu
-            updateSavedShapesList();
+            // Thêm vào danh sách hình khối
+            addSavedShapeToGrid(shapeData);
             
             document.getElementById('saveShapeModal').style.display = 'none';
+            document.getElementById('savedShapeName').value = '';
             
             showInfo(`Đã lưu hình: ${shapeData.name}`);
         }
 
+        // Hàm thêm hình đã lưu vào danh sách hình khối
+        function addSavedShapeToGrid(shapeData) {
+            const shapeGrid = document.querySelector('.shape-grid');
+            const shapeOption = document.createElement('div');
+            shapeOption.className = 'shape-option';
+            shapeOption.dataset.shape = 'saved';
+            shapeOption.dataset.shapeId = shapeData.id;
+            shapeOption.innerHTML = `<span>${shapeData.name}</span>`;
+            shapeGrid.appendChild(shapeOption);
+            
+            // Thêm sự kiện click
+            shapeOption.addEventListener('click', function() {
+                document.querySelectorAll('.shape-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        }
+
         // Hàm tải hình đã lưu
-        function loadShape(shapeData) {
+        function loadSavedShape(shapeId) {
+            const shapeData = savedShapes.find(shape => shape.id === shapeId);
+            if (!shapeData) return;
+            
             // Xóa hình hiện tại
             if (createdModels.length > 0) {
                 deleteMesh(createdModels[0]);
@@ -3030,61 +3055,15 @@
                 colorPlane(planeData.points, planeData.color);
             });
             
+            document.getElementById('createShapeModal').style.display = 'none';
+            
             showInfo(`Đã tải hình: ${shapeData.name}`);
         }
 
-        // Hàm xóa hình đã lưu
-        function deleteSavedShape(shapeId) {
-            const index = savedShapes.findIndex(shape => shape.id === shapeId);
-            if (index !== -1) {
-                savedShapes.splice(index, 1);
-                localStorage.setItem('savedShapes', JSON.stringify(savedShapes));
-                updateSavedShapesList();
-                showInfo('Đã xóa hình đã lưu');
-            }
-        }
-
-        // Hàm cập nhật danh sách hình đã lưu trong panel bên trái
-        function updateSavedShapesList() {
-            const savedShapesList = document.getElementById('savedShapesList');
-            savedShapesList.innerHTML = '';
-            
-            if (savedShapes.length === 0) {
-                savedShapesList.innerHTML = '<div class="saved-shapes-empty">Chưa có hình nào được lưu</div>';
-                return;
-            }
-            
+        // Hàm tải tất cả hình đã lưu vào danh sách
+        function loadAllSavedShapes() {
             savedShapes.forEach(shape => {
-                const shapeItem = document.createElement('div');
-                shapeItem.className = 'saved-shape-item';
-                shapeItem.innerHTML = `
-                    <div class="saved-shape-name">${shape.name}</div>
-                    <div class="saved-shape-actions">
-                        <button class="saved-shape-action load" title="Tải hình">↻</button>
-                        <button class="saved-shape-action delete" title="Xóa hình">×</button>
-                    </div>
-                `;
-                
-                // Sự kiện tải hình
-                shapeItem.querySelector('.load').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    loadShape(shape);
-                });
-                
-                // Sự kiện xóa hình
-                shapeItem.querySelector('.delete').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (confirm(`Bạn có chắc muốn xóa hình "${shape.name}" không?`)) {
-                        deleteSavedShape(shape.id);
-                    }
-                });
-                
-                // Sự kiện click vào item để tải hình
-                shapeItem.addEventListener('click', () => {
-                    loadShape(shape);
-                });
-                
-                savedShapesList.appendChild(shapeItem);
+                addSavedShapeToGrid(shape);
             });
         }
 
@@ -3303,6 +3282,12 @@
                 });
                 
                 this.classList.add('active');
+                
+                // Nếu là hình đã lưu
+                if (this.dataset.shape === 'saved') {
+                    const shapeId = parseInt(this.dataset.shapeId);
+                    loadSavedShape(shapeId);
+                }
             });
         });
 
@@ -3315,6 +3300,14 @@
             }
             
             const shapeType = selectedOption.dataset.shape;
+            
+            // Nếu là hình đã lưu
+            if (shapeType === 'saved') {
+                const shapeId = parseInt(selectedOption.dataset.shapeId);
+                loadSavedShape(shapeId);
+                return;
+            }
+            
             createNewModel(shapeType);
             
             document.getElementById('createShapeModal').style.display = 'none';
@@ -3546,7 +3539,9 @@
 
         // Khởi tạo trạng thái ban đầu
         updateLeftPanel(null);
-        updateSavedShapesList(); // Cập nhật danh sách hình đã lưu
+        
+        // Tải tất cả hình đã lưu
+        loadAllSavedShapes();
 
         // Hàm animate
         function animate() {
