@@ -570,55 +570,6 @@
             display: block;
         }
 
-        /* History modal styles */
-        .history-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-        }
-
-        .history-item {
-            padding: 10px 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .history-item:hover {
-            background-color: #f5f5f5;
-            border-color: #3A86FF;
-        }
-
-        .history-item .history-name {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .history-item .history-date {
-            font-size: 0.8rem;
-            color: #777;
-        }
-
-        /* NEW STYLES FOR SHOW RIGHT PANEL BUTTON */
-        .show-right-panel-button {
-            background: #3A86FF;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            margin-top: 10px;
-            width: 100%;
-            transition: all 0.3s;
-        }
-
-        .show-right-panel-button:hover {
-            background: #2a75f0;
-        }
-
         /* Mobile warning */
         #mobileWarning {
             display: none;
@@ -2455,7 +2406,7 @@
             const canvas = document.getElementById('sceneCanvas');
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(c canvas.clientWidth, canvas.clientHeight);
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
         }
 
         // Hàm hiển thị modal tạo hình khối
