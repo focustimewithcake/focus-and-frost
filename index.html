@@ -510,6 +510,23 @@
             border-color: #333;
         }
 
+        /* Style cho màu trong suốt */
+        .color-option[data-color="transparent"] {
+            position: relative;
+            background: repeating-linear-gradient(45deg, #ccc, #ccc 2px, #fff 2px, #fff 4px);
+        }
+
+        .color-option[data-color="transparent"]::after {
+            content: "×";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: bold;
+            color: #666;
+        }
+
         /* Right panel sections */
         .right-panel-section {
             display: none;
@@ -950,6 +967,8 @@
                     <div class="color-option" style="background-color: #00ffff;" data-color="#00ffff"></div>
                     <div class="color-option" style="background-color: #ffa500;" data-color="#ffa500"></div>
                     <div class="color-option" style="background-color: #800080;" data-color="#800080"></div>
+                    <!-- THÊM MÀU TRONG SUỐT -->
+                    <div class="color-option" data-color="transparent"></div>
                 </div>
             </div>
             <div class="action-buttons">
@@ -1113,7 +1132,7 @@
         ];
 
         // Biến cho tô màu mặt phẳng
-        let selectedColor = '#ff0000';
+        let selectedColor = '#0000ff';
 
         // Biến cho ẩn/hiện panel
         let leftPanelVisible = true;
@@ -1540,7 +1559,7 @@
             return new THREE.Mesh(geometry, material);
         }
 
-        // Hàm tạo các mặt phẳng cho hình lập phương (không màu ban đầu)
+        // Hàm tạo các mặt phẳng cho hình lập phương (ĐÃ THÊM MÀU XANH MẶC ĐỊNH)
         function createPlanesForCube(cube) {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1608,6 +1627,9 @@
                 const plane = createSelectablePlane(planeData.vertices, planeData.name);
                 scene.add(plane);
                 planeObjects.push(plane);
+                
+                // TÔ MÀU XANH DƯƠNG MẶC ĐỊNH VỚI ĐỘ TRONG SUỐT 30%
+                colorPlane(planeData.name.split(''), '#0000ff');
             });
         }
 
@@ -1676,6 +1698,14 @@
                 scene.add(plane);
                 planeObjects.push(plane);
             }
+            
+            // TÔ MÀU XANH DƯƠNG MẶC ĐỊNH VỚI ĐỘ TRONG SUỐT 30%
+            colorPlane(['A', 'B', 'C', 'D'], '#0000ff');
+            colorPlane(['E', 'F', 'G', 'H'], '#0000ff');
+            colorPlane(['A', 'D', 'H', 'E'], '#0000ff');
+            colorPlane(['B', 'C', 'G', 'F'], '#0000ff');
+            colorPlane(['A', 'B', 'F', 'E'], '#0000ff');
+            colorPlane(['D', 'C', 'G', 'H'], '#0000ff');
         }
 
         // Hàm tạo các mặt phẳng cho tứ diện
@@ -1716,6 +1746,9 @@
                 plane.visible = true;
                 scene.add(plane);
                 planeObjects.push(plane);
+                
+                // TÔ MÀU XANH DƯƠNG MẶC ĐỊNH VỚI ĐỘ TRONG SUỐT 30%
+                colorPlane(vertexNames, '#0000ff');
             }
         }
 
@@ -1766,6 +1799,9 @@
                 plane.visible = true;
                 scene.add(plane);
                 planeObjects.push(plane);
+                
+                // TÔ MÀU XANH DƯƠNG MẶC ĐỊNH VỚI ĐỘ TRONG SUỐT 30%
+                colorPlane(vertexNames, '#0000ff');
             }
         }
 
@@ -1816,6 +1852,9 @@
                 plane.visible = true;
                 scene.add(plane);
                 planeObjects.push(plane);
+                
+                // TÔ MÀU XANH DƯƠNG MẶC ĐỊNH VỚI ĐỘ TRONG SUỐT 30%
+                colorPlane(vertexNames, '#0000ff');
             }
         }
 
@@ -1903,10 +1942,15 @@
             return Math.max(size.x, size.y, size.z);
         }
 
-        // Hàm tạo mô hình mới
+        // Hàm tạo mô hình mới (ĐÃ SỬA ĐỂ XÓA MẶT PHẲNG ĐÃ TÔ MÀU)
         function createNewModel(shapeType) {
+            // XÓA CÁC MẶT PHẲNG ĐÃ TÔ MÀU KHI ĐỔI HÌNH
+            coloredPlanes.forEach(plane => {
+                scene.remove(plane);
+            });
+            coloredPlanes.length = 0;
+            
             // CHỈ xóa các đối tượng liên quan đến hình khối cũ
-            // KHÔNG xóa các mặt phẳng đã tô màu
             if (createdModels.length > 0) {
                 deleteMesh(createdModels[0]);
             }
@@ -2746,13 +2790,13 @@
             return projection;
         }
 
-        // ========== HÀM CHO TÔ MÀU MẶT PHẲNG (ĐÃ SỬA LỖI BIẾN DẠNG) ==========
+        // ========== HÀM CHO TÔ MÀU MẶT PHẲNG (ĐÃ SỬA LỖI BIẾN DẠNG VÀ HỖ TRỢ MÀU TRONG SUỐT) ==========
 
         // Hàm hiển thị modal tô màu mặt phẳng
         function showColorPlaneModal() {
             document.getElementById('colorPlaneModal').style.display = 'flex';
             
-            selectedColor = '#ff0000';
+            selectedColor = '#0000ff';
             updateColorSelection();
         }
 
@@ -2820,7 +2864,7 @@
             return pointsArray;
         }
 
-        // Hàm tô màu mặt phẳng (ĐÃ SỬA LỖI BIẾN DẠNG)
+        // Hàm tô màu mặt phẳng (ĐÃ SỬA LỖI BIẾN DẠNG VÀ HỖ TRỢ MÀU TRONG SUỐT)
         function colorPlane(pointNames, color) {
             const pointsArray = [];
             for (let name of pointNames) {
@@ -2857,17 +2901,30 @@
             geometry.setIndex(indices);
             geometry.computeVertexNormals();
             
-            const colorNum = parseInt(color.replace('#', ''), 16);
-            
-            // Sử dụng MeshStandardMaterial để có hiệu ứng 3D tốt hơn
-            const material = new THREE.MeshStandardMaterial({
-                color: colorNum,
-                transparent: true,
-                opacity: 0.5,
-                side: THREE.DoubleSide,
-                depthWrite: true,
-                depthTest: true
-            });
+            // XỬ LÝ MÀU TRONG SUỐT
+            let material;
+            if (color === 'transparent') {
+                // Nếu là màu trong suốt, tạo material trong suốt
+                material = new THREE.MeshStandardMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.0, // Hoàn toàn trong suốt
+                    side: THREE.DoubleSide,
+                    depthWrite: true,
+                    depthTest: true
+                });
+            } else {
+                // Nếu là màu bình thường, sử dụng màu xanh dương với opacity 30%
+                const colorNum = color === '#0000ff' ? 0x3A86FF : parseInt(color.replace('#', ''), 16);
+                material = new THREE.MeshStandardMaterial({
+                    color: colorNum,
+                    transparent: true,
+                    opacity: 0.3, // Độ trong suốt 30% cho tất cả các mặt phẳng
+                    side: THREE.DoubleSide,
+                    depthWrite: true,
+                    depthTest: true
+                });
+            }
             
             const plane = new THREE.Mesh(geometry, material);
             plane.userData = {
@@ -2889,7 +2946,7 @@
             document.getElementById('saveShapeModal').style.display = 'flex';
         }
 
-        // Hàm lưu hình hiện tại
+        // Hàm lưu hình hiện tại - ĐÃ CẬP NHẬT ĐỂ BAO GỒM MẶT PHẲNG MẶC ĐỊNH
         function saveCurrentShape() {
             if (createdModels.length === 0) {
                 alert('Không có hình nào để lưu!');
@@ -2920,7 +2977,7 @@
                 };
             });
             
-            // Lưu các mặt phẳng đã tô màu
+            // Lưu các mặt phẳng đã tô màu (bao gồm cả mặt phẳng mặc định màu xanh)
             coloredPlanes.forEach(plane => {
                 shapeData.coloredPlanes.push({
                     points: plane.userData.points,
@@ -2962,21 +3019,21 @@
             });
         }
 
-        // Hàm tải hình đã lưu
+        // Hàm tải hình đã lưu - ĐÃ SỬA ĐỂ XÓA MẶT PHẲNG ĐÃ TÔ MÀU
         function loadSavedShape(shapeId) {
             const shapeData = savedShapes.find(shape => shape.id === shapeId);
             if (!shapeData) return;
+            
+            // XÓA CÁC MẶT PHẲNG ĐÃ TÔ MÀU KHI ĐỔI HÌNH
+            coloredPlanes.forEach(plane => {
+                scene.remove(plane);
+            });
+            coloredPlanes.length = 0;
             
             // Xóa hình hiện tại
             if (createdModels.length > 0) {
                 deleteMesh(createdModels[0]);
             }
-            
-            // Xóa các mặt phẳng đã tô màu
-            coloredPlanes.forEach(plane => {
-                scene.remove(plane);
-            });
-            coloredPlanes.length = 0;
             
             // Tạo hình khối mới
             const model = createNewModel(shapeData.shapeType);
