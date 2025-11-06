@@ -688,7 +688,6 @@
             <div class="header-controls">
                 <button class="header-button" id="backButton">Quay lại</button>
                 <button class="header-button" id="colorPlaneButton">Tô màu mặt phẳng</button>
-                <!-- ĐÃ XÓA NÚT KHO LỊCH SỬ -->
                 <button class="header-button" id="saveButton">Lưu hình</button>
             </div>
             <div class="header-controls">
@@ -978,7 +977,7 @@
         </div>
     </div>
 
-    <!-- MODAL LƯU HÌNH - MỚI THÊM -->
+    <!-- MODAL LƯU HÌNH -->
     <div class="modal" id="saveShapeModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1592,7 +1591,7 @@
             return plane;
         }
 
-        // Hàm tạo các mặt phẳng cho hình lập phương (ĐÃ SỬA LỖI HOÀN TOÀN)
+        // Hàm tạo các mặt phẳng cho hình lập phương (ĐÃ XÓA MÀU MẶC ĐỊNH)
         function createPlanesForCube(cube) {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1661,12 +1660,11 @@
                 scene.add(plane);
                 planeObjects.push(plane);
                 
-                // TÔ MÀU XANH DƯƠNG MẶC ĐỊNH VỚI ĐỘ TRONG SUỐT 30%
-                colorPlane(planeData.name.split(''), '#0000ff');
+                // ĐÃ XÓA: Không tô màu mặc định nữa
             });
         }
 
-        // Hàm tạo các mặt phẳng cho hình hộp chữ nhật
+        // Hàm tạo các mặt phẳng cho hình hộp chữ nhật (ĐÃ XÓA MÀU MẶC ĐỊNH)
         function createPlanesForCuboid(cuboid) {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1707,17 +1705,9 @@
                 scene.add(plane);
                 planeObjects.push(plane);
             }
-            
-            // TÔ MÀU XANH DƯƠNG MẶC ĐỊNH VỚI ĐỘ TRONG SUỐT 30%
-            colorPlane(['A', 'B', 'C', 'D'], '#0000ff');
-            colorPlane(['E', 'F', 'G', 'H'], '#0000ff');
-            colorPlane(['A', 'D', 'H', 'E'], '#0000ff');
-            colorPlane(['B', 'C', 'G', 'F'], '#0000ff');
-            colorPlane(['A', 'B', 'F', 'E'], '#0000ff');
-            colorPlane(['D', 'C', 'G', 'H'], '#0000ff');
         }
 
-        // Hàm tạo các mặt phẳng cho tứ diện
+        // Hàm tạo các mặt phẳng cho tứ diện (ĐÃ XÓA MÀU MẶC ĐỊNH)
         function createPlanesForTetrahedron() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1758,13 +1748,10 @@
                 plane.renderOrder = 0;
                 scene.add(plane);
                 planeObjects.push(plane);
-                
-                // TÔ MÀU XANH DƯƠNG MẶC ĐỊNH VỚI ĐỘ TRONG SUỐT 30%
-                colorPlane(vertexNames, '#0000ff');
             }
         }
 
-        // Hàm tạo các mặt phẳng cho lăng trụ tam giác
+        // Hàm tạo các mặt phẳng cho lăng trụ tam giác (ĐÃ XÓA MÀU MẶC ĐỊNH)
         function createPlanesForTriangularPrism() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1814,13 +1801,10 @@
                 plane.renderOrder = 0;
                 scene.add(plane);
                 planeObjects.push(plane);
-                
-                // TÔ MÀU XANH DƯƠNG MẶC ĐỊNH VỚI ĐỘ TRONG SUỐT 30%
-                colorPlane(vertexNames, '#0000ff');
             }
         }
 
-        // Hàm tạo các mặt phẳng cho hình chóp
+        // Hàm tạo các mặt phẳng cho hình chóp (ĐÃ XÓA MÀU MẶC ĐỊNH)
         function createPlanesForPyramid() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1870,9 +1854,6 @@
                 plane.renderOrder = 0;
                 scene.add(plane);
                 planeObjects.push(plane);
-                
-                // TÔ MÀU XANH DƯƠNG MẶC ĐỊNH VỚI ĐỘ TRONG SUỐT 30%
-                colorPlane(vertexNames, '#0000ff');
             }
         }
 
@@ -2913,7 +2894,7 @@
             // Tạo các tam giác cho đa giác
             const indices = [];
             for (let i = 1; i < sortedPoints.length - 1; i++) {
-indices.push(0, i, i + 1);
+                indices.push(0, i, i + 1);
             }
             
             geometry.setIndex(indices);
@@ -2960,14 +2941,14 @@ indices.push(0, i, i + 1);
             return true;
         }
 
-        // ========== HÀM CHO LƯU HÌNH (MỚI THÊM) ==========
+        // ========== HÀM CHO LƯU HÌNH ==========
 
         // Hàm hiển thị modal lưu hình
         function showSaveShapeModal() {
             document.getElementById('saveShapeModal').style.display = 'flex';
         }
 
-        // Hàm lưu hình hiện tại - ĐÃ CẬP NHẬT ĐỂ BAO GỒM MẶT PHẲNG MẶC ĐỊNH
+        // Hàm lưu hình hiện tại
         function saveCurrentShape() {
             if (createdModels.length === 0) {
                 alert('Không có hình nào để lưu!');
@@ -2998,7 +2979,7 @@ indices.push(0, i, i + 1);
                 };
             });
             
-            // Lưu các mặt phẳng đã tô màu (bao gồm cả mặt phẳng mặc định màu xanh)
+            // Lưu các mặt phẳng đã tô màu
             coloredPlanes.forEach(plane => {
                 shapeData.coloredPlanes.push({
                     points: plane.userData.points,
@@ -3040,7 +3021,7 @@ indices.push(0, i, i + 1);
             });
         }
 
-        // Hàm tải hình đã lưu - ĐÃ SỬA ĐỂ XÓA MẶT PHẲNG ĐÃ TÔ MÀU
+        // Hàm tải hình đã lưu
         function loadSavedShape(shapeId) {
             const shapeData = savedShapes.find(shape => shape.id === shapeId);
             if (!shapeData) return;
@@ -3284,7 +3265,7 @@ indices.push(0, i, i + 1);
             showColorPlaneModal();
         });
 
-        // SỰ KIỆN MỚI: Nút Lưu hình
+        // Sự kiện cho nút Lưu hình
         document.getElementById('saveButton').addEventListener('click', function() {
             showSaveShapeModal();
         });
@@ -3429,12 +3410,12 @@ indices.push(0, i, i + 1);
             button.addEventListener('click', hideAllModals);
         });
 
-        // SỰ KIỆN MỚI: Xác nhận lưu hình
+        // Xác nhận lưu hình
         document.getElementById('confirmSaveShape').addEventListener('click', function() {
             saveCurrentShape();
         });
 
-        // SỰ KIỆN MỚI: Hủy lưu hình
+        // Hủy lưu hình
         document.getElementById('cancelSaveShape').addEventListener('click', function() {
             document.getElementById('saveShapeModal').style.display = 'none';
         });
@@ -3504,7 +3485,6 @@ indices.push(0, i, i + 1);
             }
             
             // Tách chuỗi thành mảng các ký tự (ví dụ: "ABC" thành ['A','B','C'])
-            // Cho phép nhập không cần theo thứ tự, ví dụ "EFBC" cũng được chấp nhận
             const pointNames = pointInput.split('').filter(char => char !== ' ' && char !== ',');
             
             if (pointNames.length < 3) {
