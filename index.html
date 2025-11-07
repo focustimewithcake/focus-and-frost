@@ -1378,46 +1378,7 @@ function createPlanesForCuboid(cuboid) {
         scene.add(plane);
         planeObjects.push(plane);
     });
-}
-            // Sử dụng EdgesGeometry để tạo các cạnh mà không có đường chéo
-            const geometry = new THREE.BoxGeometry(width, height, depth);
-            const edgesGeometry = new THREE.EdgesGeometry(geometry);
-            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
-            
-            const material = new THREE.MeshBasicMaterial({ 
-                color: 0x3A86FF, 
-                wireframe: false,
-                transparent: true,
-                opacity: 0.0
-            });
-            const cuboid = new THREE.Mesh(geometry, material);
-            
-            cuboid.position.z = depth / 2;
-            edges.position.z = depth / 2;
-            
-            const halfWidth = width / 2;
-            const halfHeight = height / 2;
-            const halfDepth = depth / 2;
-            
-            points['A'] = new THREE.Vector3(-halfWidth, -halfHeight, 0);
-            points['B'] = new THREE.Vector3(halfWidth, -halfHeight, 0);
-            points['C'] = new THREE.Vector3(halfWidth, halfHeight, 0);
-            points['D'] = new THREE.Vector3(-halfWidth, halfHeight, 0);
-            points['E'] = new THREE.Vector3(-halfWidth, -halfHeight, depth);
-            points['F'] = new THREE.Vector3(halfWidth, -halfHeight, depth);
-            points['G'] = new THREE.Vector3(halfWidth, halfHeight, depth);
-            points['H'] = new THREE.Vector3(-halfWidth, halfHeight, depth);
-            
-            scene.add(edges);
-            edgeObjects.push(edges);
-            
-            createPointSpheres();
-            createPlanesForCuboid(cuboid);
-            
-            return cuboid;
-        }
-
+    
         // Hàm tạo tứ diện S.ABC (không có cạnh vuông góc)
         function createTetrahedron() {
             const geometry = new THREE.BufferGeometry();
