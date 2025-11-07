@@ -1019,7 +1019,8 @@
         camera.position.set(5, 5, 5);
         camera.up.set(0, 0, 1);
         camera.lookAt(0, 0, 0);
-const renderer = new THREE.WebGLRenderer({ 
+
+        const renderer = new THREE.WebGLRenderer({ 
             antialias: true, 
             canvas: canvas,
             alpha: true
@@ -1301,7 +1302,7 @@ const renderer = new THREE.WebGLRenderer({
             return cube;
         }
 
-        // Hàm tạo hộp chữ nhật với các cạnh không bằng nhau (ĐÃ SỬA LỖI)
+        // Hàm tạo hộp chữ nhật với các cạnh không bằng nhau
         function createCuboid() {
             const width = FIXED_LENGTH;
             const height = FIXED_LENGTH * 1.5;
@@ -1328,21 +1329,20 @@ const renderer = new THREE.WebGLRenderer({
             const halfHeight = height / 2;
             const halfDepth = depth / 2;
             
-            // SỬA LỖI: Đặt tọa độ chính xác cho các điểm
-            points['A'] = new THREE.Vector3(-halfWidth, -halfHeight, -halfDepth);
-            points['B'] = new THREE.Vector3(halfWidth, -halfHeight, -halfDepth);
-            points['C'] = new THREE.Vector3(halfWidth, halfHeight, -halfDepth);
-            points['D'] = new THREE.Vector3(-halfWidth, halfHeight, -halfDepth);
-            points['E'] = new THREE.Vector3(-halfWidth, -halfHeight, halfDepth);
-            points['F'] = new THREE.Vector3(halfWidth, -halfHeight, halfDepth);
-            points['G'] = new THREE.Vector3(halfWidth, halfHeight, halfDepth);
-            points['H'] = new THREE.Vector3(-halfWidth, halfHeight, halfDepth);
+            points['A'] = new THREE.Vector3(-halfWidth, -halfHeight, 0);
+            points['B'] = new THREE.Vector3(halfWidth, -halfHeight, 0);
+            points['C'] = new THREE.Vector3(halfWidth, halfHeight, 0);
+            points['D'] = new THREE.Vector3(-halfWidth, halfHeight, 0);
+            points['E'] = new THREE.Vector3(-halfWidth, -halfHeight, depth);
+            points['F'] = new THREE.Vector3(halfWidth, -halfHeight, depth);
+            points['G'] = new THREE.Vector3(halfWidth, halfHeight, depth);
+            points['H'] = new THREE.Vector3(-halfWidth, halfHeight, depth);
             
             scene.add(edges);
             edgeObjects.push(edges);
             
             createPointSpheres();
-            createPlanesForCuboid();
+            createPlanesForCuboid(cuboid);
             
             return cuboid;
         }
@@ -1558,20 +1558,20 @@ const renderer = new THREE.WebGLRenderer({
             return new THREE.Mesh(geometry, material);
         }
 
-        // Hàm tạo mặt phẳng có thể chọn được (ĐÃ THÊM MÀU MẶC ĐỊNH)
+        // Hàm tạo mặt phẳng có thể chọn được (ĐÃ SỬA LỖI HOÀN TOÀN)
         function createSelectablePlane(vertices, planeName) {
             const geometry = new THREE.BufferGeometry();
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
             geometry.setIndex([0, 1, 2, 0, 2, 3]);
             geometry.computeVertexNormals();
             
-            // SỬA ĐỔI: Sử dụng màu mặc định với độ trong suốt 30% như hình đã lưu
+            // SỬA LỖI: Sử dụng MeshBasicMaterial thay vì MeshStandardMaterial
             const material = new THREE.MeshBasicMaterial({
-                color: 0x3A86FF, // Màu xanh mặc định
+                color: 0xffffff, // Màu trắng (không màu)
                 transparent: true,
-                opacity: 0.3,    // 30% trong suốt như hình đã lưu
+                opacity: 0.0,    // Hoàn toàn trong suốt ban đầu
                 side: THREE.DoubleSide,
-                depthWrite: false,
+                depthWrite: false, // QUAN TRỌNG: Tắt depthWrite để không che các đối tượng khác
                 depthTest: true
             });
             
@@ -1580,17 +1580,18 @@ const renderer = new THREE.WebGLRenderer({
                 type: 'plane', 
                 name: planeName,
                 selectable: true,
-                originalColor: 0x3A86FF,
+                originalColor: 0xffffff,
                 isSelected: false,
-                isColored: true // Đánh dấu đã được tô màu mặc định
+                isColored: false // Đánh dấu chưa được tô màu
             };
             
+            // CẢI THIỆN: Đặt renderOrder cao hơn để mặt phẳng luôn hiển thị
             plane.renderOrder = 0;
             
             return plane;
         }
 
-        // Hàm tạo các mặt phẳng cho hình lập phương (ĐÃ THÊM MÀU MẶC ĐỊNH)
+        // Hàm tạo các mặt phẳng cho hình lập phương (ĐÃ XÓA MÀU MẶC ĐỊNH)
         function createPlanesForCube(cube) {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1601,55 +1602,55 @@ const renderer = new THREE.WebGLRenderer({
                 {
                     name: 'ABCD',
                     vertices: [
-                        -half, -half, -half,
-                        half, -half, -half,
-                        half, half, -half,
-                        -half, half, -half
+                        -half, -half, 0,
+                        half, -half, 0,
+                        half, half, 0,
+                        -half, half, 0
                     ]
                 },
                 {
                     name: 'EFGH', 
                     vertices: [
-                        -half, -half, half,
-                        half, -half, half,
-                        half, half, half,
-                        -half, half, half
+                        -half, -half, FIXED_LENGTH,
+                        half, -half, FIXED_LENGTH,
+                        half, half, FIXED_LENGTH,
+                        -half, half, FIXED_LENGTH
                     ]
                 },
                 {
                     name: 'ADHE',
                     vertices: [
-                        -half, -half, -half,
-                        -half, -half, half,
-                        -half, half, half,
-                        -half, half, -half
+                        -half, -half, 0,
+                        -half, -half, FIXED_LENGTH,
+                        -half, half, FIXED_LENGTH,
+                        -half, half, 0
                     ]
                 },
                 {
                     name: 'BCGF',
                     vertices: [
-                        half, -half, -half,
-                        half, -half, half,
-                        half, half, half,
-                        half, half, -half
+                        half, -half, 0,
+                        half, -half, FIXED_LENGTH,
+                        half, half, FIXED_LENGTH,
+                        half, half, 0
                     ]
                 },
                 {
                     name: 'ABFE', 
                     vertices: [
-                        -half, -half, -half,
-                        half, -half, -half,
-                        half, -half, half,
-                        -half, -half, half
+                        -half, -half, 0,
+                        half, -half, 0,
+                        half, -half, FIXED_LENGTH,
+                        -half, -half, FIXED_LENGTH
                     ]
                 },
                 {
                     name: 'DCGH',
                     vertices: [
-                        -half, half, -half,
-                        half, half, -half,
-                        half, half, half,
-                        -half, half, half
+                        -half, half, 0,
+                        half, half, 0,
+                        half, half, FIXED_LENGTH,
+                        -half, half, FIXED_LENGTH
                     ]
                 }
             ];
@@ -1658,87 +1659,55 @@ const renderer = new THREE.WebGLRenderer({
                 const plane = createSelectablePlane(planeData.vertices, planeData.name);
                 scene.add(plane);
                 planeObjects.push(plane);
+                
+                // ĐÃ XÓA: Không tô màu mặc định nữa
             });
         }
 
-        // Hàm tạo các mặt phẳng cho hình hộp chữ nhật (ĐÃ SỬA LỖI HOÀN TOÀN)
-        function createPlanesForCuboid() {
+        // Hàm tạo các mặt phẳng cho hình hộp chữ nhật (ĐÃ XÓA MÀU MẶC ĐỊNH)
+        function createPlanesForCuboid(cuboid) {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
             
-            const width = FIXED_LENGTH;
-            const height = FIXED_LENGTH * 1.5;
-            const depth = FIXED_LENGTH * 0.8;
+            const positions = cuboid.geometry.attributes.position.array;
+            const indices = cuboid.geometry.index.array;
             
-            const halfWidth = width / 2;
-            const halfHeight = height / 2;
-            const halfDepth = depth / 2;
-            
-            const planes = [
-                {
-                    name: 'ABCD',
-                    vertices: [
-                        -halfWidth, -halfHeight, -halfDepth,
-                        halfWidth, -halfHeight, -halfDepth,
-                        halfWidth, halfHeight, -halfDepth,
-                        -halfWidth, halfHeight, -halfDepth
-                    ]
-                },
-                {
-                    name: 'EFGH', 
-                    vertices: [
-                        -halfWidth, -halfHeight, halfDepth,
-                        halfWidth, -halfHeight, halfDepth,
-                        halfWidth, halfHeight, halfDepth,
-                        -halfWidth, halfHeight, halfDepth
-                    ]
-                },
-                {
-                    name: 'ADHE',
-                    vertices: [
-                        -halfWidth, -halfHeight, -halfDepth,
-                        -halfWidth, -halfHeight, halfDepth,
-                        -halfWidth, halfHeight, halfDepth,
-                        -halfWidth, halfHeight, -halfDepth
-                    ]
-                },
-                {
-                    name: 'BCGF',
-                    vertices: [
-                        halfWidth, -halfHeight, -halfDepth,
-                        halfWidth, -halfHeight, halfDepth,
-                        halfWidth, halfHeight, halfDepth,
-                        halfWidth, halfHeight, -halfDepth
-                    ]
-                },
-                {
-                    name: 'ABFE', 
-                    vertices: [
-                        -halfWidth, -halfHeight, -halfDepth,
-                        halfWidth, -halfHeight, -halfDepth,
-                        halfWidth, -halfHeight, halfDepth,
-                        -halfWidth, -halfHeight, halfDepth
-                    ]
-                },
-                {
-                    name: 'DCGH',
-                    vertices: [
-                        -halfWidth, halfHeight, -halfDepth,
-                        halfWidth, halfHeight, -halfDepth,
-                        halfWidth, halfHeight, halfDepth,
-                        -halfWidth, halfHeight, halfDepth
-                    ]
+            for (let i = 0; i < 6; i++) {
+                const planeGeometry = new THREE.BufferGeometry();
+                const planeVertices = [];
+                
+                for (let j = 0; j < 3; j++) {
+                    const vertexIndex = indices[i * 6 + j] * 3;
+                    planeVertices.push(
+                        positions[vertexIndex],
+                        positions[vertexIndex + 1],
+                        positions[vertexIndex + 2]
+                    );
                 }
-            ];
-            
-            planes.forEach(planeData => {
-                const plane = createSelectablePlane(planeData.vertices, planeData.name);
+                
+                planeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(planeVertices, 3));
+                planeGeometry.setIndex([0, 1, 2]);
+                planeGeometry.computeVertexNormals();
+                
+                const planeMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.0,
+                    side: THREE.DoubleSide,
+                    depthWrite: false,
+                    depthTest: true
+                });
+                
+                const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+                plane.userData = { type: 'plane', index: i };
+                plane.visible = true;
+                plane.renderOrder = 0;
                 scene.add(plane);
                 planeObjects.push(plane);
-            });
+            }
         }
 
-        // Hàm tạo các mặt phẳng cho tứ diện (ĐÃ THÊM MÀU MẶC ĐỊNH)
+        // Hàm tạo các mặt phẳng cho tứ diện (ĐÃ XÓA MÀU MẶC ĐỊNH)
         function createPlanesForTetrahedron() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1764,18 +1733,17 @@ const renderer = new THREE.WebGLRenderer({
                 planeGeometry.setIndex([0, 1, 2]);
                 planeGeometry.computeVertexNormals();
                 
-                // SỬA ĐỔI: Sử dụng màu mặc định với độ trong suốt 30%
                 const planeMaterial = new THREE.MeshBasicMaterial({
-                    color: 0x3A86FF,
+                    color: 0xffffff,
                     transparent: true,
-                    opacity: 0.3,
+                    opacity: 0.0,
                     side: THREE.DoubleSide,
                     depthWrite: false,
                     depthTest: true
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-                plane.userData = { type: 'plane', index: i, name: planeNames[i], isColored: true };
+                plane.userData = { type: 'plane', index: i, name: planeNames[i] };
                 plane.visible = true;
                 plane.renderOrder = 0;
                 scene.add(plane);
@@ -1783,7 +1751,7 @@ const renderer = new THREE.WebGLRenderer({
             }
         }
 
-        // Hàm tạo các mặt phẳng cho lăng trụ tam giác (ĐÃ THÊM MÀU MẶC ĐỊNH)
+        // Hàm tạo các mặt phẳng cho lăng trụ tam giác (ĐÃ XÓA MÀU MẶC ĐỊNH)
         function createPlanesForTriangularPrism() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1818,18 +1786,17 @@ const renderer = new THREE.WebGLRenderer({
                 planeGeometry.setIndex(indices);
                 planeGeometry.computeVertexNormals();
                 
-                // SỬA ĐỔI: Sử dụng màu mặc định với độ trong suốt 30%
                 const planeMaterial = new THREE.MeshBasicMaterial({
-                    color: 0x3A86FF,
+                    color: 0xffffff,
                     transparent: true,
-                    opacity: 0.3,
+                    opacity: 0.0,
                     side: THREE.DoubleSide,
                     depthWrite: false,
                     depthTest: true
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-                plane.userData = { type: 'plane', index: i, name: planeNames[i], isColored: true };
+                plane.userData = { type: 'plane', index: i, name: planeNames[i] };
                 plane.visible = true;
                 plane.renderOrder = 0;
                 scene.add(plane);
@@ -1837,7 +1804,7 @@ const renderer = new THREE.WebGLRenderer({
             }
         }
 
-        // Hàm tạo các mặt phẳng cho hình chóp (ĐÃ THÊM MÀU MẶC ĐỊNH)
+        // Hàm tạo các mặt phẳng cho hình chóp (ĐÃ XÓA MÀU MẶC ĐỊNH)
         function createPlanesForPyramid() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1872,18 +1839,17 @@ const renderer = new THREE.WebGLRenderer({
                 planeGeometry.setIndex(indices);
                 planeGeometry.computeVertexNormals();
                 
-                // SỬA ĐỔI: Sử dụng màu mặc định với độ trong suốt 30%
                 const planeMaterial = new THREE.MeshBasicMaterial({
-                    color: 0x3A86FF,
+                    color: 0xffffff,
                     transparent: true,
-                    opacity: 0.3,
+                    opacity: 0.0,
                     side: THREE.DoubleSide,
                     depthWrite: false,
                     depthTest: true
                 });
                 
                 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-                plane.userData = { type: 'plane', index: i, name: planeNames[i], isColored: true };
+                plane.userData = { type: 'plane', index: i, name: planeNames[i] };
                 plane.visible = true;
                 plane.renderOrder = 0;
                 scene.add(plane);
@@ -1891,7 +1857,7 @@ const renderer = new THREE.WebGLRenderer({
             }
         }
 
-        // Hàm tạo các điểm hiển thị
+        // Hàm tạo các điểm hiển thị (CẢI THIỆN ĐỘ ỔN ĐỊNH)
         function createPointSpheres() {
             pointObjects.forEach(obj => scene.remove(obj));
             pointObjects.length = 0;
@@ -1914,6 +1880,7 @@ const renderer = new THREE.WebGLRenderer({
                     isSelected: false
                 };
                 
+                // CẢI THIỆN: Thêm renderOrder để đảm bảo điểm luôn hiển thị trên các đối tượng khác
                 pointMesh.renderOrder = 1;
                 
                 scene.add(pointMesh);
@@ -1954,6 +1921,7 @@ const renderer = new THREE.WebGLRenderer({
             sprite.scale.set(0.8, 0.4, 1);
             sprite.userData = { type: 'label', name: name };
             
+            // CẢI THIỆN: Thêm renderOrder để đảm bảo nhãn luôn hiển thị trên các đối tượng khác
             sprite.renderOrder = 2;
             
             return sprite;
@@ -1973,7 +1941,7 @@ const renderer = new THREE.WebGLRenderer({
             return Math.max(size.x, size.y, size.z);
         }
 
-        // Hàm tạo mô hình mới
+        // Hàm tạo mô hình mới (ĐÃ SỬA ĐỂ XÓA MẶT PHẲNG ĐÃ TÔ MÀU)
         function createNewModel(shapeType) {
             // XÓA CÁC MẶT PHẲNG ĐÃ TÔ MÀU KHI ĐỔI HÌNH
             coloredPlanes.forEach(plane => {
@@ -2037,7 +2005,7 @@ const renderer = new THREE.WebGLRenderer({
             }
         }
 
-        // Hàm xóa hình khối
+        // Hàm xóa hình khối (SỬA ĐỔI: KHÔNG xóa các mặt phẳng đã tô màu)
         function deleteMesh(mesh) {
             if (!mesh) return;
             
@@ -2531,6 +2499,7 @@ const renderer = new THREE.WebGLRenderer({
                 isSelected: false
             };
             
+            // CẢI THIỆN: Thêm renderOrder để đảm bảo điểm luôn hiển thị trên các đối tượng khác
             pointMesh.renderOrder = 1;
             
             scene.add(pointMesh);
@@ -2820,7 +2789,7 @@ const renderer = new THREE.WebGLRenderer({
             return projection;
         }
 
-        // ========== HÀM CHO TÔ MÀU MẶT PHẲNG ==========
+        // ========== HÀM CHO TÔ MÀU MẶT PHẲNG (ĐÃ SỬA LỖI HOÀN TOÀN) ==========
 
         // Hàm hiển thị modal tô màu mặt phẳng
         function showColorPlaneModal() {
@@ -2894,7 +2863,7 @@ const renderer = new THREE.WebGLRenderer({
             return pointsArray;
         }
 
-        // Hàm tô màu mặt phẳng
+        // Hàm tô màu mặt phẳng (ĐÃ SỬA LỖI HOÀN TOÀN)
         function colorPlane(pointNames, color) {
             const pointsArray = [];
             for (let name of pointNames) {
@@ -2931,15 +2900,16 @@ const renderer = new THREE.WebGLRenderer({
             geometry.setIndex(indices);
             geometry.computeVertexNormals();
             
+            // SỬA LỖI: Sử dụng MeshBasicMaterial thay vì MeshStandardMaterial
             let material;
             if (color === 'transparent') {
                 // Nếu là màu trong suốt, tạo material trong suốt
                 material = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.0,
+                    opacity: 0.0, // Hoàn toàn trong suốt
                     side: THREE.DoubleSide,
-                    depthWrite: false,
+                    depthWrite: false, // QUAN TRỌNG: Tắt depthWrite
                     depthTest: true
                 });
             } else {
@@ -2948,9 +2918,9 @@ const renderer = new THREE.WebGLRenderer({
                 material = new THREE.MeshBasicMaterial({
                     color: colorNum,
                     transparent: true,
-                    opacity: 0.3,
+                    opacity: 0.3, // Độ trong suốt 30% cho tất cả các mặt phẳng
                     side: THREE.DoubleSide,
-                    depthWrite: false,
+                    depthWrite: false, // QUAN TRỌNG: Tắt depthWrite
                     depthTest: true
                 });
             }
@@ -2962,6 +2932,7 @@ const renderer = new THREE.WebGLRenderer({
                 color: color
             };
             
+            // CẢI THIỆN: Đặt renderOrder cao hơn để mặt phẳng luôn hiển thị
             plane.renderOrder = 1;
             
             scene.add(plane);
@@ -3247,7 +3218,7 @@ const renderer = new THREE.WebGLRenderer({
                         createPlanesForCube(selectedMesh);
                         break;
                     case 'cuboid':
-                        createPlanesForCuboid();
+                        createPlanesForCuboid(selectedMesh);
                         break;
                     case 'tetrahedron':
                     case 'triangularPyramid':
@@ -3594,4 +3565,4 @@ const renderer = new THREE.WebGLRenderer({
         animate();
     </script>
 </body>
-</html>
+</html>  
