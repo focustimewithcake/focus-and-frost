@@ -1302,12 +1302,83 @@
             return cube;
         }
 
-        // Hàm tạo hộp chữ nhật với các cạnh không bằng nhau
-        function createCuboid() {
-            const width = FIXED_LENGTH;
-            const height = FIXED_LENGTH * 1.5;
-            const depth = FIXED_LENGTH * 0.8;
-            
+       // Hàm tạo các mặt phẳng cho hình hộp chữ nhật (ĐÃ SỬA LỖI)
+function createPlanesForCuboid(cuboid) {
+    planeObjects.forEach(obj => scene.remove(obj));
+    planeObjects.length = 0;
+    
+    const width = FIXED_LENGTH;
+    const height = FIXED_LENGTH * 1.5;
+    const depth = FIXED_LENGTH * 0.8;
+    
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+    const halfDepth = depth / 2;
+    
+    // Tạo 6 mặt phẳng hoàn chỉnh cho hình hộp chữ nhật
+    const planes = [
+        {
+            name: 'ABCD', // Mặt đáy dưới
+            vertices: [
+                -halfWidth, -halfHeight, 0,
+                halfWidth, -halfHeight, 0,
+                halfWidth, halfHeight, 0,
+                -halfWidth, halfHeight, 0
+            ]
+        },
+        {
+            name: 'EFGH', // Mặt đáy trên
+            vertices: [
+                -halfWidth, -halfHeight, depth,
+                halfWidth, -halfHeight, depth,
+                halfWidth, halfHeight, depth,
+                -halfWidth, halfHeight, depth
+            ]
+        },
+        {
+            name: 'ADHE', // Mặt bên trái
+            vertices: [
+                -halfWidth, -halfHeight, 0,
+                -halfWidth, -halfHeight, depth,
+                -halfWidth, halfHeight, depth,
+                -halfWidth, halfHeight, 0
+            ]
+        },
+        {
+            name: 'BCGF', // Mặt bên phải
+            vertices: [
+                halfWidth, -halfHeight, 0,
+                halfWidth, -halfHeight, depth,
+                halfWidth, halfHeight, depth,
+                halfWidth, halfHeight, 0
+            ]
+        },
+        {
+            name: 'ABFE', // Mặt trước
+            vertices: [
+                -halfWidth, -halfHeight, 0,
+                halfWidth, -halfHeight, 0,
+                halfWidth, -halfHeight, depth,
+                -halfWidth, -halfHeight, depth
+            ]
+        },
+        {
+            name: 'DCGH', // Mặt sau
+            vertices: [
+                -halfWidth, halfHeight, 0,
+                halfWidth, halfHeight, 0,
+                halfWidth, halfHeight, depth,
+                -halfWidth, halfHeight, depth
+            ]
+        }
+    ];
+    
+    planes.forEach(planeData => {
+        const plane = createSelectablePlane(planeData.vertices, planeData.name);
+        scene.add(plane);
+        planeObjects.push(plane);
+    });
+}
             // Sử dụng EdgesGeometry để tạo các cạnh mà không có đường chéo
             const geometry = new THREE.BoxGeometry(width, height, depth);
             const edgesGeometry = new THREE.EdgesGeometry(geometry);
