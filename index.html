@@ -1261,69 +1261,184 @@
                 color
             );
             return arrowHelper;
-        }
+        }// Hàm tạo hình lập phương
+function createCube() {
+    const geometry = new THREE.BufferGeometry();
+    
+    // Đặt đáy ABCD trùng với mặt phẳng OXY (z=0)
+    // Đặt cạnh AE song song với trục OZ
+    const half = FIXED_LENGTH / 2;
+    const vertices = new Float32Array([
+        // Mặt đáy ABCD (z = 0)
+        -half, -half, 0,           // A
+        half, -half, 0,            // B  
+        half, half, 0,             // C
+        -half, half, 0,            // D
+        
+        // Mặt trên EFGH (z = FIXED_LENGTH)
+        -half, -half, FIXED_LENGTH, // E
+        half, -half, FIXED_LENGTH,  // F
+        half, half, FIXED_LENGTH,   // G
+        -half, half, FIXED_LENGTH   // H
+    ]);
+    
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    
+    // Các mặt được định nghĩa theo thứ tự ngược chiều kim đồng hồ
+    const indices = [
+        // Mặt đáy ABCD
+        0, 1, 2, 0, 2, 3,
+        // Mặt trên EFGH  
+        4, 5, 6, 4, 6, 7,
+        // Mặt trước ABFE
+        0, 1, 5, 0, 5, 4,
+        // Mặt phải BCGF
+        1, 2, 6, 1, 6, 5,
+        // Mặt sau CDHG
+        2, 3, 7, 2, 7, 6,
+        // Mặt trái DHEA
+        3, 0, 4, 3, 4, 7
+    ];
+    
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    
+    const material = new THREE.MeshBasicMaterial({ 
+        color: 0x3A86FF, 
+        wireframe: false,
+        transparent: true,
+        opacity: 0.7
+    });
+    
+    // Định nghĩa các điểm
+    points['A'] = new THREE.Vector3(-half, -half, 0);
+    points['B'] = new THREE.Vector3(half, -half, 0);
+    points['C'] = new THREE.Vector3(half, half, 0);
+    points['D'] = new THREE.Vector3(-half, half, 0);
+    points['E'] = new THREE.Vector3(-half, -half, FIXED_LENGTH);
+    points['F'] = new THREE.Vector3(half, -half, FIXED_LENGTH);
+    points['G'] = new THREE.Vector3(half, half, FIXED_LENGTH);
+    points['H'] = new THREE.Vector3(-half, half, FIXED_LENGTH);
+    
+    // Tạo các cạnh
+    const edgesGeometry = new THREE.EdgesGeometry(geometry);
+    const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+    const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+    
+    scene.add(edges);
+    edgeObjects.push(edges);
+    
+    createPointSpheres();
+    createPlanesForCube();
+    
+    return new THREE.Mesh(geometry, material);
+}
 
-        // Hàm tạo hình lập phương
-        function createCube() {
-            const geometry = new THREE.BufferGeometry();
-            
-            // Đặt đáy ABCD trùng với mặt phẳng OXY (z=0)
-            // Đặt cạnh AE song song với trục OZ
-            const half = FIXED_LENGTH / 2;
-            const vertices = new Float32Array([
-                -half, -half, 0,           // A
-                half, -half, 0,            // B
-                half, half, 0,             // C
-                -half, half, 0,            // D
-                -half, -half, FIXED_LENGTH, // E
-                half, -half, FIXED_LENGTH,  // F
-                half, half, FIXED_LENGTH,   // G
-                -half, half, FIXED_LENGTH   // H
-            ]);
-            
-            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-            
-            const indices = [
-                0, 1, 2, 0, 2, 3, // Mặt đáy ABCD
-                4, 5, 6, 4, 6, 7, // Mặt trên EFGH
-                0, 4, 5, 0, 5, 1, // Mặt trước ABFE
-                1, 5, 6, 1, 6, 2, // Mặt phải BCGF
-                2, 6, 7, 2, 7, 3, // Mặt sau CDHG
-                3, 7, 4, 3, 4, 0  // Mặt trái DHEA
-            ];
-            
-            geometry.setIndex(indices);
-            geometry.computeVertexNormals();
-            
-            const material = new THREE.MeshBasicMaterial({ 
-                color: 0x3A86FF, 
-                wireframe: false,
-                transparent: true,
-                opacity: 0.7
-            });
-            
-            points['A'] = new THREE.Vector3(-half, -half, 0);
-            points['B'] = new THREE.Vector3(half, -half, 0);
-            points['C'] = new THREE.Vector3(half, half, 0);
-            points['D'] = new THREE.Vector3(-half, half, 0);
-            points['E'] = new THREE.Vector3(-half, -half, FIXED_LENGTH);
-            points['F'] = new THREE.Vector3(half, -half, FIXED_LENGTH);
-            points['G'] = new THREE.Vector3(half, half, FIXED_LENGTH);
-            points['H'] = new THREE.Vector3(-half, half, FIXED_LENGTH);
-            
-            // Sử dụng EdgesGeometry để tạo các cạnh
-            const edgesGeometry = new THREE.EdgesGeometry(geometry);
-            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
-            
-            scene.add(edges);
-            edgeObjects.push(edges);
-            
-            createPointSpheres();
-            createPlanesForCube();
-            
-            return new THREE.Mesh(geometry, material);
+// Hàm tạo các mặt phẳng cho hình lập phương
+function createPlanesForCube() {
+    planeObjects.forEach(obj => scene.remove(obj));
+    planeObjects.length = 0;
+    
+    const half = FIXED_LENGTH / 2;
+    
+    const planes = [
+        {
+            name: 'ABCD', // Mặt đáy
+            vertices: [
+                -half, -half, 0,    // A
+                half, -half, 0,     // B
+                half, half, 0,      // C  
+                -half, half, 0      // D
+            ]
+        },
+        {
+            name: 'EFGH', // Mặt trên
+            vertices: [
+                -half, -half, FIXED_LENGTH,  // E
+                half, -half, FIXED_LENGTH,   // F
+                half, half, FIXED_LENGTH,    // G
+                -half, half, FIXED_LENGTH    // H
+            ]
+        },
+        {
+            name: 'ABFE', // Mặt trước
+            vertices: [
+                -half, -half, 0,             // A
+                half, -half, 0,              // B
+                half, -half, FIXED_LENGTH,   // F
+                -half, -half, FIXED_LENGTH   // E
+            ]
+        },
+        {
+            name: 'BCGF', // Mặt phải
+            vertices: [
+                half, -half, 0,              // B
+                half, half, 0,               // C
+                half, half, FIXED_LENGTH,    // G
+                half, -half, FIXED_LENGTH    // F
+            ]
+        },
+        {
+            name: 'CDHG', // Mặt sau
+            vertices: [
+                half, half, 0,               // C
+                -half, half, 0,              // D
+                -half, half, FIXED_LENGTH,   // H
+                half, half, FIXED_LENGTH     // G
+            ]
+        },
+        {
+            name: 'DAEH', // Mặt trái
+            vertices: [
+                -half, half, 0,              // D
+                -half, -half, 0,             // A
+                -half, -half, FIXED_LENGTH,  // E
+                -half, half, FIXED_LENGTH    // H
+            ]
         }
+    ];
+    
+    planes.forEach(planeData => {
+        const plane = createSelectablePlane(planeData.vertices, planeData.name);
+        scene.add(plane);
+        planeObjects.push(plane);
+    });
+}
+
+// Hàm tạo mặt phẳng có thể chọn được
+function createSelectablePlane(vertices, planeName) {
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    
+    // Tạo các tam giác cho đa giác (2 tam giác cho hình chữ nhật)
+    const indices = [0, 1, 2, 0, 2, 3];
+    
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    
+    const material = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.0,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        depthTest: true
+    });
+    
+    const plane = new THREE.Mesh(geometry, material);
+    plane.userData = { 
+        type: 'plane', 
+        name: planeName,
+        selectable: true,
+        originalColor: 0xffffff,
+        isSelected: false,
+        isColored: false
+    };
+    
+    plane.renderOrder = 0;
+    
+    return plane;
+}
 
         // Hàm tạo hình hộp chữ nhật
         function createCuboid() {
