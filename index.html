@@ -1352,14 +1352,14 @@ function createPlanesForCube() {
             ]
         },
         {
-            name: 'EFGH', // Mặt trên
-            vertices: [
-                -half, -half, FIXED_LENGTH,  // E
-                half, -half, FIXED_LENGTH,   // F
-                half, half, FIXED_LENGTH,    // G
-                -half, half, FIXED_LENGTH    // H
-            ]
-        },
+    name: 'EFGH', 
+    vertices: [
+        -half, -half, FIXED_LENGTH,  // E
+        -half, half, FIXED_LENGTH,   // H
+        half, half, FIXED_LENGTH,    // G
+        half, -half, FIXED_LENGTH    // F
+    ]
+}  
         {
             name: 'ABFE', // Mặt trước
             vertices: [
@@ -1777,14 +1777,15 @@ function createSelectablePlane(vertices, planeName) {
                     ]
                 },
                 {
-                    name: 'EFGH', 
-                    vertices: [
-                        -half, -half, FIXED_LENGTH,
-                        half, -half, FIXED_LENGTH,
-                        half, half, FIXED_LENGTH,
-                        -half, half, FIXED_LENGTH
-                    ]
-                },
+                    
+    name: 'EFGH', 
+    vertices: [
+        -half, -half, FIXED_LENGTH,  // E
+        -half, half, FIXED_LENGTH,   // H
+        half, half, FIXED_LENGTH,    // G
+        half, -half, FIXED_LENGTH    // F
+    ]
+}
                 {
                     name: 'ABFE',
                     vertices: [
