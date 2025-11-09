@@ -830,12 +830,6 @@
                 <button class="close-button">&times;</button>
             </div>
             <div class="shape-grid">
-                <div class="shape-option" data-shape="cube">
-                    <span>Hình lập phương</span>
-                </div>
-                <div class="shape-option" data-shape="cuboid">
-                    <span>Hình hộp chữ nhật</span>
-                </div>
                 <div class="shape-option" data-shape="tetrahedron">
                     <span>Tứ diện S.ABC</span>
                 </div>
@@ -847,6 +841,13 @@
                 </div>
                 <div class="shape-option" data-shape="triangularPyramid">
                     <span>Chóp tam giác đều</span>
+                </div>
+                <!-- THÊM HÌNH LẬP PHƯƠNG VÀ HÌNH HỘP CHỮ NHẬT -->
+                <div class="shape-option" data-shape="cube">
+                    <span>Hình lập phương</span>
+                </div>
+                <div class="shape-option" data-shape="cuboid">
+                    <span>Hình hộp chữ nhật</span>
                 </div>
             </div>
             <div class="action-buttons">
@@ -1261,251 +1262,6 @@
                 color
             );
             return arrowHelper;
-        }// Hàm tạo hình lập phương
-function createCube() {
-    const geometry = new THREE.BufferGeometry();
-    
-    // Đặt đáy ABCD trùng với mặt phẳng OXY (z=0)
-    // Đặt cạnh AE song song với trục OZ
-    const half = FIXED_LENGTH / 2;
-    const vertices = new Float32Array([
-        // Mặt đáy ABCD (z = 0)
-        -half, -half, 0,           // A
-        half, -half, 0,            // B  
-        half, half, 0,             // C
-        -half, half, 0,            // D
-        
-        // Mặt trên EFGH (z = FIXED_LENGTH)
-        -half, -half, FIXED_LENGTH, // E
-        half, -half, FIXED_LENGTH,  // F
-        half, half, FIXED_LENGTH,   // G
-        -half, half, FIXED_LENGTH   // H
-    ]);
-    
-    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    
-    // Các mặt được định nghĩa theo thứ tự ngược chiều kim đồng hồ
-    const indices = [
-        // Mặt đáy ABCD
-        0, 1, 2, 0, 2, 3,
-        // Mặt trên EFGH  
-        4, 5, 6, 4, 6, 7,
-        // Mặt trước ABFE
-        0, 1, 5, 0, 5, 4,
-        // Mặt phải BCGF
-        1, 2, 6, 1, 6, 5,
-        // Mặt sau CDHG
-        2, 3, 7, 2, 7, 6,
-        // Mặt trái DHEA
-        3, 0, 4, 3, 4, 7
-    ];
-    
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals();
-    
-    const material = new THREE.MeshBasicMaterial({ 
-        color: 0x3A86FF, 
-        wireframe: false,
-        transparent: true,
-        opacity: 0.7
-    });
-    
-    // Định nghĩa các điểm
-    points['A'] = new THREE.Vector3(-half, -half, 0);
-    points['B'] = new THREE.Vector3(half, -half, 0);
-    points['C'] = new THREE.Vector3(half, half, 0);
-    points['D'] = new THREE.Vector3(-half, half, 0);
-    points['E'] = new THREE.Vector3(-half, -half, FIXED_LENGTH);
-    points['F'] = new THREE.Vector3(half, -half, FIXED_LENGTH);
-    points['G'] = new THREE.Vector3(half, half, FIXED_LENGTH);
-    points['H'] = new THREE.Vector3(-half, half, FIXED_LENGTH);
-    
-    // Tạo các cạnh
-    const edgesGeometry = new THREE.EdgesGeometry(geometry);
-    const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-    const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
-    
-    scene.add(edges);
-    edgeObjects.push(edges);
-    
-    createPointSpheres();
-    createPlanesForCube();
-    
-    return new THREE.Mesh(geometry, material);
-}
-
-// Hàm tạo các mặt phẳng cho hình lập phương
-function createPlanesForCube() {
-    planeObjects.forEach(obj => scene.remove(obj));
-    planeObjects.length = 0;
-    
-    const half = FIXED_LENGTH / 2;
-    
-    const planes = [
-        {
-            name: 'ABCD', // Mặt đáy
-            vertices: [
-                -half, -half, 0,    // A
-                half, -half, 0,     // B
-                half, half, 0,      // C  
-                -half, half, 0      // D
-            ]
-        },
-        {
-    name: 'EFGH', 
-    vertices: [
-        -half, -half, FIXED_LENGTH,  // E
-        -half, half, FIXED_LENGTH,   // H
-        half, half, FIXED_LENGTH,    // G
-        half, -half, FIXED_LENGTH    // F
-    ]
-},
-        {
-            name: 'ABFE', // Mặt trước
-            vertices: [
-                -half, -half, 0,             // A
-                half, -half, 0,              // B
-                half, -half, FIXED_LENGTH,   // F
-                -half, -half, FIXED_LENGTH   // E
-            ]
-        },
-        {
-            name: 'BCGF', // Mặt phải
-            vertices: [
-                half, -half, 0,              // B
-                half, half, 0,               // C
-                half, half, FIXED_LENGTH,    // G
-                half, -half, FIXED_LENGTH    // F
-            ]
-        },
-        {
-            name: 'CDHG', // Mặt sau
-            vertices: [
-                half, half, 0,               // C
-                -half, half, 0,              // D
-                -half, half, FIXED_LENGTH,   // H
-                half, half, FIXED_LENGTH     // G
-            ]
-        },
-        {
-            name: 'DAEH', // Mặt trái
-            vertices: [
-                -half, half, 0,              // D
-                -half, -half, 0,             // A
-                -half, -half, FIXED_LENGTH,  // E
-                -half, half, FIXED_LENGTH    // H
-            ]
-        }
-    ];
-    
-    planes.forEach(planeData => {
-        const plane = createSelectablePlane(planeData.vertices, planeData.name);
-        scene.add(plane);
-        planeObjects.push(plane);
-    });
-}
-
-// Hàm tạo mặt phẳng có thể chọn được
-function createSelectablePlane(vertices, planeName) {
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    
-    // Tạo các tam giác cho đa giác (2 tam giác cho hình chữ nhật)
-    const indices = [0, 1, 2, 0, 2, 3];
-    
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals();
-    
-    const material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.0,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        depthTest: true
-    });
-    
-    const plane = new THREE.Mesh(geometry, material);
-    plane.userData = { 
-        type: 'plane', 
-        name: planeName,
-        selectable: true,
-        originalColor: 0xffffff,
-        isSelected: false,
-        isColored: false
-    };
-    
-    plane.renderOrder = 0;
-    
-    return plane;
-}
-
-        // Hàm tạo hình hộp chữ nhật
-        function createCuboid() {
-            const geometry = new THREE.BufferGeometry();
-            
-            // Đặt đáy ABCD trùng với mặt phẳng OXY (z=0)
-            // Đặt cạnh AE song song với trục OZ
-            const width = FIXED_LENGTH;
-            const height = FIXED_LENGTH * 0.7;
-            const depth = FIXED_LENGTH * 1.3;
-            
-            const halfWidth = width / 2;
-            const halfHeight = height / 2;
-            
-            const vertices = new Float32Array([
-                -halfWidth, -halfHeight, 0,  // A
-                halfWidth, -halfHeight, 0,   // B
-                halfWidth, halfHeight, 0,    // C
-                -halfWidth, halfHeight, 0,   // D
-                -halfWidth, -halfHeight, depth,   // E
-                halfWidth, -halfHeight, depth,    // F
-                halfWidth, halfHeight, depth,     // G
-                -halfWidth, halfHeight, depth     // H
-            ]);
-            
-            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-            
-            const indices = [
-                0, 1, 2, 0, 2, 3, // Mặt đáy ABCD
-                4, 5, 6, 4, 6, 7, // Mặt trên EFGH
-                0, 4, 5, 0, 5, 1, // Mặt trước ABFE
-                1, 5, 6, 1, 6, 2, // Mặt phải BCGF
-                2, 6, 7, 2, 7, 3, // Mặt sau CDHG
-                3, 7, 4, 3, 4, 0  // Mặt trái DHEA
-            ];
-            
-            geometry.setIndex(indices);
-            geometry.computeVertexNormals();
-            
-            const material = new THREE.MeshBasicMaterial({ 
-                color: 0x3A86FF, 
-                wireframe: false,
-                transparent: true,
-                opacity: 0.7
-            });
-            
-            points['A'] = new THREE.Vector3(-halfWidth, -halfHeight, 0);
-            points['B'] = new THREE.Vector3(halfWidth, -halfHeight, 0);
-            points['C'] = new THREE.Vector3(halfWidth, halfHeight, 0);
-            points['D'] = new THREE.Vector3(-halfWidth, halfHeight, 0);
-            points['E'] = new THREE.Vector3(-halfWidth, -halfHeight, depth);
-            points['F'] = new THREE.Vector3(halfWidth, -halfHeight, depth);
-            points['G'] = new THREE.Vector3(halfWidth, halfHeight, depth);
-            points['H'] = new THREE.Vector3(-halfWidth, halfHeight, depth);
-            
-            // Sử dụng EdgesGeometry để tạo các cạnh
-            const edgesGeometry = new THREE.EdgesGeometry(geometry);
-            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
-            
-            scene.add(edges);
-            edgeObjects.push(edges);
-            
-            createPointSpheres();
-            createPlanesForCuboid();
-            
-            return new THREE.Mesh(geometry, material);
         }
 
         // Hàm tạo tứ diện S.ABC (không có cạnh vuông góc)
@@ -1719,6 +1475,151 @@ function createSelectablePlane(vertices, planeName) {
             return new THREE.Mesh(geometry, material);
         }
 
+        // HÀM TẠO HÌNH LẬP PHƯƠNG
+        function createCube() {
+            const geometry = new THREE.BufferGeometry();
+            
+            const halfSize = FIXED_LENGTH / 2;
+            const vertices = new Float32Array([
+                // Mặt dưới
+                -halfSize, -halfSize, -halfSize,  // A
+                halfSize, -halfSize, -halfSize,   // B
+                halfSize, halfSize, -halfSize,    // C
+                -halfSize, halfSize, -halfSize,   // D
+                
+                // Mặt trên
+                -halfSize, -halfSize, halfSize,   // E
+                halfSize, -halfSize, halfSize,    // F
+                halfSize, halfSize, halfSize,     // G
+                -halfSize, halfSize, halfSize     // H
+            ]);
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+            
+            const indices = [
+                // Mặt dưới
+                0, 1, 2, 0, 2, 3,
+                // Mặt trên
+                4, 6, 5, 4, 7, 6,
+                // Mặt trước
+                0, 4, 1, 1, 4, 5,
+                // Mặt sau
+                2, 6, 3, 3, 6, 7,
+                // Mặt trái
+                0, 3, 4, 3, 7, 4,
+                // Mặt phải
+                1, 5, 2, 2, 5, 6
+            ];
+            
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+            
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x3A86FF, 
+                wireframe: false,
+                transparent: true,
+                opacity: 0.7
+            });
+            
+            points['A'] = new THREE.Vector3(-halfSize, -halfSize, -halfSize);
+            points['B'] = new THREE.Vector3(halfSize, -halfSize, -halfSize);
+            points['C'] = new THREE.Vector3(halfSize, halfSize, -halfSize);
+            points['D'] = new THREE.Vector3(-halfSize, halfSize, -halfSize);
+            points['E'] = new THREE.Vector3(-halfSize, -halfSize, halfSize);
+            points['F'] = new THREE.Vector3(halfSize, -halfSize, halfSize);
+            points['G'] = new THREE.Vector3(halfSize, halfSize, halfSize);
+            points['H'] = new THREE.Vector3(-halfSize, halfSize, halfSize);
+            
+            // Sử dụng EdgesGeometry để tạo các cạnh
+            const edgesGeometry = new THREE.EdgesGeometry(geometry);
+            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+            
+            scene.add(edges);
+            edgeObjects.push(edges);
+            
+            createPointSpheres();
+            createPlanesForCube();
+            
+            return new THREE.Mesh(geometry, material);
+        }
+
+        // HÀM TẠO HÌNH HỘP CHỮ NHẬT
+        function createCuboid() {
+            const geometry = new THREE.BufferGeometry();
+            
+            const width = FIXED_LENGTH;
+            const height = FIXED_LENGTH * 0.7;
+            const depth = FIXED_LENGTH * 1.3;
+            
+            const halfWidth = width / 2;
+            const halfHeight = height / 2;
+            const halfDepth = depth / 2;
+            
+            const vertices = new Float32Array([
+                // Mặt dưới
+                -halfWidth, -halfHeight, -halfDepth,  // A
+                halfWidth, -halfHeight, -halfDepth,   // B
+                halfWidth, halfHeight, -halfDepth,    // C
+                -halfWidth, halfHeight, -halfDepth,   // D
+                
+                // Mặt trên
+                -halfWidth, -halfHeight, halfDepth,   // E
+                halfWidth, -halfHeight, halfDepth,    // F
+                halfWidth, halfHeight, halfDepth,     // G
+                -halfWidth, halfHeight, halfDepth     // H
+            ]);
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+            
+            const indices = [
+                // Mặt dưới
+                0, 1, 2, 0, 2, 3,
+                // Mặt trên
+                4, 6, 5, 4, 7, 6,
+                // Mặt trước
+                0, 4, 1, 1, 4, 5,
+                // Mặt sau
+                2, 6, 3, 3, 6, 7,
+                // Mặt trái
+                0, 3, 4, 3, 7, 4,
+                // Mặt phải
+                1, 5, 2, 2, 5, 6
+            ];
+            
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+            
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x3A86FF, 
+                wireframe: false,
+                transparent: true,
+                opacity: 0.7
+            });
+            
+            points['A'] = new THREE.Vector3(-halfWidth, -halfHeight, -halfDepth);
+            points['B'] = new THREE.Vector3(halfWidth, -halfHeight, -halfDepth);
+            points['C'] = new THREE.Vector3(halfWidth, halfHeight, -halfDepth);
+            points['D'] = new THREE.Vector3(-halfWidth, halfHeight, -halfDepth);
+            points['E'] = new THREE.Vector3(-halfWidth, -halfHeight, halfDepth);
+            points['F'] = new THREE.Vector3(halfWidth, -halfHeight, halfDepth);
+            points['G'] = new THREE.Vector3(halfWidth, halfHeight, halfDepth);
+            points['H'] = new THREE.Vector3(-halfWidth, halfHeight, halfDepth);
+            
+            // Sử dụng EdgesGeometry để tạo các cạnh
+            const edgesGeometry = new THREE.EdgesGeometry(geometry);
+            const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+            
+            scene.add(edges);
+            edgeObjects.push(edges);
+            
+            createPointSpheres();
+            createPlanesForCuboid();
+            
+            return new THREE.Mesh(geometry, material);
+        }
+
         // Hàm tạo mặt phẳng có thể chọn được (ĐÃ SỬA LỖI HOÀN TOÀN)
         function createSelectablePlane(vertices, planeName) {
             const geometry = new THREE.BufferGeometry();
@@ -1757,153 +1658,6 @@ function createSelectablePlane(vertices, planeName) {
             plane.renderOrder = 0;
             
             return plane;
-        }
-
-        // Hàm tạo các mặt phẳng cho hình lập phương (ĐÃ XÓA MÀU MẶC ĐỊNH)
-        function createPlanesForCube() {
-            planeObjects.forEach(obj => scene.remove(obj));
-            planeObjects.length = 0;
-            
-            const half = FIXED_LENGTH / 2;
-            
-            const planes = [
-                {
-                    name: 'ABCD',
-                    vertices: [
-                        -half, -half, 0,
-                        half, -half, 0,
-                        half, half, 0,
-                        -half, half, 0
-                    ]
-                },
-                {                
-    name: 'EFGH', 
-    vertices: [
-        -half, -half, FIXED_LENGTH,  // E
-        -half, half, FIXED_LENGTH,   // H
-        half, half, FIXED_LENGTH,    // G
-        half, -half, FIXED_LENGTH    // F
-    ]
-},
-                {
-                    name: 'ABFE',
-                    vertices: [
-                        -half, -half, 0,
-                        half, -half, 0,
-                        half, -half, FIXED_LENGTH,
-                        -half, -half, FIXED_LENGTH
-                    ]
-                },
-                {
-                    name: 'BCGF',
-                    vertices: [
-                        half, -half, 0,
-                        half, half, 0,
-                        half, half, FIXED_LENGTH,
-                        half, -half, FIXED_LENGTH
-                    ]
-                },
-                {
-                    name: 'CDHG', 
-                    vertices: [
-                        half, half, 0,
-                        -half, half, 0,
-                        -half, half, FIXED_LENGTH,
-                        half, half, FIXED_LENGTH
-                    ]
-                },
-                {
-                    name: 'DAEH',
-                    vertices: [
-                        -half, half, 0,
-                        -half, -half, 0,
-                        -half, -half, FIXED_LENGTH,
-                        -half, half, FIXED_LENGTH
-                    ]
-                }
-            ];
-            
-            planes.forEach(planeData => {
-                const plane = createSelectablePlane(planeData.vertices, planeData.name);
-                scene.add(plane);
-                planeObjects.push(plane);
-            });
-        }
-
-        // Hàm tạo các mặt phẳng cho hình hộp chữ nhật (ĐÃ XÓA MÀU MẶC ĐỊNH)
-        function createPlanesForCuboid() {
-            planeObjects.forEach(obj => scene.remove(obj));
-            planeObjects.length = 0;
-            
-            const width = FIXED_LENGTH;
-            const height = FIXED_LENGTH * 0.7;
-            const depth = FIXED_LENGTH * 1.3;
-            
-            const halfWidth = width / 2;
-            const halfHeight = height / 2;
-            
-            const planes = [
-                {
-                    name: 'ABCD',
-                    vertices: [
-                        -halfWidth, -halfHeight, 0,
-                        halfWidth, -halfHeight, 0,
-                        halfWidth, halfHeight, 0,
-                        -halfWidth, halfHeight, 0
-                    ]
-                },
-                {
-                    name: 'EFGH', 
-                    vertices: [
-                        -halfWidth, -halfHeight, depth,
-                        halfWidth, -halfHeight, depth,
-                        halfWidth, halfHeight, depth,
-                        -halfWidth, halfHeight, depth
-                    ]
-                },
-                {
-                    name: 'ABFE',
-                    vertices: [
-                        -halfWidth, -halfHeight, 0,
-                        halfWidth, -halfHeight, 0,
-                        halfWidth, -halfHeight, depth,
-                        -halfWidth, -halfHeight, depth
-                    ]
-                },
-                {
-                    name: 'BCGF',
-                    vertices: [
-                        halfWidth, -halfHeight, 0,
-                        halfWidth, halfHeight, 0,
-                        halfWidth, halfHeight, depth,
-                        halfWidth, -halfHeight, depth
-                    ]
-                },
-                {
-                    name: 'CDHG', 
-                    vertices: [
-                        halfWidth, halfHeight, 0,
-                        -halfWidth, halfHeight, 0,
-                        -halfWidth, halfHeight, depth,
-                        halfWidth, halfHeight, depth
-                    ]
-                },
-                {
-                    name: 'DAEH',
-                    vertices: [
-                        -halfWidth, halfHeight, 0,
-                        -halfWidth, -halfHeight, 0,
-                        -halfWidth, -halfHeight, depth,
-                        -halfWidth, halfHeight, depth
-                    ]
-                }
-            ];
-            
-            planes.forEach(planeData => {
-                const plane = createSelectablePlane(planeData.vertices, planeData.name);
-                scene.add(plane);
-                planeObjects.push(plane);
-            });
         }
 
         // Hàm tạo các mặt phẳng cho tứ diện (ĐÃ XÓA MÀU MẶC ĐỊNH)
@@ -2056,6 +1810,114 @@ function createSelectablePlane(vertices, planeName) {
             }
         }
 
+        // HÀM TẠO CÁC MẶT PHẲNG CHO HÌNH LẬP PHƯƠNG (ĐÃ XÓA MÀU MẶC ĐỊNH)
+        function createPlanesForCube() {
+            planeObjects.forEach(obj => scene.remove(obj));
+            planeObjects.length = 0;
+            
+            const planeNames = ['ABCD', 'EFGH', 'ABFE', 'BCGF', 'CDHG', 'DAEH'];
+            
+            for (let i = 0; i < 6; i++) {
+                const planeGeometry = new THREE.BufferGeometry();
+                let planeVertices = [];
+                
+                let vertexNames = [];
+                if (i === 0) vertexNames = ['A', 'B', 'C', 'D']; // Mặt dưới
+                else if (i === 1) vertexNames = ['E', 'F', 'G', 'H']; // Mặt trên
+                else if (i === 2) vertexNames = ['A', 'B', 'F', 'E']; // Mặt trước
+                else if (i === 3) vertexNames = ['B', 'C', 'G', 'F']; // Mặt phải
+                else if (i === 4) vertexNames = ['C', 'D', 'H', 'G']; // Mặt sau
+                else if (i === 5) vertexNames = ['D', 'A', 'E', 'H']; // Mặt trái
+                
+                vertexNames.forEach(name => {
+                    const point = points[name];
+                    planeVertices.push(point.x, point.y, point.z);
+                });
+                
+                planeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(planeVertices, 3));
+                
+                const indices = [];
+                if (vertexNames.length === 3) {
+                    indices.push(0, 1, 2);
+                } else {
+                    indices.push(0, 1, 2, 0, 2, 3);
+                }
+                
+                planeGeometry.setIndex(indices);
+                planeGeometry.computeVertexNormals();
+                
+                const planeMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.0,
+                    side: THREE.DoubleSide,
+                    depthWrite: false,
+                    depthTest: true
+                });
+                
+                const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+                plane.userData = { type: 'plane', index: i, name: planeNames[i] };
+                plane.visible = true;
+                plane.renderOrder = 0;
+                scene.add(plane);
+                planeObjects.push(plane);
+            }
+        }
+
+        // HÀM TẠO CÁC MẶT PHẲNG CHO HÌNH HỘP CHỮ NHẬT (ĐÃ XÓA MÀU MẶC ĐỊNH)
+        function createPlanesForCuboid() {
+            planeObjects.forEach(obj => scene.remove(obj));
+            planeObjects.length = 0;
+            
+            const planeNames = ['ABCD', 'EFGH', 'ABFE', 'BCGF', 'CDHG', 'DAEH'];
+            
+            for (let i = 0; i < 6; i++) {
+                const planeGeometry = new THREE.BufferGeometry();
+                let planeVertices = [];
+                
+                let vertexNames = [];
+                if (i === 0) vertexNames = ['A', 'B', 'C', 'D']; // Mặt dưới
+                else if (i === 1) vertexNames = ['E', 'F', 'G', 'H']; // Mặt trên
+                else if (i === 2) vertexNames = ['A', 'B', 'F', 'E']; // Mặt trước
+                else if (i === 3) vertexNames = ['B', 'C', 'G', 'F']; // Mặt phải
+                else if (i === 4) vertexNames = ['C', 'D', 'H', 'G']; // Mặt sau
+                else if (i === 5) vertexNames = ['D', 'A', 'E', 'H']; // Mặt trái
+                
+                vertexNames.forEach(name => {
+                    const point = points[name];
+                    planeVertices.push(point.x, point.y, point.z);
+                });
+                
+                planeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(planeVertices, 3));
+                
+                const indices = [];
+                if (vertexNames.length === 3) {
+                    indices.push(0, 1, 2);
+                } else {
+                    indices.push(0, 1, 2, 0, 2, 3);
+                }
+                
+                planeGeometry.setIndex(indices);
+                planeGeometry.computeVertexNormals();
+                
+                const planeMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.0,
+                    side: THREE.DoubleSide,
+                    depthWrite: false,
+                    depthTest: true
+                });
+                
+                const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+                plane.userData = { type: 'plane', index: i, name: planeNames[i] };
+                plane.visible = true;
+                plane.renderOrder = 0;
+                scene.add(plane);
+                planeObjects.push(plane);
+            }
+        }
+
         // Hàm tạo các điểm hiển thị (CẢI THIỆN ĐỘ ỔN ĐỊNH)
         function createPointSpheres() {
             pointObjects.forEach(obj => scene.remove(obj));
@@ -2156,12 +2018,6 @@ function createSelectablePlane(vertices, planeName) {
             let model = null;
             
             switch(shapeType) {
-                case 'cube':
-                    model = createCube();
-                    break;
-                case 'cuboid':
-                    model = createCuboid();
-                    break;
                 case 'tetrahedron':
                     model = createTetrahedron();
                     break;
@@ -2173,6 +2029,12 @@ function createSelectablePlane(vertices, planeName) {
                     break;
                 case 'triangularPyramid':
                     model = createTriangularPyramid();
+                    break;
+                case 'cube':
+                    model = createCube();
+                    break;
+                case 'cuboid':
+                    model = createCuboid();
                     break;
             }
             
@@ -2194,12 +2056,12 @@ function createSelectablePlane(vertices, planeName) {
         // Hàm lấy tên hình khối
         function getShapeName(shapeType) {
             switch(shapeType) {
-                case 'cube': return 'lập phương';
-                case 'cuboid': return 'hộp chữ nhật';
                 case 'tetrahedron': return 'tứ diện S.ABC';
                 case 'triangularPrism': return 'lăng trụ đứng tam giác';
                 case 'pyramid': return 'chóp tứ giác đều';
                 case 'triangularPyramid': return 'chóp tam giác đều';
+                case 'cube': return 'hình lập phương';
+                case 'cuboid': return 'hình hộp chữ nhật';
                 default: return 'khối';
             }
         }
@@ -2260,12 +2122,12 @@ function createSelectablePlane(vertices, planeName) {
             let shapeName = '';
             
             switch(shapeType) {
-                case 'cube': shapeName = 'Hình lập phương'; break;
-                case 'cuboid': shapeName = 'Hình hộp chữ nhật'; break;
                 case 'tetrahedron': shapeName = 'Tứ diện S.ABC'; break;
                 case 'triangularPrism': shapeName = 'Lăng trụ đứng tam giác'; break;
                 case 'pyramid': shapeName = 'Chóp tứ giác đều'; break;
                 case 'triangularPyramid': shapeName = 'Chóp tam giác đều'; break;
+                case 'cube': shapeName = 'Hình lập phương'; break;
+                case 'cuboid': shapeName = 'Hình hộp chữ nhật'; break;
             }
             
             let html = `
@@ -2327,14 +2189,6 @@ function createSelectablePlane(vertices, planeName) {
             let edges = [];
             
             switch(shapeType) {
-                case 'cube':
-                case 'cuboid':
-                    edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-                    ];
-                    break;
                 case 'tetrahedron':
                 case 'triangularPyramid':
                     edges = [
@@ -2353,6 +2207,14 @@ function createSelectablePlane(vertices, planeName) {
                     edges = [
                         ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
                         ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
+                    ];
+                    break;
+                case 'cube':
+                case 'cuboid':
+                    edges = [
+                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Mặt dưới
+                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'], // Mặt trên
+                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']  // Cạnh bên
                     ];
                     break;
             }
@@ -3368,14 +3230,6 @@ function createSelectablePlane(vertices, planeName) {
                 let edges = [];
                 
                 switch(shapeType) {
-                    case 'cube':
-                    case 'cuboid':
-                        edges = [
-                            ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                            ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
-                            ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
-                        ];
-                        break;
                     case 'tetrahedron':
                     case 'triangularPyramid':
                         edges = [
@@ -3396,6 +3250,14 @@ function createSelectablePlane(vertices, planeName) {
                             ['A', 'S'], ['B', 'S'], ['C', 'S'], ['D', 'S']
                         ];
                         break;
+                    case 'cube':
+                    case 'cuboid':
+                        edges = [
+                            ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Mặt dưới
+                            ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'], // Mặt trên
+                            ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']  // Cạnh bên
+                        ];
+                        break;
                 }
                 
                 const edgesMesh = createEdges(edges);
@@ -3413,12 +3275,6 @@ function createSelectablePlane(vertices, planeName) {
                 const shapeType = selectedMesh.userData.shapeType;
                 
                 switch(shapeType) {
-                    case 'cube':
-                        createPlanesForCube();
-                        break;
-                    case 'cuboid':
-                        createPlanesForCuboid();
-                        break;
                     case 'tetrahedron':
                     case 'triangularPyramid':
                         createPlanesForTetrahedron();
@@ -3428,6 +3284,12 @@ function createSelectablePlane(vertices, planeName) {
                         break;
                     case 'pyramid':
                         createPlanesForPyramid();
+                        break;
+                    case 'cube':
+                        createPlanesForCube();
+                        break;
+                    case 'cuboid':
+                        createPlanesForCuboid();
                         break;
                 }
             }
@@ -3764,4 +3626,4 @@ function createSelectablePlane(vertices, planeName) {
         animate();
     </script>
 </body>
-</html> 
+</html>
