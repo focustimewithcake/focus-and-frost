@@ -92,6 +92,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(5px);
             transition: all 0.3s;
+            z-index: 100;
         }
 
         .tool-button {
@@ -590,36 +591,43 @@
         /* Mobile warning */
         #mobileWarning {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            text-align: center;
-            padding: 20px;
-            flex-direction: column;
         }
 
-        @media (max-width: 768px) {
+        /* Cải thiện cho thiết bị di động */
+        @media (max-width: 1024px) {
             .toolbar {
                 flex-wrap: wrap;
                 justify-content: center;
                 width: 95%;
                 bottom: 10px;
+                padding: 10px;
             }
             
             .tool-button {
                 width: 60px;
                 height: 60px;
+                padding: 8px;
             }
             
             .tool-button span {
                 font-size: 0.7rem;
+            }
+            
+            .side-panel {
+                width: 90%;
+                left: 5%;
+                right: 5%;
+                top: 20vh;
+                max-height: calc(100vh - 180px);
+            }
+            
+            .panel-toggle {
+                top: 20vh;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
             }
             
             .shape-grid {
@@ -630,17 +638,58 @@
                 display: none;
             }
             
-            header h1 {
-                font-size: 1.3rem;
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
             }
             
-            .side-panel {
-                width: 90%;
-                left: 5%;
-                right: 5%;
+            .header-controls {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
             }
+            
+            .header-button {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+            
+            #infoPanel {
+                width: 90%;
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
 
+        @media (max-width: 768px) {
+            .toolbar {
+                gap: 5px;
+            }
+            
+            .tool-button {
+                width: 55px;
+                height: 55px;
+            }
+            
+            .tool-button span {
+                font-size: 0.65rem;
+            }
+            
             .right-panel-tabs {
+                flex-direction: column;
+            }
+            
+            .right-panel-tab {
+                padding: 8px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .action-buttons {
                 flex-direction: column;
             }
         }
@@ -651,38 +700,62 @@
             }
             
             .modal-content {
-                padding: 20px 15px;
+                padding: 15px;
             }
             
             .toolbar {
-                gap: 5px;
-                padding: 10px;
+                padding: 8px;
+                bottom: 5px;
             }
             
             .tool-button {
-                width: 55px;
-                height: 55px;
+                width: 50px;
+                height: 50px;
             }
-
-            header {
-                flex-direction: column;
-                gap: 10px;
+            
+            .tool-button span {
+                font-size: 0.6rem;
             }
+            
+            .side-panel {
+                width: 95%;
+                left: 2.5%;
+                right: 2.5%;
+                padding: 10px;
+            }
+            
+            .panel-toggle {
+                width: 25px;
+                height: 25px;
+            }
+        }
 
-            .header-controls {
-                width: 100%;
-                justify-content: center;
+        /* Cải thiện cho thiết bị di động - chế độ cảm ứng */
+        @media (hover: none) and (pointer: coarse) {
+            .tool-button:hover {
+                transform: none;
+            }
+            
+            .header-button:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+            
+            .shape-option:hover {
+                background-color: #f8f9fa;
+                border-color: #e9ecef;
+            }
+            
+            .color-option:hover {
+                transform: none;
+            }
+            
+            .tool-button:active, .header-button:active, .shape-option:active {
+                transform: scale(0.95);
             }
         }
     </style>
 </head>
 <body>
-    <!-- Cảnh báo thiết bị di động -->
-    <div id="mobileWarning">
-        <h2>Ứng dụng không hỗ trợ trên thiết bị di động</h2>
-        <p>Vui lòng sử dụng máy tính để truy cập ứng dụng này.</p>
-    </div>
-
     <div id="app">
         <header>
             <div class="header-controls">
@@ -997,17 +1070,6 @@
     </div>
 
     <script>
-        // === KIỂM TRA THIẾT BỊ DI ĐỘNG ===
-        function isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        }
-
-        // Nếu là thiết bị di động, hiển thị cảnh báo và ẩn ứng dụng
-        if (isMobileDevice()) {
-            document.getElementById('mobileWarning').style.display = 'flex';
-            document.getElementById('app').style.display = 'none';
-        }
-
         // === PHẦN JAVASCRIPT - XỬ LÝ CHỨC NĂNG ===
         
         // KHỞI TẠO MÔI TRƯỜNG 3D
@@ -1079,16 +1141,20 @@
         scene.add(light);
         scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
-        // Điều khiển camera
+        // Điều khiển camera - cải thiện cho thiết bị di động
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.enablePan = true;
         controls.touchAction = 'none';
-        controls.screenSpacePanning = false;
+        controls.screenSpacePanning = true; // Cho phép panning trên màn hình cảm ứng
         controls.mouseButtons = {
             LEFT: THREE.MOUSE.ROTATE,
             MIDDLE: THREE.MOUSE.DOLLY,
             RIGHT: THREE.MOUSE.PAN
+        };
+        controls.touches = {
+            ONE: THREE.TOUCH.ROTATE,
+            TWO: THREE.TOUCH.DOLLY_PAN
         };
         controls.rotateSpeed = 0.5;
         controls.panSpeed = 0.5;
@@ -1475,23 +1541,24 @@
             return new THREE.Mesh(geometry, material);
         }
 
-        // HÀM TẠO HÌNH LẬP PHƯƠNG
+        // HÀM TẠO HÌNH LẬP PHƯƠNG - ĐÃ SỬA: MẶT ABCD NẰM TRÊN OXY
         function createCube() {
             const geometry = new THREE.BufferGeometry();
             
             const halfSize = FIXED_LENGTH / 2;
+            // Điều chỉnh để mặt ABCD nằm trên OXY (z=0)
             const vertices = new Float32Array([
-                // Mặt dưới
-                -halfSize, -halfSize, -halfSize,  // A
-                halfSize, -halfSize, -halfSize,   // B
-                halfSize, halfSize, -halfSize,    // C
-                -halfSize, halfSize, -halfSize,   // D
+                // Mặt dưới ABCD - z = 0
+                -halfSize, -halfSize, 0,  // A
+                halfSize, -halfSize, 0,   // B
+                halfSize, halfSize, 0,    // C
+                -halfSize, halfSize, 0,   // D
                 
-                // Mặt trên
-                -halfSize, -halfSize, halfSize,   // E
-                halfSize, -halfSize, halfSize,    // F
-                halfSize, halfSize, halfSize,     // G
-                -halfSize, halfSize, halfSize     // H
+                // Mặt trên EFGH - z = FIXED_LENGTH
+                -halfSize, -halfSize, FIXED_LENGTH,   // E
+                halfSize, -halfSize, FIXED_LENGTH,    // F
+                halfSize, halfSize, FIXED_LENGTH,     // G
+                -halfSize, halfSize, FIXED_LENGTH     // H
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -1521,14 +1588,14 @@
                 opacity: 0.7
             });
             
-            points['A'] = new THREE.Vector3(-halfSize, -halfSize, -halfSize);
-            points['B'] = new THREE.Vector3(halfSize, -halfSize, -halfSize);
-            points['C'] = new THREE.Vector3(halfSize, halfSize, -halfSize);
-            points['D'] = new THREE.Vector3(-halfSize, halfSize, -halfSize);
-            points['E'] = new THREE.Vector3(-halfSize, -halfSize, halfSize);
-            points['F'] = new THREE.Vector3(halfSize, -halfSize, halfSize);
-            points['G'] = new THREE.Vector3(halfSize, halfSize, halfSize);
-            points['H'] = new THREE.Vector3(-halfSize, halfSize, halfSize);
+            points['A'] = new THREE.Vector3(-halfSize, -halfSize, 0);
+            points['B'] = new THREE.Vector3(halfSize, -halfSize, 0);
+            points['C'] = new THREE.Vector3(halfSize, halfSize, 0);
+            points['D'] = new THREE.Vector3(-halfSize, halfSize, 0);
+            points['E'] = new THREE.Vector3(-halfSize, -halfSize, FIXED_LENGTH);
+            points['F'] = new THREE.Vector3(halfSize, -halfSize, FIXED_LENGTH);
+            points['G'] = new THREE.Vector3(halfSize, halfSize, FIXED_LENGTH);
+            points['H'] = new THREE.Vector3(-halfSize, halfSize, FIXED_LENGTH);
             
             // Sử dụng EdgesGeometry để tạo các cạnh
             const edgesGeometry = new THREE.EdgesGeometry(geometry);
@@ -1544,7 +1611,7 @@
             return new THREE.Mesh(geometry, material);
         }
 
-        // HÀM TẠO HÌNH HỘP CHỮ NHẬT
+        // HÀM TẠO HÌNH HỘP CHỮ NHẬT - ĐÃ SỬA: MẶT CDGH NẰM TRÊN OXY
         function createCuboid() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1556,18 +1623,19 @@
             const halfHeight = height / 2;
             const halfDepth = depth / 2;
             
+            // Điều chỉnh để mặt CDGH nằm trên OXY (z=0)
             const vertices = new Float32Array([
-                // Mặt dưới
-                -halfWidth, -halfHeight, -halfDepth,  // A
-                halfWidth, -halfHeight, -halfDepth,   // B
-                halfWidth, halfHeight, -halfDepth,    // C
-                -halfWidth, halfHeight, -halfDepth,   // D
+                // Mặt dưới - z = 0
+                -halfWidth, -halfHeight, 0,  // A
+                halfWidth, -halfHeight, 0,   // B
+                halfWidth, halfHeight, 0,    // C
+                -halfWidth, halfHeight, 0,   // D
                 
-                // Mặt trên
-                -halfWidth, -halfHeight, halfDepth,   // E
-                halfWidth, -halfHeight, halfDepth,    // F
-                halfWidth, halfHeight, halfDepth,     // G
-                -halfWidth, halfHeight, halfDepth     // H
+                // Mặt trên - z = depth
+                -halfWidth, -halfHeight, depth,   // E
+                halfWidth, -halfHeight, depth,    // F
+                halfWidth, halfHeight, depth,     // G
+                -halfWidth, halfHeight, depth     // H
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -1597,14 +1665,14 @@
                 opacity: 0.7
             });
             
-            points['A'] = new THREE.Vector3(-halfWidth, -halfHeight, -halfDepth);
-            points['B'] = new THREE.Vector3(halfWidth, -halfHeight, -halfDepth);
-            points['C'] = new THREE.Vector3(halfWidth, halfHeight, -halfDepth);
-            points['D'] = new THREE.Vector3(-halfWidth, halfHeight, -halfDepth);
-            points['E'] = new THREE.Vector3(-halfWidth, -halfHeight, halfDepth);
-            points['F'] = new THREE.Vector3(halfWidth, -halfHeight, halfDepth);
-            points['G'] = new THREE.Vector3(halfWidth, halfHeight, halfDepth);
-            points['H'] = new THREE.Vector3(-halfWidth, halfHeight, halfDepth);
+            points['A'] = new THREE.Vector3(-halfWidth, -halfHeight, 0);
+            points['B'] = new THREE.Vector3(halfWidth, -halfHeight, 0);
+            points['C'] = new THREE.Vector3(halfWidth, halfHeight, 0);
+            points['D'] = new THREE.Vector3(-halfWidth, halfHeight, 0);
+            points['E'] = new THREE.Vector3(-halfWidth, -halfHeight, depth);
+            points['F'] = new THREE.Vector3(halfWidth, -halfHeight, depth);
+            points['G'] = new THREE.Vector3(halfWidth, halfHeight, depth);
+            points['H'] = new THREE.Vector3(-halfWidth, halfHeight, depth);
             
             // Sử dụng EdgesGeometry để tạo các cạnh
             const edgesGeometry = new THREE.EdgesGeometry(geometry);
@@ -3601,6 +3669,18 @@
             }
         });
 
+        // === SỰ KIỆN CHO THAY ĐỔI LOẠI VECTOR ===
+        document.getElementById('vectorType').addEventListener('change', function() {
+            const vectorType = this.value;
+            if (vectorType === 'fromPoints') {
+                document.getElementById('vectorFromPoints').style.display = 'block';
+                document.getElementById('vectorFromCoords').style.display = 'none';
+            } else {
+                document.getElementById('vectorFromPoints').style.display = 'none';
+                document.getElementById('vectorFromCoords').style.display = 'block';
+            }
+        });
+
         window.addEventListener('resize', onWindowResize);
         
         canvas.addEventListener('click', onPointerEvent, false);
@@ -3615,6 +3695,15 @@
         // Tải tất cả hình đã lưu
         loadAllSavedShapes();
 
+        // CẢI THIỆN CHO THIẾT BỊ DI ĐỘNG: Thêm sự kiện touch cho các nút
+        document.querySelectorAll('.tool-button, .header-button, .shape-option, .color-option').forEach(button => {
+            button.addEventListener('touchstart', function(e) {
+                // Ngăn chặn hành vi mặc định để tránh zoom không mong muốn
+                e.preventDefault();
+                this.click();
+            });
+        });
+
         // Hàm animate
         function animate() {
             requestAnimationFrame(animate);
@@ -3627,3 +3716,4 @@
     </script>
 </body>
 </html>
+                        
