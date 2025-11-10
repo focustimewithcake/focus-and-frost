@@ -157,9 +157,13 @@
             overflow-y: auto;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             animation: slideUp 0.3s ease;
-            /* THÊM THUỘC TÍNH QUAN TRỌNG CHO THANH CUỘN TRÊN ĐIỆN THOẠI */
-            -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
-            overflow-scrolling: touch; /* Cuộn mượt trên các thiết bị khác */
+            /* CẢI THIỆN: Tối ưu hóa thanh cuộn cho thiết bị di động */
+            -webkit-overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên iOS */
+            overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên các thiết bị khác */
+            /* Tăng kích thước vùng cuộn để dễ dàng thao tác hơn */
+            scroll-padding: 20px;
+            /* Thêm padding để tránh nội dung bị che bởi thanh cuộn */
+            padding-bottom: 20px;
         }
 
         @keyframes slideUp {
@@ -199,30 +203,46 @@
             overflow-y: auto;
             margin-bottom: 20px;
             padding-right: 5px;
-            /* THÊM THUỘC TÍNH QUAN TRỌNG CHO THANH CUỘN TRÊN ĐIỆN THOẠI */
-            -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
-            overflow-scrolling: touch; /* Cuộn mượt trên các thiết bị khác */
-            /* THÊM ĐỂ ĐẢM BẢO HIỂN THỊ THANH CUỘN RÕ RÀNG */
+            /* CẢI THIỆN: Tối ưu hóa thanh cuộn cho thiết bị di động */
+            -webkit-overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên iOS */
+            overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên các thiết bị khác */
+            /* Tăng kích thước vùng cuộn để dễ dàng thao tác hơn */
+            scroll-padding: 15px;
+            /* Thêm padding để tránh nội dung bị che bởi thanh cuộn */
+            padding-bottom: 15px;
+            /* Tăng độ nhạy của cuộn */
+            scroll-behavior: smooth;
+            /* Đảm bảo hiển thị thanh cuộn rõ ràng */
             scrollbar-width: thin; /* Firefox */
             scrollbar-color: #3A86FF #f0f0f0; /* Firefox */
         }
 
         /* Tùy chỉnh thanh cuộn cho Webkit (Chrome, Safari, Edge) */
         .shape-grid-container::-webkit-scrollbar {
-            width: 8px;
+            width: 12px; /* Tăng kích thước thanh cuộn để dễ dàng thao tác trên di động */
         }
 
         .shape-grid-container::-webkit-scrollbar-track {
             background: #f0f0f0;
-            border-radius: 4px;
+            border-radius: 6px; /* Tăng độ bo tròn để thân thiện hơn */
         }
 
         .shape-grid-container::-webkit-scrollbar-thumb {
             background: #3A86FF;
-            border-radius: 4px;
+            border-radius: 6px; /* Tăng độ bo tròn để thân thiện hơn */
+            border: 2px solid #f0f0f0; /* Thêm viền để dễ nhận biết */
         }
 
         .shape-grid-container::-webkit-scrollbar-thumb:hover {
+            background: #2a75f0;
+        }
+
+        /* Thêm hiệu ứng khi đang cuộn */
+        .shape-grid-container.scrolling {
+            scrollbar-color: #2a75f0 #e0e0e0; /* Firefox */
+        }
+
+        .shape-grid-container.scrolling::-webkit-scrollbar-thumb {
             background: #2a75f0;
         }
 
@@ -230,6 +250,8 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
+            /* Tăng kích thước tối thiểu của các mục để dễ dàng chạm */
+            min-height: min-content;
         }
 
         .shape-option {
@@ -243,6 +265,13 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
+            /* Tăng kích thước tối thiểu để dễ dàng chạm */
+            min-height: 60px;
+            /* Đảm bảo nội dung có thể chọn được */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         .shape-option:hover {
@@ -259,6 +288,11 @@
         .shape-option span {
             font-size: 0.85rem;
             font-weight: 500;
+            /* Đảm bảo văn bản không bị chọn */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         .form-group {
@@ -403,9 +437,15 @@
             max-height: calc(100vh - 160px);
             overflow-y: auto;
             transition: transform 0.3s ease;
-            /* THÊM THUỘC TÍNH QUAN TRỌNG CHO THANH CUỘN TRÊN ĐIỆN THOẠI */
-            -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
-            overflow-scrolling: touch; /* Cuộn mượt trên các thiết bị khác */
+            /* CẢI THIỆN: Tối ưu hóa thanh cuộn cho thiết bị di động */
+            -webkit-overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên iOS */
+            overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên các thiết bị khác */
+            /* Tăng kích thước vùng cuộn để dễ dàng thao tác hơn */
+            scroll-padding: 15px;
+            /* Thêm padding để tránh nội dung bị che bởi thanh cuộn */
+            padding-bottom: 15px;
+            /* Tăng độ nhạy của cuộn */
+            scroll-behavior: smooth;
         }
 
         .left-panel {
@@ -939,7 +979,7 @@
                 <h2>Tạo hình khối</h2>
                 <button class="close-button">&times;</button>
             </div>
-            <div class="shape-grid-container">
+            <div class="shape-grid-container" id="shapeGridContainer">
                 <div class="shape-grid">
                     <div class="shape-option" data-shape="tetrahedron">
                         <span>Tứ diện S.ABC</span>
@@ -3475,6 +3515,71 @@
             }
         }
 
+        // ========== CẢI THIỆN THANH CUỘN CHO THIẾT BỊ DI ĐỘNG ==========
+
+        // Hàm xử lý sự kiện cuộn cho container
+        // Mô tả: Thêm hiệu ứng khi đang cuộn để cải thiện trải nghiệm người dùng
+        function handleScrollEvents() {
+            const scrollContainers = document.querySelectorAll('.shape-grid-container, .side-panel, .modal-content');
+            
+            scrollContainers.forEach(container => {
+                // Thêm sự kiện touchstart để xử lý cuộn trên di động
+                container.addEventListener('touchstart', function(e) {
+                    // Đánh dấu là đang cuộn
+                    this.classList.add('scrolling');
+                    
+                    // Cho phép sự kiện touch tiếp tục lan truyền nếu không phải là cuộn
+                    if (this.scrollHeight <= this.clientHeight) {
+                        return;
+                    }
+                    
+                    // Ngăn chặn sự kiện chỉ khi phần tử có thể cuộn được
+                    e.stopPropagation();
+                });
+                
+                // Thêm sự kiện touchmove để xử lý cuộn
+                container.addEventListener('touchmove', function(e) {
+                    // Cho phép cuộn bình thường trên các phần tử này
+                    e.stopPropagation();
+                });
+                
+                // Thêm sự kiện touchend để xóa lớp scrolling
+                container.addEventListener('touchend', function() {
+                    setTimeout(() => {
+                        this.classList.remove('scrolling');
+                    }, 300);
+                });
+                
+                // Thêm sự kiện scroll để xử lý khi người dùng cuộn
+                container.addEventListener('scroll', function() {
+                    this.classList.add('scrolling');
+                    
+                    // Xóa lớp scrolling sau khi ngừng cuộn
+                    clearTimeout(this.scrollTimeout);
+                    this.scrollTimeout = setTimeout(() => {
+                        this.classList.remove('scrolling');
+                    }, 300);
+                });
+            });
+        }
+
+        // Hàm tối ưu hóa hiệu suất cho thiết bị di động
+        // Mô tả: Tối ưu hóa hiệu suất cho các thiết bị di động có tài nguyên hạn chế
+        function optimizeForMobile() {
+            // Giảm độ phân giải trên thiết bị di động để cải thiện hiệu suất
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                renderer.setPixelRatio(1); // Giảm pixel ratio để tăng hiệu suất
+                
+                // Giảm chất lượng mặc định cho các hình khối
+                FIXED_LENGTH = 0.8; // Giảm kích thước mặc định
+                
+                // Tối ưu hóa controls cho di động
+                controls.rotateSpeed = 0.3;
+                controls.panSpeed = 0.3;
+                controls.zoomSpeed = 0.3;
+            }
+        }
+
         // ========== GÁN SỰ KIỆN ==========
 
         // Gán sự kiện
@@ -3543,8 +3648,7 @@
                 }
             });
         });
-
-        // Xác nhận tạo hình khối
+// Xác nhận tạo hình khối
         document.getElementById('confirmCreateShape').addEventListener('click', function() {
             const selectedOption = document.querySelector('.shape-option.active');
             if (!selectedOption) {
@@ -3554,7 +3658,7 @@
             
             const shapeType = selectedOption.dataset.shape;
 
-           // Nếu là hình đã lưu
+            // Nếu là hình đã lưu
             if (shapeType === 'saved') {
                 const shapeId = parseInt(selectedOption.dataset.shapeId);
                 loadSavedShape(shapeId);
@@ -3812,6 +3916,8 @@
             });
         });
 
+        // === KHỞI TẠO VÀ CẤU HÌNH BAN ĐẦU ===
+
         window.addEventListener('resize', onWindowResize);
         
         canvas.addEventListener('click', onPointerEvent, false);
@@ -3835,15 +3941,172 @@
             });
         });
 
-        // Hàm animate
+        // KHỞI TẠO CÁC CẢI THIỆN CHO THANH CUỘN
+        handleScrollEvents();
+        optimizeForMobile();
+
+        // Hàm animate - vòng lặp chính để render scene
+        // Mô tả: Hàm này được gọi liên tục để cập nhật và render scene
+        // Thay đổi: Có thể điều chỉnh tốc độ khung hình bằng cách thay đổi requestAnimationFrame
         function animate() {
             requestAnimationFrame(animate);
             
+            // Cập nhật controls (xoay, pan, zoom)
             controls.update();
+            
+            // Render scene với camera hiện tại
             renderer.render(scene, camera);
         }
         
+        // Bắt đầu vòng lặp animate
         animate();
+
+        // === XỬ LÝ SỰ KIỆN CHO MODAL ĐỂ NGĂN CHẶN PROPAGATION ===
+        // Mô tả: Ngăn chặn sự kiện click trên modal lan ra ngoài, đóng modal khi click ra ngoài
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideAllModals();
+                }
+            });
+            
+            // Ngăn chặn sự kiện click trong modal content lan ra ngoài
+            modal.querySelector('.modal-content').addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+
+        // === XỬ LÝ SỰ KIỆN CHO CÁC PHẦN TỬ CÓ THANH CUỘN TRÊN DI ĐỘNG ===
+        // Mô tả: Tối ưu hóa trải nghiệm cuộn trên thiết bị di động
+        document.querySelectorAll('.shape-grid-container, .side-panel').forEach(container => {
+            // Thêm sự kiện để phát hiện khi người dùng bắt đầu cuộn
+            container.addEventListener('touchstart', function() {
+                this.style.pointerEvents = 'auto';
+            });
+            
+            // Thêm sự kiện để phát hiện khi người dùng kết thúc cuộn
+            container.addEventListener('touchend', function() {
+                // Giữ pointer events được bật để cho phép click trên các phần tử con
+                this.style.pointerEvents = 'auto';
+            });
+        });
+
+        // === XỬ LÝ SỰ KIỆN CHO CÁC INPUT TRÊN DI ĐỘNG ===
+        // Mô tả: Ngăn chặn zoom không mong muốn khi focus vào input trên di động
+        document.querySelectorAll('input, select, textarea').forEach(input => {
+            input.addEventListener('touchstart', function(e) {
+                // Ngăn chặn zoom khi chạm vào input
+                e.stopPropagation();
+            });
+            
+            input.addEventListener('focus', function() {
+                // Trên di động, khi focus vào input, đảm bảo nó không bị che bởi bàn phím ảo
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            });
+        });
+
+        // === XỬ LÝ SỰ KIỆN CHO CÁC NÚT TRÊN DI ĐỘNG - CẢI THIỆN ĐỘ NHẠY ===
+        // Mô tả: Thêm hiệu ứng visual feedback khi chạm vào các nút trên di động
+        document.querySelectorAll('.tool-button, .header-button, .shape-option').forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+                this.style.transition = 'transform 0.1s';
+            });
+            
+            button.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            button.addEventListener('touchcancel', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // === XỬ LÝ SỰ KIỆN CHO CÁC DROPDOWN TRÊN DI ĐỘNG ===
+        // Mô tả: Tối ưu hóa trải nghiệm sử dụng dropdown trên thiết bị di động
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('touchstart', function(e) {
+                // Trên di động, mở rộng kích thước touch target
+                this.style.minHeight = '44px'; // Kích thước touch target tối thiểu theo tiêu chuẩn Apple
+                e.stopPropagation();
+            });
+            
+            select.addEventListener('change', function() {
+                // Reset kích thước sau khi chọn
+                this.style.minHeight = '';
+            });
+        });
+
+        // === XỬ LÝ SỰ KIỆN CHO CÁC MODAL TRÊN DI ĐỘNG ===
+        // Mô tả: Tối ưu hóa hiển thị modal trên thiết bị di động
+        document.querySelectorAll('.modal-content').forEach(modalContent => {
+            // Đảm bảo modal content có chiều cao phù hợp trên di động
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                modalContent.style.maxHeight = '70vh'; // Giới hạn chiều cao trên di động
+                modalContent.style.overflowY = 'auto'; // Luôn cho phép cuộn
+            }
+        });
+
+        // === XỬ LÝ SỰ KIỆN LOAD VÀ RESIZE ===
+        // Mô tả: Xử lý sự kiện khi trang được load và khi thay đổi kích thước cửa sổ
+        window.addEventListener('load', function() {
+            // Đảm bảo canvas có kích thước chính xác khi trang load
+            onWindowResize();
+            
+            // Hiển thị thông báo chào mừng
+            showInfo('Chào mừng đến với Công cụ Vẽ Hình Không Gian!');
+        });
+
+        // Xử lý sự kiện khi thiết bị thay đổi hướng (xoay màn hình)
+        window.addEventListener('orientationchange', function() {
+            // Đợi một chút để màn hình ổn định sau khi xoay
+            setTimeout(onWindowResize, 100);
+        });
+
+        // === XỬ LÝ SỰ KIỆN CHO CÁC HÌNH ĐÃ LƯU ===
+        // Mô tả: Thêm tính năng xóa hình đã lưu (giữ để xóa)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Thêm sự kiện cho hình đã lưu (giữ lâu để xóa)
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                
+                const shapeOption = e.target.closest('.shape-option');
+                if (shapeOption && shapeOption.dataset.shape === 'saved') {
+                    const shapeId = parseInt(shapeOption.dataset.shapeId);
+                    const shapeData = savedShapes.find(shape => shape.id === shapeId);
+                    
+                    if (shapeData && confirm(`Bạn có muốn xóa hình "${shapeData.name}" không?`)) {
+                        // Xóa khỏi danh sách
+                        savedShapes = savedShapes.filter(shape => shape.id !== shapeId);
+                        
+                        // Cập nhật localStorage
+                        localStorage.setItem('savedShapes', JSON.stringify(savedShapes));
+                        
+                        // Xóa khỏi DOM
+                        shapeOption.remove();
+                        
+                        showInfo(`Đã xóa hình "${shapeData.name}"`);
+                    }
+                }
+            });
+        });
+
+        // === HÀM KIỂM TRA VÀ CẢNH BÁO CHO THIẾT BỊ DI ĐỘNG ===
+        // Mô tả: Hiển thị cảnh báo nếu ứng dụng chạy trên thiết bị di động
+        function checkMobileDevice() {
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                showInfo('Ứng dụng hoạt động tốt nhất trên máy tính. Trên di động, sử dụng 2 ngón tay để xoay và phóng to.');
+                
+                // Tự động ẩn tutorial panel trên di động để tiết kiệm không gian
+                document.getElementById('tutorialPanel').style.display = 'none';
+            }
+        }
+
+        // Gọi hàm kiểm tra thiết bị
+        checkMobileDevice();
     </script>
 </body>
 </html>
+        
