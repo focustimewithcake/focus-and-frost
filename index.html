@@ -157,6 +157,9 @@
             overflow-y: auto;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             animation: slideUp 0.3s ease;
+            /* THÊM THUỘC TÍNH QUAN TRỌNG CHO THANH CUỘN TRÊN ĐIỆN THOẠI */
+            -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
+            overflow-scrolling: touch; /* Cuộn mượt trên các thiết bị khác */
         }
 
         @keyframes slideUp {
@@ -196,6 +199,31 @@
             overflow-y: auto;
             margin-bottom: 20px;
             padding-right: 5px;
+            /* THÊM THUỘC TÍNH QUAN TRỌNG CHO THANH CUỘN TRÊN ĐIỆN THOẠI */
+            -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
+            overflow-scrolling: touch; /* Cuộn mượt trên các thiết bị khác */
+            /* THÊM ĐỂ ĐẢM BẢO HIỂN THỊ THANH CUỘN RÕ RÀNG */
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: #3A86FF #f0f0f0; /* Firefox */
+        }
+
+        /* Tùy chỉnh thanh cuộn cho Webkit (Chrome, Safari, Edge) */
+        .shape-grid-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .shape-grid-container::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .shape-grid-container::-webkit-scrollbar-thumb {
+            background: #3A86FF;
+            border-radius: 4px;
+        }
+
+        .shape-grid-container::-webkit-scrollbar-thumb:hover {
+            background: #2a75f0;
         }
 
         .shape-grid {
@@ -375,6 +403,9 @@
             max-height: calc(100vh - 160px);
             overflow-y: auto;
             transition: transform 0.3s ease;
+            /* THÊM THUỘC TÍNH QUAN TRỌNG CHO THANH CUỘN TRÊN ĐIỆN THOẠI */
+            -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
+            overflow-scrolling: touch; /* Cuộn mượt trên các thiết bị khác */
         }
 
         .left-panel {
@@ -1079,8 +1110,14 @@
 
     <script>
         // === PHẦN JAVASCRIPT - XỬ LÝ CHỨC NĂNG ===
+        // ===========================================
         
         // KHỞI TẠO MÔI TRƯỜNG 3D
+        // Mô tả: Tạo scene, camera, renderer và các thành phần cơ bản của môi trường 3D
+        // Thay đổi: 
+        // - scene.background: Thay đổi màu nền của cảnh 3D
+        // - camera.position: Thay đổi vị trí mặc định của camera
+        // - renderer.setSize: Thay đổi kích thước của canvas render
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xf4f7ff);
 
@@ -1100,6 +1137,8 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         // Trục Oxyz với nhãn
+        // Mô tả: Tạo hệ trục tọa độ 3D với các nhãn X, Y, Z
+        // Thay đổi axesHelper.size: Thay đổi kích thước của hệ trục
         const axesHelper = new THREE.AxesHelper(3);
         scene.add(axesHelper);
         
@@ -1133,6 +1172,9 @@
         scene.add(createAxisLabel('Z', new THREE.Vector3(0, 0, 3.5), '#0000ff'));
 
         // Mặt phẳng tọa độ OXY
+        // Mô tả: Tạo lưới tọa độ OXY làm nền
+        // Thay đổi gridHelper.size: Thay đổi kích thước lưới
+        // Thay đổi gridHelper.divisions: Thay đổi số lượng ô lưới
         const gridHelper = new THREE.GridHelper(10, 10, 0x888888, 0xcccccc);
         gridHelper.position.set(0, 0, 0);
         gridHelper.rotation.x = -Math.PI/2;
@@ -1144,12 +1186,18 @@
         scene.add(gridHelper);
 
         // Ánh sáng
+        // Mô tả: Thiết lập ánh sáng cho cảnh 3D
+        // Thay đổi light.position: Thay đổi hướng ánh sáng
+        // Thay đổi light.intensity: Thay đổi cường độ ánh sáng
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(5, 5, 5);
         scene.add(light);
         scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
         // Điều khiển camera - cải thiện cho thiết bị di động
+        // Mô tả: Thiết lập điều khiển camera (xoay, zoom, pan)
+        // Thay đổi controls.enableDamping: Bật/tắt hiệu ứng giảm xóc
+        // Thay đổi controls.rotateSpeed: Thay đổi tốc độ xoay camera
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.enablePan = true;
@@ -1169,22 +1217,23 @@
         controls.zoomSpeed = 0.5;
 
         // BIẾN LƯU TRỮ DỮ LIỆU
-        const createdModels = [];
-        const points = {};
-        const vectors = {};
-        const lines = [];
-        const pointObjects = [];
-        const lineObjects = [];
-        const planeObjects = [];
-        const edgeObjects = [];
-        const vectorObjects = [];
+        // Mô tả: Các biến toàn cục để lưu trữ dữ liệu hình ảnh
+        const createdModels = []; // Lưu các mô hình đã tạo
+        const points = {}; // Lưu tọa độ các điểm
+        const vectors = {}; // Lưu thông tin vector
+        const lines = []; // Lưu các đường thẳng
+        const pointObjects = []; // Lưu các đối tượng điểm trong scene
+        const lineObjects = []; // Lưu các đối tượng đường thẳng trong scene
+        const planeObjects = []; // Lưu các đối tượng mặt phẳng trong scene
+        const edgeObjects = []; // Lưu các đối tượng cạnh trong scene
+        const vectorObjects = []; // Lưu các đối tượng vector trong scene
         const coloredPlanes = []; // Lưu các mặt phẳng đã tô màu
-        let activeTool = null;
-        let selectedPoints = [];
-        let selectedLine = null;
-        let selectedEdge = null;
-        let selectedMesh = null;
-        let selectedPlane = null;
+        let activeTool = null; // Công cụ đang được chọn
+        let selectedPoints = []; // Các điểm đang được chọn
+        let selectedLine = null; // Đường thẳng đang được chọn
+        let selectedEdge = null; // Cạnh đang được chọn
+        let selectedMesh = null; // Mô hình đang được chọn
+        let selectedPlane = null; // Mặt phẳng đang được chọn
 
         // Biến để xử lý double tap
         let lastTapTime = 0;
@@ -1216,6 +1265,8 @@
         let savedShapes = JSON.parse(localStorage.getItem('savedShapes')) || [];
 
         // Hàm hiển thị thông báo
+        // Mô tả: Hiển thị thông báo tạm thời trên màn hình
+        // Thay đổi: setTimeout duration - thay đổi thời gian hiển thị thông báo
         function showInfo(message) {
             const infoPanel = document.getElementById('infoPanel');
             const infoText = document.getElementById('infoText');
@@ -1230,6 +1281,8 @@
         }
 
         // Hàm thay đổi góc nhìn
+        // Mô tả: Thay đổi vị trí camera để có các góc nhìn khác nhau
+        // Thay đổi camera.position: Thay đổi vị trí camera cho từng góc nhìn
         function changeView(viewType) {
             currentView = viewType;
             
@@ -1280,6 +1333,8 @@
         }
 
         // Hàm chọn hình khối
+        // Mô tả: Xử lý khi người dùng chọn một hình khối
+        // Thay đổi: Cập nhật panel bên trái và các dropdown
         function selectMesh(mesh) {
             selectedMesh = mesh;
             
@@ -1304,6 +1359,8 @@
         }
 
         // Hàm tạo các cạnh cho hình khối
+        // Mô tả: Tạo các đường cạnh cho hình khối từ danh sách cạnh
+        // Thay đổi: edgeList - thay đổi danh sách cạnh sẽ thay đổi hình dạng của khối
         function createEdges(edgeList) {
             const geometry = new THREE.BufferGeometry();
             const vertices = [];
@@ -1327,6 +1384,8 @@
         }
 
         // Hàm tạo mũi tên cho vector
+        // Mô tả: Tạo mũi tên biểu diễn vector
+        // Thay đổi color: Thay đổi màu sắc của vector
         function createArrow(origin, direction, color = 0xff0000) {
             const length = direction.length();
             const arrowHelper = new THREE.ArrowHelper(
@@ -1339,6 +1398,8 @@
         }
 
         // Hàm tạo tứ diện S.ABC (không có cạnh vuông góc)
+        // Mô tả: Tạo hình tứ diện với các điểm A, B, C, S
+        // Thay đổi FIXED_LENGTH: Thay đổi kích thước của tứ diện
         function createTetrahedron() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1389,6 +1450,8 @@
         }
 
         // Hàm tạo lăng trụ tam giác
+        // Mô tả: Tạo hình lăng trụ tam giác với các điểm A, B, C, D, E, F
+        // Thay đổi FIXED_LENGTH: Thay đổi kích thước của lăng trụ
         function createTriangularPrism() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1447,6 +1510,8 @@
         }
 
         // Hàm tạo hình chóp tứ giác đều
+        // Mô tả: Tạo hình chóp tứ giác đều với các điểm A, B, C, D, S
+        // Thay đổi FIXED_LENGTH: Thay đổi kích thước của hình chóp
         function createPyramid() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1500,6 +1565,8 @@
         }
 
         // Hàm tạo hình chóp tam giác đều
+        // Mô tả: Tạo hình chóp tam giác đều với các điểm A, B, C, S
+        // Thay đổi FIXED_LENGTH: Thay đổi kích thước của hình chóp
         function createTriangularPyramid() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1550,6 +1617,8 @@
         }
 
         // HÀM TẠO HÌNH LẬP PHƯƠNG - ĐÃ SỬA: MẶT ABCD NẰM TRÊN OXY
+        // Mô tả: Tạo hình lập phương với các điểm A, B, C, D, E, F, G, H
+        // Thay đổi FIXED_LENGTH: Thay đổi kích thước của hình lập phương
         function createCube() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1620,6 +1689,8 @@
         }
 
         // HÀM TẠO HÌNH HỘP CHỮ NHẬT - ĐÃ SỬA: MẶT CDGH NẰM TRÊN OXY
+        // Mô tả: Tạo hình hộp chữ nhật với các điểm A, B, C, D, E, F, G, H
+        // Thay đổi width, height, depth: Thay đổi kích thước của hình hộp
         function createCuboid() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1697,6 +1768,8 @@
         }
 
         // Hàm tạo mặt phẳng có thể chọn được (ĐÃ SỬA LỖI HOÀN TOÀN)
+        // Mô tả: Tạo mặt phẳng trong suốt để người dùng có thể chọn
+        // Thay đổi opacity: Thay đổi độ trong suốt của mặt phẳng
         function createSelectablePlane(vertices, planeName) {
             const geometry = new THREE.BufferGeometry();
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
@@ -1737,6 +1810,7 @@
         }
 
         // Hàm tạo các mặt phẳng cho tứ diện (ĐÃ XÓA MÀU MẶC ĐỊNH)
+        // Mô tả: Tạo 4 mặt phẳng cho hình tứ diện
         function createPlanesForTetrahedron() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1781,6 +1855,7 @@
         }
 
         // Hàm tạo các mặt phẳng cho lăng trụ tam giác (ĐÃ XÓA MÀU MẶC ĐỊNH)
+        // Mô tả: Tạo 5 mặt phẳng cho hình lăng trụ tam giác
         function createPlanesForTriangularPrism() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1834,6 +1909,7 @@
         }
 
         // Hàm tạo các mặt phẳng cho hình chóp (ĐÃ XÓA MÀU MẶC ĐỊNH)
+        // Mô tả: Tạo 5 mặt phẳng cho hình chóp tứ giác
         function createPlanesForPyramid() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1887,6 +1963,7 @@
         }
 
         // HÀM TẠO CÁC MẶT PHẲNG CHO HÌNH LẬP PHƯƠNG (ĐÃ XÓA MÀU MẶC ĐỊNH)
+        // Mô tả: Tạo 6 mặt phẳng cho hình lập phương
         function createPlanesForCube() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1941,6 +2018,7 @@
         }
 
         // HÀM TẠO CÁC MẶT PHẲNG CHO HÌNH HỘP CHỮ NHẬT (ĐÃ XÓA MÀU MẶC ĐỊNH)
+        // Mô tả: Tạo 6 mặt phẳng cho hình hộp chữ nhật
         function createPlanesForCuboid() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1995,6 +2073,8 @@
         }
 
         // Hàm tạo các điểm hiển thị (CẢI THIỆN ĐỘ ỔN ĐỊNH)
+        // Mô tả: Tạo các điểm hình cầu và nhãn cho các điểm
+        // Thay đổi pointGeometry.radius: Thay đổi kích thước điểm
         function createPointSpheres() {
             pointObjects.forEach(obj => scene.remove(obj));
             pointObjects.length = 0;
@@ -2030,6 +2110,8 @@
         }
 
         // Hàm tạo nhãn cho điểm
+        // Mô tả: Tạo nhãn văn bản cho các điểm
+        // Thay đổi fontSize: Thay đổi kích thước chữ của nhãn
         function createPointLabel(name, position) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
@@ -2079,6 +2161,8 @@
         }
 
         // Hàm tạo mô hình mới (ĐÃ SỬA ĐỂ XÓA MẶT PHẲNG ĐÃ TÔ MÀU)
+        // Mô tả: Tạo mô hình mới dựa trên loại hình được chọn
+        // Thay đổi: Xóa các mặt phẳng đã tô màu khi đổi hình
         function createNewModel(shapeType) {
             // XÓA CÁC MẶT PHẲNG ĐÃ TÔ MÀU KHI ĐỔI HÌNH
             coloredPlanes.forEach(plane => {
@@ -2143,6 +2227,7 @@
         }
 
         // Hàm xóa hình khối (SỬA ĐỔI: KHÔNG xóa các mặt phẳng đã tô màu)
+        // Mô tả: Xóa hình khối hiện tại khỏi scene
         function deleteMesh(mesh) {
             if (!mesh) return;
             
@@ -2182,6 +2267,7 @@
         }
 
         // Hàm cập nhật panel bên trái với thông tin hình khối
+        // Mô tả: Cập nhật nội dung panel bên trái với thông tin hình khối được chọn
         function updateLeftPanel(mesh) {
             const panel = document.getElementById('leftPanel');
             const content = document.getElementById('shapeInfo');
@@ -2224,6 +2310,7 @@
         }
 
         // Hàm cập nhật thông tin chi tiết của hình khối
+        // Mô tả: Cập nhật tọa độ điểm và độ dài cạnh trong panel bên trái
         function updateShapeDetails(mesh) {
             if (!mesh) return;
             
@@ -2313,6 +2400,7 @@
         }
 
         // Hàm cập nhật danh sách điểm trong các dropdown
+        // Mô tả: Cập nhật danh sách điểm trong tất cả các dropdown menu
         function updatePointDropdowns() {
             const pointSelects = document.querySelectorAll('select[id$="Point"], select[id$="Vertex"], select[id$="StartPoint"], select[id$="EndPoint"], select[id$="Origin"]');
             
@@ -2397,6 +2485,7 @@
         }
 
         // Hàm cập nhật danh sách mặt phẳng trong dropdown
+        // Mô tả: Cập nhật danh sách mặt phẳng trong các dropdown menu
         function updatePlaneDropdowns() {
             const planeSelects = document.querySelectorAll('select[id$="Plane"]');
             
@@ -2429,6 +2518,7 @@
         }
 
         // Hàm cập nhật danh sách đoạn thẳng trong các dropdown
+        // Mô tả: Cập nhật danh sách đoạn thẳng trong các dropdown menu
         function updateSegmentDropdowns() {
             const segmentSelects = document.querySelectorAll('select[id$="Segment"], select[id$="Base"]');
             
@@ -2462,6 +2552,7 @@
         }
 
         // Hàm cập nhật dropdown tam giác
+        // Mô tả: Cập nhật danh sách tam giác trong dropdown menu
         function updateTriangleDropdowns() {
             const triangleSelect = document.getElementById('centroidTriangle');
             const currentValue = triangleSelect.value;
@@ -2494,6 +2585,7 @@
         }
 
         // Hàm xử lý sự kiện pointer
+        // Mô tả: Xử lý sự kiện click và touch trên canvas
         function onPointerEvent(event) {
             event.preventDefault();
             
@@ -2582,6 +2674,7 @@
         }
 
         // Hàm xử lý thay đổi kích thước cửa sổ
+        // Mô tả: Điều chỉnh camera và renderer khi kích thước cửa sổ thay đổi
         function onWindowResize() {
             const canvas = document.getElementById('sceneCanvas');
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
@@ -2611,6 +2704,7 @@
         }
 
         // Hàm thêm điểm theo tọa độ
+        // Mô tả: Thêm điểm mới vào scene với tọa độ xác định
         function addPointByCoord(name, x, y, z) {
             if (points[name]) {
                 alert('Tên điểm đã tồn tại!');
@@ -2650,6 +2744,7 @@
         }
 
         // Hàm vẽ vector
+        // Mô tả: Vẽ vector từ hai điểm
         function drawVector(name, startPoint, endPoint, color = 0xff0000) {
             const start = points[startPoint];
             const end = points[endPoint];
@@ -2676,6 +2771,7 @@
         }
 
         // Hàm vẽ vector từ tọa độ
+        // Mô tả: Vẽ vector từ tọa độ và điểm gốc
         function drawVectorFromCoords(name, x, y, z, origin = 'O', color = 0xff0000) {
             const start = origin === 'O' ? new THREE.Vector3(0, 0, 0) : points[origin];
             
@@ -2700,6 +2796,7 @@
         }
 
         // Hàm xóa điểm hoặc đường
+        // Mô tả: Xóa đối tượng được chọn khỏi scene
         function eraseObject(object) {
             if (object.userData.type === 'point') {
                 scene.remove(object);
@@ -2762,6 +2859,7 @@
         // ========== HÀM CHO THÊM ĐIỂM/ĐOẠN THẲNG ==========
 
         // Hàm xử lý thay đổi loại điểm
+        // Mô tả: Hiển thị các trường nhập liệu tương ứng với loại điểm được chọn
         function handlePointTypeChange() {
             const pointType = document.getElementById('newPointType').value;
             
@@ -2790,6 +2888,7 @@
         }
 
         // Hàm thêm điểm mới
+        // Mô tả: Thêm điểm mới dựa trên loại điểm được chọn
         function addNewPoint() {
             const pointType = document.getElementById('newPointType').value;
             const pointName = document.getElementById('newPointName').value.trim().toUpperCase();
@@ -2865,6 +2964,7 @@
         }
 
         // Hàm thêm đoạn thẳng mới
+        // Mô tả: Thêm đoạn thẳng nối hai điểm
         function addNewSegment() {
             const startPoint = document.getElementById('segmentStart').value;
             const endPoint = document.getElementById('segmentEnd').value;
@@ -2898,6 +2998,7 @@
         }
 
         // Hàm tính hình chiếu của điểm lên mặt phẳng
+        // Mô tả: Tính toán hình chiếu của một điểm lên một mặt phẳng
         function calculatePointProjection(pointName, planeName) {
             const point = points[pointName];
             if (!point) return null;
@@ -3001,6 +3102,7 @@
         }
 
         // Hàm tô màu mặt phẳng (ĐÃ SỬA LỖI HOÀN TOÀN)
+        // Mô tả: Tô màu một mặt phẳng xác định bởi các điểm
         function colorPlane(pointNames, color) {
             const pointsArray = [];
             for (let name of pointNames) {
@@ -3086,6 +3188,7 @@
         }
 
         // Hàm lưu hình hiện tại
+        // Mô tả: Lưu hình hiện tại vào localStorage
         function saveCurrentShape() {
             if (createdModels.length === 0) {
                 alert('Không có hình nào để lưu!');
@@ -3159,6 +3262,7 @@
         }
 
         // Hàm tải hình đã lưu
+        // Mô tả: Tải hình đã lưu từ localStorage
         function loadSavedShape(shapeId) {
             const shapeData = savedShapes.find(shape => shape.id === shapeId);
             if (!shapeData) return;
@@ -3450,7 +3554,7 @@
             
             const shapeType = selectedOption.dataset.shape;
 
-            // Nếu là hình đã lưu
+           // Nếu là hình đã lưu
             if (shapeType === 'saved') {
                 const shapeId = parseInt(selectedOption.dataset.shapeId);
                 loadSavedShape(shapeId);
@@ -3689,6 +3793,25 @@
             }
         });
 
+        // === SỰ KIỆN QUAN TRỌNG: XỬ LÝ TOUCH CHO THANH CUỘN TRÊN ĐIỆN THOẠI ===
+        // Ngăn chặn sự kiện touch mặc định trên các phần tử có thanh cuộn để tránh xung đột với Three.js
+        document.querySelectorAll('.shape-grid-container, .side-panel, .modal-content').forEach(container => {
+            container.addEventListener('touchstart', function(e) {
+                // Cho phép sự kiện touch tiếp tục lan truyền nếu không phải là cuộn
+                if (this.scrollHeight <= this.clientHeight) {
+                    return;
+                }
+                
+                // Ngăn chặn sự kiện chỉ khi phần tử có thể cuộn được
+                e.stopPropagation();
+            });
+            
+            container.addEventListener('touchmove', function(e) {
+                // Cho phép cuộn bình thường trên các phần tử này
+                e.stopPropagation();
+            });
+        });
+
         window.addEventListener('resize', onWindowResize);
         
         canvas.addEventListener('click', onPointerEvent, false);
@@ -3724,6 +3847,3 @@
     </script>
 </body>
 </html>
-            
-            
-                                                                       
