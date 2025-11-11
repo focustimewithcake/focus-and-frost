@@ -157,12 +157,9 @@
             overflow-y: auto;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             animation: slideUp 0.3s ease;
-            /* CẢI THIỆN: Tối ưu hóa thanh cuộn cho thiết bị di động */
-            -webkit-overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên iOS */
-            overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên các thiết bị khác */
-            /* Tăng kích thước vùng cuộn để dễ dàng thao tác hơn */
+            -webkit-overflow-scrolling: touch;
+            overflow-scrolling: touch;
             scroll-padding: 20px;
-            /* Thêm padding để tránh nội dung bị che bởi thanh cuộn */
             padding-bottom: 20px;
         }
 
@@ -203,43 +200,36 @@
             overflow-y: auto;
             margin-bottom: 20px;
             padding-right: 5px;
-            /* CẢI THIỆN: Tối ưu hóa thanh cuộn cho thiết bị di động */
-            -webkit-overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên iOS */
-            overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên các thiết bị khác */
-            /* Tăng kích thước vùng cuộn để dễ dàng thao tác hơn */
+            -webkit-overflow-scrolling: touch;
+            overflow-scrolling: touch;
             scroll-padding: 15px;
-            /* Thêm padding để tránh nội dung bị che bởi thanh cuộn */
             padding-bottom: 15px;
-            /* Tăng độ nhạy của cuộn */
             scroll-behavior: smooth;
-            /* Đảm bảo hiển thị thanh cuộn rõ ràng */
-            scrollbar-width: thin; /* Firefox */
-            scrollbar-color: #3A86FF #f0f0f0; /* Firefox */
+            scrollbar-width: thin;
+            scrollbar-color: #3A86FF #f0f0f0;
         }
 
-        /* Tùy chỉnh thanh cuộn cho Webkit (Chrome, Safari, Edge) */
         .shape-grid-container::-webkit-scrollbar {
-            width: 12px; /* Tăng kích thước thanh cuộn để dễ dàng thao tác trên di động */
+            width: 12px;
         }
 
         .shape-grid-container::-webkit-scrollbar-track {
             background: #f0f0f0;
-            border-radius: 6px; /* Tăng độ bo tròn để thân thiện hơn */
+            border-radius: 6px;
         }
 
         .shape-grid-container::-webkit-scrollbar-thumb {
             background: #3A86FF;
-            border-radius: 6px; /* Tăng độ bo tròn để thân thiện hơn */
-            border: 2px solid #f0f0f0; /* Thêm viền để dễ nhận biết */
+            border-radius: 6px;
+            border: 2px solid #f0f0f0;
         }
 
         .shape-grid-container::-webkit-scrollbar-thumb:hover {
             background: #2a75f0;
         }
 
-        /* Thêm hiệu ứng khi đang cuộn */
         .shape-grid-container.scrolling {
-            scrollbar-color: #2a75f0 #e0e0e0; /* Firefox */
+            scrollbar-color: #2a75f0 #e0e0e0;
         }
 
         .shape-grid-container.scrolling::-webkit-scrollbar-thumb {
@@ -250,7 +240,6 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            /* Tăng kích thước tối thiểu của các mục để dễ dàng chạm */
             min-height: min-content;
         }
 
@@ -265,9 +254,7 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            /* Tăng kích thước tối thiểu để dễ dàng chạm */
             min-height: 60px;
-            /* Đảm bảo nội dung có thể chọn được */
             user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -288,7 +275,6 @@
         .shape-option span {
             font-size: 0.85rem;
             font-weight: 500;
-            /* Đảm bảo văn bản không bị chọn */
             user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -423,7 +409,6 @@
             line-height: 1.4;
         }
 
-        /* Side panels */
         .side-panel {
             position: absolute;
             top: 15vh;
@@ -437,14 +422,10 @@
             max-height: calc(100vh - 160px);
             overflow-y: auto;
             transition: transform 0.3s ease;
-            /* CẢI THIỆN: Tối ưu hóa thanh cuộn cho thiết bị di động */
-            -webkit-overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên iOS */
-            overflow-scrolling: touch; /* Kích hoạt cuộn mượt trên các thiết bị khác */
-            /* Tăng kích thước vùng cuộn để dễ dàng thao tác hơn */
+            -webkit-overflow-scrolling: touch;
+            overflow-scrolling: touch;
             scroll-padding: 15px;
-            /* Thêm padding để tránh nội dung bị che bởi thanh cuộn */
             padding-bottom: 15px;
-            /* Tăng độ nhạy của cuộn */
             scroll-behavior: smooth;
         }
 
@@ -474,7 +455,6 @@
             color: #777;
         }
 
-        /* Shape list styles */
         .shape-list {
             display: flex;
             flex-direction: column;
@@ -530,7 +510,6 @@
             margin-left: 10px;
         }
 
-        /* Panel toggle buttons */
         .panel-toggle {
             position: absolute;
             top: 15vh;
@@ -563,7 +542,6 @@
             display: none;
         }
 
-        /* Color palette */
         .color-palette {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -588,7 +566,6 @@
             border-color: #333;
         }
 
-        /* Style cho màu trong suốt */
         .color-option[data-color="transparent"] {
             position: relative;
             background: repeating-linear-gradient(45deg, #ccc, #ccc 2px, #fff 2px, #fff 4px);
@@ -605,7 +582,6 @@
             color: #666;
         }
 
-        /* Right panel sections */
         .right-panel-section {
             display: none;
             margin-top: 15px;
@@ -633,7 +609,6 @@
             background: #2a75f0;
         }
 
-        /* NEW STYLES FOR RIGHT PANEL TABS */
         .right-panel-tabs {
             display: flex;
             border-bottom: 1px solid #ddd;
@@ -665,12 +640,10 @@
             display: block;
         }
 
-        /* Mobile warning */
         #mobileWarning {
             display: none;
         }
 
-        /* Cải thiện cho thiết bị di động */
         @media (max-width: 1024px) {
             .toolbar {
                 flex-wrap: wrap;
@@ -681,13 +654,13 @@
             }
             
             .tool-button {
-                width: 54px; /* Giảm 10% từ 60px */
-                height: 54px; /* Giảm 10% từ 60px */
+                width: 54px;
+                height: 54px;
                 padding: 7px;
             }
             
             .tool-button span {
-                font-size: 0.63rem; /* Giảm 10% từ 0.7rem */
+                font-size: 0.63rem;
             }
             
             .side-panel {
@@ -728,8 +701,8 @@
             }
             
             .header-button {
-                padding: 5px 10px; /* Giảm từ 6px 12px */
-                font-size: 0.8rem; /* Giảm từ 0.9rem */
+                padding: 5px 10px;
+                font-size: 0.8rem;
             }
             
             #infoPanel {
@@ -745,12 +718,12 @@
             }
             
             .tool-button {
-                width: 50px; /* Giảm 10% từ 55px */
-                height: 50px; /* Giảm 10% từ 55px */
+                width: 50px;
+                height: 50px;
             }
             
             .tool-button span {
-                font-size: 0.585rem; /* Giảm 10% từ 0.65rem */
+                font-size: 0.585rem;
             }
             
             .right-panel-tabs {
@@ -786,12 +759,12 @@
             }
             
             .tool-button {
-                width: 45px; /* Giảm 10% từ 50px */
-                height: 45px; /* Giảm 10% từ 50px */
+                width: 45px;
+                height: 45px;
             }
             
             .tool-button span {
-                font-size: 0.54rem; /* Giảm 10% từ 0.6rem */
+                font-size: 0.54rem;
             }
             
             .side-panel {
@@ -807,7 +780,6 @@
             }
         }
 
-        /* Cải thiện cho thiết bị di động - chế độ cảm ứng */
         @media (hover: none) and (pointer: coarse) {
             .tool-button:hover {
                 transform: none;
@@ -850,12 +822,10 @@
             <section>
                 <canvas id="sceneCanvas"></canvas>
                 
-                <!-- Nút ẩn/hiện panel bên trái -->
                 <div class="panel-toggle left-panel-toggle" id="leftPanelToggle">
                     <span id="leftPanelToggleIcon">&#9664;</span>
                 </div>
                 
-                <!-- Nút ẩn/hiện panel bên phải -->
                 <div class="panel-toggle right-panel-toggle" id="rightPanelToggle">
                     <span id="rightPanelToggleIcon">&#9654;</span>
                 </div>
@@ -891,7 +861,6 @@
                     </button>
                 </div>
 
-                <!-- Side panels -->
                 <div class="side-panel left-panel" id="leftPanel">
                     <h3>Thông tin hình khối</h3>
                     <button class="close-side-panel" id="closeLeftPanel">&times;</button>
@@ -904,13 +873,11 @@
                     <h3>Thêm phần tử</h3>
                     <button class="close-side-panel" id="closeRightPanel">&times;</button>
                     
-                    <!-- Các tab ngang -->
                     <div class="right-panel-tabs">
                         <button class="right-panel-tab active" data-tab="addPointTab">Thêm điểm</button>
                         <button class="right-panel-tab" data-tab="addSegmentTab">Đoạn thẳng</button>
                     </div>
                     
-                    <!-- Nội dung tab Thêm điểm -->
                     <div class="right-panel-tab-content active" id="addPointTab">
                         <div class="form-group">
                             <label for="newPointType">Loại điểm:</label>
@@ -951,7 +918,6 @@
                         </div>
                     </div>
 
-                    <!-- Nội dung tab Đoạn thẳng -->
                     <div class="right-panel-tab-content" id="addSegmentTab">
                         <h4>Nối đoạn thẳng</h4>
                         <div class="form-group">
@@ -972,7 +938,6 @@
         </div>
     </div>
 
-    <!-- Modal tạo hình khối -->
     <div class="modal" id="createShapeModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -993,7 +958,6 @@
                     <div class="shape-option" data-shape="triangularPyramid">
                         <span>Chóp tam giác đều</span>
                     </div>
-                    <!-- THÊM HÌNH LẬP PHƯƠNG VÀ HÌNH HỘP CHỮ NHẬT -->
                     <div class="shape-option" data-shape="cube">
                         <span>Hình lập phương</span>
                     </div>
@@ -1009,7 +973,6 @@
         </div>
     </div>
 
-    <!-- Modal đặt điểm theo tọa độ -->
     <div class="modal" id="pointByCoordModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1041,7 +1004,6 @@
         </div>
     </div>
 
-    <!-- Modal vẽ vector -->
     <div class="modal" id="vectorModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1096,7 +1058,6 @@
         </div>
     </div>
 
-    <!-- Modal tô màu mặt phẳng -->
     <div class="modal" id="colorPlaneModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1119,7 +1080,6 @@
                     <div class="color-option" style="background-color: #00ffff;" data-color="#00ffff"></div>
                     <div class="color-option" style="background-color: #ffa500;" data-color="#ffa500"></div>
                     <div class="color-option" style="background-color: #800080;" data-color="#800080"></div>
-                    <!-- THÊM MÀU TRONG SUỐT -->
                     <div class="color-option" data-color="transparent"></div>
                 </div>
             </div>
@@ -1130,7 +1090,6 @@
         </div>
     </div>
 
-    <!-- MODAL LƯU HÌNH -->
     <div class="modal" id="saveShapeModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1149,15 +1108,9 @@
     </div>
 
     <script>
-        // === PHẦN JAVASCRIPT - XỬ LÝ CHỨC NĂNG ===
-        // ===========================================
+        // === PHẦN JAVASCRIPT - ĐÃ SỬA LỖI ===
         
         // KHỞI TẠO MÔI TRƯỜNG 3D
-        // Mô tả: Tạo scene, camera, renderer và các thành phần cơ bản của môi trường 3D
-        // Thay đổi: 
-        // - scene.background: Thay đổi màu nền của cảnh 3D
-        // - camera.position: Thay đổi vị trí mặc định của camera
-        // - renderer.setSize: Thay đổi kích thước của canvas render
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xf4f7ff);
 
@@ -1177,8 +1130,6 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         // Trục Oxyz với nhãn
-        // Mô tả: Tạo hệ trục tọa độ 3D với các nhãn X, Y, Z
-        // Thay đổi axesHelper.size: Thay đổi kích thước của hệ trục
         const axesHelper = new THREE.AxesHelper(3);
         scene.add(axesHelper);
         
@@ -1212,37 +1163,27 @@
         scene.add(createAxisLabel('Z', new THREE.Vector3(0, 0, 3.5), '#0000ff'));
 
         // Mặt phẳng tọa độ OXY
-        // Mô tả: Tạo lưới tọa độ OXY làm nền
-        // Thay đổi gridHelper.size: Thay đổi kích thước lưới
-        // Thay đổi gridHelper.divisions: Thay đổi số lượng ô lưới
         const gridHelper = new THREE.GridHelper(10, 10, 0x888888, 0xcccccc);
         gridHelper.position.set(0, 0, 0);
         gridHelper.rotation.x = -Math.PI/2;
         
-        // Làm mờ tấm lưới
         gridHelper.material.transparent = true;
         gridHelper.material.opacity = 0.3;
         
         scene.add(gridHelper);
 
         // Ánh sáng
-        // Mô tả: Thiết lập ánh sáng cho cảnh 3D
-        // Thay đổi light.position: Thay đổi hướng ánh sáng
-        // Thay đổi light.intensity: Thay đổi cường độ ánh sáng
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(5, 5, 5);
         scene.add(light);
         scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
-        // Điều khiển camera - cải thiện cho thiết bị di động
-        // Mô tả: Thiết lập điều khiển camera (xoay, zoom, pan)
-        // Thay đổi controls.enableDamping: Bật/tắt hiệu ứng giảm xóc
-        // Thay đổi controls.rotateSpeed: Thay đổi tốc độ xoay camera
+        // Điều khiển camera
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.enablePan = true;
         controls.touchAction = 'none';
-        controls.screenSpacePanning = true; // Cho phép panning trên màn hình cảm ứng
+        controls.screenSpacePanning = true;
         controls.mouseButtons = {
             LEFT: THREE.MOUSE.ROTATE,
             MIDDLE: THREE.MOUSE.DOLLY,
@@ -1257,30 +1198,29 @@
         controls.zoomSpeed = 0.5;
 
         // BIẾN LƯU TRỮ DỮ LIỆU
-        // Mô tả: Các biến toàn cục để lưu trữ dữ liệu hình ảnh
-        const createdModels = []; // Lưu các mô hình đã tạo
-        const points = {}; // Lưu tọa độ các điểm
-        const vectors = {}; // Lưu thông tin vector
-        const lines = []; // Lưu các đường thẳng
-        const pointObjects = []; // Lưu các đối tượng điểm trong scene
-        const lineObjects = []; // Lưu các đối tượng đường thẳng trong scene
-        const planeObjects = []; // Lưu các đối tượng mặt phẳng trong scene
-        const edgeObjects = []; // Lưu các đối tượng cạnh trong scene
-        const vectorObjects = []; // Lưu các đối tượng vector trong scene
-        const coloredPlanes = []; // Lưu các mặt phẳng đã tô màu
-        let activeTool = null; // Công cụ đang được chọn
-        let selectedPoints = []; // Các điểm đang được chọn
-        let selectedLine = null; // Đường thẳng đang được chọn
-        let selectedEdge = null; // Cạnh đang được chọn
-        let selectedMesh = null; // Mô hình đang được chọn
-        let selectedPlane = null; // Mặt phẳng đang được chọn
+        const createdModels = [];
+        const points = {};
+        const vectors = {};
+        const lines = [];
+        const pointObjects = [];
+        const lineObjects = [];
+        const planeObjects = [];
+        const edgeObjects = [];
+        const vectorObjects = [];
+        const coloredPlanes = [];
+        let activeTool = null;
+        let selectedPoints = [];
+        let selectedLine = null;
+        let selectedEdge = null;
+        let selectedMesh = null;
+        let selectedPlane = null;
 
         // Biến để xử lý double tap
         let lastTapTime = 0;
         const doubleTapDelay = 300;
 
         // Độ dài cố định cho tất cả các hình
-        const FIXED_LENGTH = 1;
+        let FIXED_LENGTH = 1;
 
         // Biến cho góc nhìn
         let currentView = 'default';
@@ -1305,8 +1245,6 @@
         let savedShapes = JSON.parse(localStorage.getItem('savedShapes')) || [];
 
         // Hàm hiển thị thông báo
-        // Mô tả: Hiển thị thông báo tạm thời trên màn hình
-        // Thay đổi: setTimeout duration - thay đổi thời gian hiển thị thông báo
         function showInfo(message) {
             const infoPanel = document.getElementById('infoPanel');
             const infoText = document.getElementById('infoText');
@@ -1314,15 +1252,12 @@
             infoText.textContent = message;
             infoPanel.style.display = 'block';
             
-            // Tự động ẩn sau 2 giây
             setTimeout(() => {
                 infoPanel.style.display = 'none';
             }, 2000);
         }
 
         // Hàm thay đổi góc nhìn
-        // Mô tả: Thay đổi vị trí camera để có các góc nhìn khác nhau
-        // Thay đổi camera.position: Thay đổi vị trí camera cho từng góc nhìn
         function changeView(viewType) {
             currentView = viewType;
             
@@ -1373,8 +1308,6 @@
         }
 
         // Hàm chọn hình khối
-        // Mô tả: Xử lý khi người dùng chọn một hình khối
-        // Thay đổi: Cập nhật panel bên trái và các dropdown
         function selectMesh(mesh) {
             selectedMesh = mesh;
             
@@ -1399,8 +1332,6 @@
         }
 
         // Hàm tạo các cạnh cho hình khối
-        // Mô tả: Tạo các đường cạnh cho hình khối từ danh sách cạnh
-        // Thay đổi: edgeList - thay đổi danh sách cạnh sẽ thay đổi hình dạng của khối
         function createEdges(edgeList) {
             const geometry = new THREE.BufferGeometry();
             const vertices = [];
@@ -1424,8 +1355,6 @@
         }
 
         // Hàm tạo mũi tên cho vector
-        // Mô tả: Tạo mũi tên biểu diễn vector
-        // Thay đổi color: Thay đổi màu sắc của vector
         function createArrow(origin, direction, color = 0xff0000) {
             const length = direction.length();
             const arrowHelper = new THREE.ArrowHelper(
@@ -1437,27 +1366,24 @@
             return arrowHelper;
         }
 
-        // Hàm tạo tứ diện S.ABC (không có cạnh vuông góc)
-        // Mô tả: Tạo hình tứ diện với các điểm A, B, C, S
-        // Thay đổi FIXED_LENGTH: Thay đổi kích thước của tứ diện
+        // Hàm tạo tứ diện S.ABC
         function createTetrahedron() {
             const geometry = new THREE.BufferGeometry();
             
-            // Tọa độ các đỉnh của tứ diện - không có cặp cạnh nào vuông góc
             const vertices = new Float32Array([
-                0, 0, 0,           // A
-                FIXED_LENGTH, 0, 0,           // B
-                0.5, FIXED_LENGTH, 0,         // C - không vuông góc với AB
-                0.3, 0.3, FIXED_LENGTH        // S - không vuông góc với bất kỳ cạnh nào
+                0, 0, 0,
+                FIXED_LENGTH, 0, 0,
+                0.5, FIXED_LENGTH, 0,
+                0.3, 0.3, FIXED_LENGTH
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
             
             const indices = [
-                0, 1, 2,  // Mặt đáy ABC
-                0, 3, 1,  // Mặt ABS
-                1, 3, 2,  // Mặt BCS
-                2, 3, 0   // Mặt CAS
+                0, 1, 2,
+                0, 3, 1,
+                1, 3, 2,
+                2, 3, 0
             ];
             
             geometry.setIndex(indices);
@@ -1475,7 +1401,6 @@
             points['C'] = new THREE.Vector3(0.5, FIXED_LENGTH, 0);
             points['S'] = new THREE.Vector3(0.3, 0.3, FIXED_LENGTH);
             
-            // Sử dụng EdgesGeometry để tạo các cạnh
             const edgesGeometry = new THREE.EdgesGeometry(geometry);
             const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
             const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
@@ -1490,8 +1415,6 @@
         }
 
         // Hàm tạo lăng trụ tam giác
-        // Mô tả: Tạo hình lăng trụ tam giác với các điểm A, B, C, D, E, F
-        // Thay đổi FIXED_LENGTH: Thay đổi kích thước của lăng trụ
         function createTriangularPrism() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1535,7 +1458,6 @@
             points['E'] = new THREE.Vector3(FIXED_LENGTH, 0, FIXED_LENGTH);
             points['F'] = new THREE.Vector3(FIXED_LENGTH/2, height, FIXED_LENGTH);
             
-            // Sử dụng EdgesGeometry để tạo các cạnh
             const edgesGeometry = new THREE.EdgesGeometry(geometry);
             const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
             const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
@@ -1550,8 +1472,6 @@
         }
 
         // Hàm tạo hình chóp tứ giác đều
-        // Mô tả: Tạo hình chóp tứ giác đều với các điểm A, B, C, D, S
-        // Thay đổi FIXED_LENGTH: Thay đổi kích thước của hình chóp
         function createPyramid() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1590,7 +1510,6 @@
             points['D'] = new THREE.Vector3(-FIXED_LENGTH/2, FIXED_LENGTH/2, 0);
             points['S'] = new THREE.Vector3(0, 0, FIXED_LENGTH);
             
-            // Sử dụng EdgesGeometry để tạo các cạnh
             const edgesGeometry = new THREE.EdgesGeometry(geometry);
             const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
             const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
@@ -1605,8 +1524,6 @@
         }
 
         // Hàm tạo hình chóp tam giác đều
-        // Mô tả: Tạo hình chóp tam giác đều với các điểm A, B, C, S
-        // Thay đổi FIXED_LENGTH: Thay đổi kích thước của hình chóp
         function createTriangularPyramid() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1642,7 +1559,6 @@
             points['C'] = new THREE.Vector3(FIXED_LENGTH/2, height, 0);
             points['S'] = new THREE.Vector3(FIXED_LENGTH/2, height/3, FIXED_LENGTH);
             
-            // Sử dụng EdgesGeometry để tạo các cạnh
             const edgesGeometry = new THREE.EdgesGeometry(geometry);
             const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
             const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
@@ -1656,42 +1572,31 @@
             return new THREE.Mesh(geometry, material);
         }
 
-        // HÀM TẠO HÌNH LẬP PHƯƠNG - ĐÃ SỬA: MẶT ABCD NẰM TRÊN OXY
-        // Mô tả: Tạo hình lập phương với các điểm A, B, C, D, E, F, G, H
-        // Thay đổi FIXED_LENGTH: Thay đổi kích thước của hình lập phương
+        // HÀM TẠO HÌNH LẬP PHƯƠNG
         function createCube() {
             const geometry = new THREE.BufferGeometry();
             
             const halfSize = FIXED_LENGTH / 2;
-            // Điều chỉnh để mặt ABCD nằm trên OXY (z=0)
             const vertices = new Float32Array([
-                // Mặt dưới ABCD - z = 0
-                -halfSize, -halfSize, 0,  // A
-                halfSize, -halfSize, 0,   // B
-                halfSize, halfSize, 0,    // C
-                -halfSize, halfSize, 0,   // D
+                -halfSize, -halfSize, 0,
+                halfSize, -halfSize, 0,
+                halfSize, halfSize, 0,
+                -halfSize, halfSize, 0,
                 
-                // Mặt trên EFGH - z = FIXED_LENGTH
-                -halfSize, -halfSize, FIXED_LENGTH,   // E
-                halfSize, -halfSize, FIXED_LENGTH,    // F
-                halfSize, halfSize, FIXED_LENGTH,     // G
-                -halfSize, halfSize, FIXED_LENGTH     // H
+                -halfSize, -halfSize, FIXED_LENGTH,
+                halfSize, -halfSize, FIXED_LENGTH,
+                halfSize, halfSize, FIXED_LENGTH,
+                -halfSize, halfSize, FIXED_LENGTH
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
             
             const indices = [
-                // Mặt dưới
                 0, 1, 2, 0, 2, 3,
-                // Mặt trên
                 4, 6, 5, 4, 7, 6,
-                // Mặt trước
                 0, 4, 1, 1, 4, 5,
-                // Mặt sau
                 2, 6, 3, 3, 6, 7,
-                // Mặt trái
                 0, 3, 4, 3, 7, 4,
-                // Mặt phải
                 1, 5, 2, 2, 5, 6
             ];
             
@@ -1714,7 +1619,6 @@
             points['G'] = new THREE.Vector3(halfSize, halfSize, FIXED_LENGTH);
             points['H'] = new THREE.Vector3(-halfSize, halfSize, FIXED_LENGTH);
             
-            // Sử dụng EdgesGeometry để tạo các cạnh
             const edgesGeometry = new THREE.EdgesGeometry(geometry);
             const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
             const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
@@ -1728,9 +1632,7 @@
             return new THREE.Mesh(geometry, material);
         }
 
-        // HÀM TẠO HÌNH HỘP CHỮ NHẬT - ĐÃ SỬA: MẶT CDGH NẰM TRÊN OXY
-        // Mô tả: Tạo hình hộp chữ nhật với các điểm A, B, C, D, E, F, G, H
-        // Thay đổi width, height, depth: Thay đổi kích thước của hình hộp
+        // HÀM TẠO HÌNH HỘP CHỮ NHẬT
         function createCuboid() {
             const geometry = new THREE.BufferGeometry();
             
@@ -1742,35 +1644,26 @@
             const halfHeight = height / 2;
             const halfDepth = depth / 2;
             
-            // Điều chỉnh để mặt CDGH nằm trên OXY (z=0)
             const vertices = new Float32Array([
-                // Mặt dưới - z = 0
-                -halfWidth, -halfHeight, 0,  // A
-                halfWidth, -halfHeight, 0,   // B
-                halfWidth, halfHeight, 0,    // C
-                -halfWidth, halfHeight, 0,   // D
+                -halfWidth, -halfHeight, 0,
+                halfWidth, -halfHeight, 0,
+                halfWidth, halfHeight, 0,
+                -halfWidth, halfHeight, 0,
                 
-                // Mặt trên - z = depth
-                -halfWidth, -halfHeight, depth,   // E
-                halfWidth, -halfHeight, depth,    // F
-                halfWidth, halfHeight, depth,     // G
-                -halfWidth, halfHeight, depth     // H
+                -halfWidth, -halfHeight, depth,
+                halfWidth, -halfHeight, depth,
+                halfWidth, halfHeight, depth,
+                -halfWidth, halfHeight, depth
             ]);
             
             geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
             
             const indices = [
-                // Mặt dưới
                 0, 1, 2, 0, 2, 3,
-                // Mặt trên
                 4, 6, 5, 4, 7, 6,
-                // Mặt trước
                 0, 4, 1, 1, 4, 5,
-                // Mặt sau
                 2, 6, 3, 3, 6, 7,
-                // Mặt trái
                 0, 3, 4, 3, 7, 4,
-                // Mặt phải
                 1, 5, 2, 2, 5, 6
             ];
             
@@ -1793,7 +1686,6 @@
             points['G'] = new THREE.Vector3(halfWidth, halfHeight, depth);
             points['H'] = new THREE.Vector3(-halfWidth, halfHeight, depth);
             
-            // Sử dụng EdgesGeometry để tạo các cạnh
             const edgesGeometry = new THREE.EdgesGeometry(geometry);
             const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
             const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
@@ -1807,50 +1699,7 @@
             return new THREE.Mesh(geometry, material);
         }
 
-        // Hàm tạo mặt phẳng có thể chọn được (ĐÃ SỬA LỖI HOÀN TOÀN)
-        // Mô tả: Tạo mặt phẳng trong suốt để người dùng có thể chọn
-        // Thay đổi opacity: Thay đổi độ trong suốt của mặt phẳng
-        function createSelectablePlane(vertices, planeName) {
-            const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-            
-            // Tạo các tam giác cho đa giác
-            const indices = [];
-            for (let i = 1; i < vertices.length/3 - 1; i++) {
-                indices.push(0, i, i + 1);
-            }
-            
-            geometry.setIndex(indices);
-            geometry.computeVertexNormals();
-            
-            // SỬA LỖI: Sử dụng MeshBasicMaterial thay vì MeshStandardMaterial
-            const material = new THREE.MeshBasicMaterial({
-                color: 0xffffff, // Màu trắng (không màu)
-                transparent: true,
-                opacity: 0.0,    // Hoàn toàn trong suốt ban đầu
-                side: THREE.DoubleSide,
-                depthWrite: false, // QUAN TRỌNG: Tắt depthWrite để không che các đối tượng khác
-                depthTest: true
-            });
-            
-            const plane = new THREE.Mesh(geometry, material);
-            plane.userData = { 
-                type: 'plane', 
-                name: planeName,
-                selectable: true,
-                originalColor: 0xffffff,
-                isSelected: false,
-                isColored: false // Đánh dấu chưa được tô màu
-            };
-            
-            // CẢI THIỆN: Đặt renderOrder cao hơn để mặt phẳng luôn hiển thị
-            plane.renderOrder = 0;
-            
-            return plane;
-        }
-
-        // Hàm tạo các mặt phẳng cho tứ diện (ĐÃ XÓA MÀU MẶC ĐỊNH)
-        // Mô tả: Tạo 4 mặt phẳng cho hình tứ diện
+        // Hàm tạo các mặt phẳng cho tứ diện
         function createPlanesForTetrahedron() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1894,8 +1743,7 @@
             }
         }
 
-        // Hàm tạo các mặt phẳng cho lăng trụ tam giác (ĐÃ XÓA MÀU MẶC ĐỊNH)
-        // Mô tả: Tạo 5 mặt phẳng cho hình lăng trụ tam giác
+        // Hàm tạo các mặt phẳng cho lăng trụ tam giác
         function createPlanesForTriangularPrism() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -1948,8 +1796,7 @@
             }
         }
 
-        // Hàm tạo các mặt phẳng cho hình chóp (ĐÃ XÓA MÀU MẶC ĐỊNH)
-        // Mô tả: Tạo 5 mặt phẳng cho hình chóp tứ giác
+        // Hàm tạo các mặt phẳng cho hình chóp
         function createPlanesForPyramid() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -2002,8 +1849,7 @@
             }
         }
 
-        // HÀM TẠO CÁC MẶT PHẲNG CHO HÌNH LẬP PHƯƠNG (ĐÃ XÓA MÀU MẶC ĐỊNH)
-        // Mô tả: Tạo 6 mặt phẳng cho hình lập phương
+        // HÀM TẠO CÁC MẶT PHẲNG CHO HÌNH LẬP PHƯƠNG
         function createPlanesForCube() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -2015,12 +1861,12 @@
                 let planeVertices = [];
                 
                 let vertexNames = [];
-                if (i === 0) vertexNames = ['A', 'B', 'C', 'D']; // Mặt dưới
-                else if (i === 1) vertexNames = ['E', 'F', 'G', 'H']; // Mặt trên
-                else if (i === 2) vertexNames = ['A', 'B', 'F', 'E']; // Mặt trước
-                else if (i === 3) vertexNames = ['B', 'C', 'G', 'F']; // Mặt phải
-                else if (i === 4) vertexNames = ['C', 'D', 'H', 'G']; // Mặt sau
-                else if (i === 5) vertexNames = ['D', 'A', 'E', 'H']; // Mặt trái
+                if (i === 0) vertexNames = ['A', 'B', 'C', 'D'];
+                else if (i === 1) vertexNames = ['E', 'F', 'G', 'H'];
+                else if (i === 2) vertexNames = ['A', 'B', 'F', 'E'];
+                else if (i === 3) vertexNames = ['B', 'C', 'G', 'F'];
+                else if (i === 4) vertexNames = ['C', 'D', 'H', 'G'];
+                else if (i === 5) vertexNames = ['D', 'A', 'E', 'H'];
                 
                 vertexNames.forEach(name => {
                     const point = points[name];
@@ -2057,8 +1903,7 @@
             }
         }
 
-        // HÀM TẠO CÁC MẶT PHẲNG CHO HÌNH HỘP CHỮ NHẬT (ĐÃ XÓA MÀU MẶC ĐỊNH)
-        // Mô tả: Tạo 6 mặt phẳng cho hình hộp chữ nhật
+        // HÀM TẠO CÁC MẶT PHẲNG CHO HÌNH HỘP CHỮ NHẬT
         function createPlanesForCuboid() {
             planeObjects.forEach(obj => scene.remove(obj));
             planeObjects.length = 0;
@@ -2070,12 +1915,12 @@
                 let planeVertices = [];
                 
                 let vertexNames = [];
-                if (i === 0) vertexNames = ['A', 'B', 'C', 'D']; // Mặt dưới
-                else if (i === 1) vertexNames = ['E', 'F', 'G', 'H']; // Mặt trên
-                else if (i === 2) vertexNames = ['A', 'B', 'F', 'E']; // Mặt trước
-                else if (i === 3) vertexNames = ['B', 'C', 'G', 'F']; // Mặt phải
-                else if (i === 4) vertexNames = ['C', 'D', 'H', 'G']; // Mặt sau
-                else if (i === 5) vertexNames = ['D', 'A', 'E', 'H']; // Mặt trái
+                if (i === 0) vertexNames = ['A', 'B', 'C', 'D'];
+                else if (i === 1) vertexNames = ['E', 'F', 'G', 'H'];
+                else if (i === 2) vertexNames = ['A', 'B', 'F', 'E'];
+                else if (i === 3) vertexNames = ['B', 'C', 'G', 'F'];
+                else if (i === 4) vertexNames = ['C', 'D', 'H', 'G'];
+                else if (i === 5) vertexNames = ['D', 'A', 'E', 'H'];
                 
                 vertexNames.forEach(name => {
                     const point = points[name];
@@ -2112,9 +1957,7 @@
             }
         }
 
-        // Hàm tạo các điểm hiển thị (CẢI THIỆN ĐỘ ỔN ĐỊNH)
-        // Mô tả: Tạo các điểm hình cầu và nhãn cho các điểm
-        // Thay đổi pointGeometry.radius: Thay đổi kích thước điểm
+        // Hàm tạo các điểm hiển thị
         function createPointSpheres() {
             pointObjects.forEach(obj => scene.remove(obj));
             pointObjects.length = 0;
@@ -2137,7 +1980,6 @@
                     isSelected: false
                 };
                 
-                // CẢI THIỆN: Thêm renderOrder để đảm bảo điểm luôn hiển thị trên các đối tượng khác
                 pointMesh.renderOrder = 1;
                 
                 scene.add(pointMesh);
@@ -2150,8 +1992,6 @@
         }
 
         // Hàm tạo nhãn cho điểm
-        // Mô tả: Tạo nhãn văn bản cho các điểm
-        // Thay đổi fontSize: Thay đổi kích thước chữ của nhãn
         function createPointLabel(name, position) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
@@ -2180,7 +2020,6 @@
             sprite.scale.set(0.8, 0.4, 1);
             sprite.userData = { type: 'label', name: name };
             
-            // CẢI THIỆN: Thêm renderOrder để đảm bảo nhãn luôn hiển thị trên các đối tượng khác
             sprite.renderOrder = 2;
             
             return sprite;
@@ -2200,9 +2039,7 @@
             return Math.max(size.x, size.y, size.z);
         }
 
-        // Hàm tạo mô hình mới (ĐÃ SỬA ĐỂ XÓA MẶT PHẲNG ĐÃ TÔ MÀU)
-        // Mô tả: Tạo mô hình mới dựa trên loại hình được chọn
-        // Thay đổi: Xóa các mặt phẳng đã tô màu khi đổi hình
+        // Hàm tạo mô hình mới
         function createNewModel(shapeType) {
             // XÓA CÁC MẶT PHẲNG ĐÃ TÔ MÀU KHI ĐỔI HÌNH
             coloredPlanes.forEach(plane => {
@@ -2266,8 +2103,7 @@
             }
         }
 
-        // Hàm xóa hình khối (SỬA ĐỔI: KHÔNG xóa các mặt phẳng đã tô màu)
-        // Mô tả: Xóa hình khối hiện tại khỏi scene
+        // Hàm xóa hình khối
         function deleteMesh(mesh) {
             if (!mesh) return;
             
@@ -2307,7 +2143,6 @@
         }
 
         // Hàm cập nhật panel bên trái với thông tin hình khối
-        // Mô tả: Cập nhật nội dung panel bên trái với thông tin hình khối được chọn
         function updateLeftPanel(mesh) {
             const panel = document.getElementById('leftPanel');
             const content = document.getElementById('shapeInfo');
@@ -2350,7 +2185,6 @@
         }
 
         // Hàm cập nhật thông tin chi tiết của hình khối
-        // Mô tả: Cập nhật tọa độ điểm và độ dài cạnh trong panel bên trái
         function updateShapeDetails(mesh) {
             if (!mesh) return;
             
@@ -2415,9 +2249,9 @@
                 case 'cube':
                 case 'cuboid':
                     edges = [
-                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Mặt dưới
-                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'], // Mặt trên
-                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']  // Cạnh bên
+                        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                        ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
+                        ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
                     ];
                     break;
             }
@@ -2440,7 +2274,6 @@
         }
 
         // Hàm cập nhật danh sách điểm trong các dropdown
-        // Mô tả: Cập nhật danh sách điểm trong tất cả các dropdown menu
         function updatePointDropdowns() {
             const pointSelects = document.querySelectorAll('select[id$="Point"], select[id$="Vertex"], select[id$="StartPoint"], select[id$="EndPoint"], select[id$="Origin"]');
             
@@ -2525,7 +2358,6 @@
         }
 
         // Hàm cập nhật danh sách mặt phẳng trong dropdown
-        // Mô tả: Cập nhật danh sách mặt phẳng trong các dropdown menu
         function updatePlaneDropdowns() {
             const planeSelects = document.querySelectorAll('select[id$="Plane"]');
             
@@ -2558,7 +2390,6 @@
         }
 
         // Hàm cập nhật danh sách đoạn thẳng trong các dropdown
-        // Mô tả: Cập nhật danh sách đoạn thẳng trong các dropdown menu
         function updateSegmentDropdowns() {
             const segmentSelects = document.querySelectorAll('select[id$="Segment"], select[id$="Base"]');
             
@@ -2592,7 +2423,6 @@
         }
 
         // Hàm cập nhật dropdown tam giác
-        // Mô tả: Cập nhật danh sách tam giác trong dropdown menu
         function updateTriangleDropdowns() {
             const triangleSelect = document.getElementById('centroidTriangle');
             const currentValue = triangleSelect.value;
@@ -2625,7 +2455,6 @@
         }
 
         // Hàm xử lý sự kiện pointer
-        // Mô tả: Xử lý sự kiện click và touch trên canvas
         function onPointerEvent(event) {
             event.preventDefault();
             
@@ -2714,7 +2543,6 @@
         }
 
         // Hàm xử lý thay đổi kích thước cửa sổ
-        // Mô tả: Điều chỉnh camera và renderer khi kích thước cửa sổ thay đổi
         function onWindowResize() {
             const canvas = document.getElementById('sceneCanvas');
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
@@ -2744,7 +2572,6 @@
         }
 
         // Hàm thêm điểm theo tọa độ
-        // Mô tả: Thêm điểm mới vào scene với tọa độ xác định
         function addPointByCoord(name, x, y, z) {
             if (points[name]) {
                 alert('Tên điểm đã tồn tại!');
@@ -2770,7 +2597,6 @@
                 isSelected: false
             };
             
-            // CẢI THIỆN: Thêm renderOrder để đảm bảo điểm luôn hiển thị trên các đối tượng khác
             pointMesh.renderOrder = 1;
             
             scene.add(pointMesh);
@@ -2784,7 +2610,6 @@
         }
 
         // Hàm vẽ vector
-        // Mô tả: Vẽ vector từ hai điểm
         function drawVector(name, startPoint, endPoint, color = 0xff0000) {
             const start = points[startPoint];
             const end = points[endPoint];
@@ -2811,7 +2636,6 @@
         }
 
         // Hàm vẽ vector từ tọa độ
-        // Mô tả: Vẽ vector từ tọa độ và điểm gốc
         function drawVectorFromCoords(name, x, y, z, origin = 'O', color = 0xff0000) {
             const start = origin === 'O' ? new THREE.Vector3(0, 0, 0) : points[origin];
             
@@ -2836,7 +2660,6 @@
         }
 
         // Hàm xóa điểm hoặc đường
-        // Mô tả: Xóa đối tượng được chọn khỏi scene
         function eraseObject(object) {
             if (object.userData.type === 'point') {
                 scene.remove(object);
@@ -2899,7 +2722,6 @@
         // ========== HÀM CHO THÊM ĐIỂM/ĐOẠN THẲNG ==========
 
         // Hàm xử lý thay đổi loại điểm
-        // Mô tả: Hiển thị các trường nhập liệu tương ứng với loại điểm được chọn
         function handlePointTypeChange() {
             const pointType = document.getElementById('newPointType').value;
             
@@ -2928,7 +2750,6 @@
         }
 
         // Hàm thêm điểm mới
-        // Mô tả: Thêm điểm mới dựa trên loại điểm được chọn
         function addNewPoint() {
             const pointType = document.getElementById('newPointType').value;
             const pointName = document.getElementById('newPointName').value.trim().toUpperCase();
@@ -3004,7 +2825,6 @@
         }
 
         // Hàm thêm đoạn thẳng mới
-        // Mô tả: Thêm đoạn thẳng nối hai điểm
         function addNewSegment() {
             const startPoint = document.getElementById('segmentStart').value;
             const endPoint = document.getElementById('segmentEnd').value;
@@ -3038,7 +2858,6 @@
         }
 
         // Hàm tính hình chiếu của điểm lên mặt phẳng
-        // Mô tả: Tính toán hình chiếu của một điểm lên một mặt phẳng
         function calculatePointProjection(pointName, planeName) {
             const point = points[pointName];
             if (!point) return null;
@@ -3067,7 +2886,7 @@
             return projection;
         }
 
-        // ========== HÀM CHO TÔ MÀU MẶT PHẲNG (ĐÃ SỬA LỖI HOÀN TOÀN) ==========
+        // ========== HÀM CHO TÔ MÀU MẶT PHẲNG ==========
 
         // Hàm hiển thị modal tô màu mặt phẳng
         function showColorPlaneModal() {
@@ -3141,8 +2960,7 @@
             return pointsArray;
         }
 
-        // Hàm tô màu mặt phẳng (ĐÃ SỬA LỖI HOÀN TOÀN)
-        // Mô tả: Tô màu một mặt phẳng xác định bởi các điểm
+        // Hàm tô màu mặt phẳng
         function colorPlane(pointNames, color) {
             const pointsArray = [];
             for (let name of pointNames) {
@@ -3179,27 +2997,24 @@
             geometry.setIndex(indices);
             geometry.computeVertexNormals();
             
-            // SỬA LỖI: Sử dụng MeshBasicMaterial thay vì MeshStandardMaterial
             let material;
             if (color === 'transparent') {
-                // Nếu là màu trong suốt, tạo material trong suốt
                 material = new THREE.MeshBasicMaterial({
                     color: 0xffffff,
                     transparent: true,
-                    opacity: 0.0, // Hoàn toàn trong suốt
+                    opacity: 0.0,
                     side: THREE.DoubleSide,
-                    depthWrite: false, // QUAN TRỌNG: Tắt depthWrite
+                    depthWrite: false,
                     depthTest: true
                 });
             } else {
-                // Nếu là màu bình thường, sử dụng màu với opacity 30%
                 const colorNum = color === '#0000ff' ? 0x3A86FF : parseInt(color.replace('#', ''), 16);
                 material = new THREE.MeshBasicMaterial({
                     color: colorNum,
                     transparent: true,
-                    opacity: 0.3, // Độ trong suốt 30% cho tất cả các mặt phẳng
+                    opacity: 0.3,
                     side: THREE.DoubleSide,
-                    depthWrite: false, // QUAN TRỌNG: Tắt depthWrite
+                    depthWrite: false,
                     depthTest: true
                 });
             }
@@ -3211,7 +3026,6 @@
                 color: color
             };
             
-            // CẢI THIỆN: Đặt renderOrder cao hơn để mặt phẳng luôn hiển thị
             plane.renderOrder = 1;
             
             scene.add(plane);
@@ -3228,7 +3042,6 @@
         }
 
         // Hàm lưu hình hiện tại
-        // Mô tả: Lưu hình hiện tại vào localStorage
         function saveCurrentShape() {
             if (createdModels.length === 0) {
                 alert('Không có hình nào để lưu!');
@@ -3259,6 +3072,7 @@
                 };
             });
             
+            // Lưu các mặt phẳng đã tô màu
             // Lưu các mặt phẳng đã tô màu
             coloredPlanes.forEach(plane => {
                 shapeData.coloredPlanes.push({
@@ -3302,7 +3116,6 @@
         }
 
         // Hàm tải hình đã lưu
-        // Mô tả: Tải hình đã lưu từ localStorage
         function loadSavedShape(shapeId) {
             const shapeData = savedShapes.find(shape => shape.id === shapeId);
             if (!shapeData) return;
@@ -3473,9 +3286,9 @@
                     case 'cube':
                     case 'cuboid':
                         edges = [
-                            ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], // Mặt dưới
-                            ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'], // Mặt trên
-                            ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']  // Cạnh bên
+                            ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                            ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'E'],
+                            ['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']
                         ];
                         break;
                 }
@@ -3518,7 +3331,6 @@
         // ========== CẢI THIỆN THANH CUỘN CHO THIẾT BỊ DI ĐỘNG ==========
 
         // Hàm xử lý sự kiện cuộn cho container
-        // Mô tả: Thêm hiệu ứng khi đang cuộn để cải thiện trải nghiệm người dùng
         function handleScrollEvents() {
             const scrollContainers = document.querySelectorAll('.shape-grid-container, .side-panel, .modal-content');
             
@@ -3564,7 +3376,6 @@
         }
 
         // Hàm tối ưu hóa hiệu suất cho thiết bị di động
-        // Mô tả: Tối ưu hóa hiệu suất cho các thiết bị di động có tài nguyên hạn chế
         function optimizeForMobile() {
             // Giảm độ phân giải trên thiết bị di động để cải thiện hiệu suất
             if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -3649,7 +3460,7 @@
             });
         });
 
-// Xác nhận tạo hình khối
+        // Xác nhận tạo hình khối
         document.getElementById('confirmCreateShape').addEventListener('click', function() {
             const selectedOption = document.querySelector('.shape-option.active');
             if (!selectedOption) {
@@ -3899,7 +3710,6 @@
         });
 
         // === SỰ KIỆN QUAN TRỌNG: XỬ LÝ TOUCH CHO THANH CUỘN TRÊN ĐIỆN THOẠI ===
-        // Ngăn chặn sự kiện touch mặc định trên các phần tử có thanh cuộn để tránh xung đột với Three.js
         document.querySelectorAll('.shape-grid-container, .side-panel, .modal-content').forEach(container => {
             container.addEventListener('touchstart', function(e) {
                 // Cho phép sự kiện touch tiếp tục lan truyền nếu không phải là cuộn
@@ -3947,8 +3757,6 @@
         optimizeForMobile();
 
         // Hàm animate - vòng lặp chính để render scene
-        // Mô tả: Hàm này được gọi liên tục để cập nhật và render scene
-        // Thay đổi: Có thể điều chỉnh tốc độ khung hình bằng cách thay đổi requestAnimationFrame
         function animate() {
             requestAnimationFrame(animate);
             
@@ -3963,7 +3771,6 @@
         animate();
 
         // === XỬ LÝ SỰ KIỆN CHO MODAL ĐỂ NGĂN CHẶN PROPAGATION ===
-        // Mô tả: Ngăn chặn sự kiện click trên modal lan ra ngoài, đóng modal khi click ra ngoài
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', function(e) {
                 if (e.target === this) {
@@ -3978,7 +3785,6 @@
         });
 
         // === XỬ LÝ SỰ KIỆN CHO CÁC PHẦN TỬ CÓ THANH CUỘN TRÊN DI ĐỘNG ===
-        // Mô tả: Tối ưu hóa trải nghiệm cuộn trên thiết bị di động
         document.querySelectorAll('.shape-grid-container, .side-panel').forEach(container => {
             // Thêm sự kiện để phát hiện khi người dùng bắt đầu cuộn
             container.addEventListener('touchstart', function() {
@@ -3993,7 +3799,6 @@
         });
 
         // === XỬ LÝ SỰ KIỆN CHO CÁC INPUT TRÊN DI ĐỘNG ===
-        // Mô tả: Ngăn chặn zoom không mong muốn khi focus vào input trên di động
         document.querySelectorAll('input, select, textarea').forEach(input => {
             input.addEventListener('touchstart', function(e) {
                 // Ngăn chặn zoom khi chạm vào input
@@ -4009,7 +3814,6 @@
         });
 
         // === XỬ LÝ SỰ KIỆN CHO CÁC NÚT TRÊN DI ĐỘNG - CẢI THIỆN ĐỘ NHẠY ===
-        // Mô tả: Thêm hiệu ứng visual feedback khi chạm vào các nút trên di động
         document.querySelectorAll('.tool-button, .header-button, .shape-option').forEach(button => {
             button.addEventListener('touchstart', function() {
                 this.style.transform = 'scale(0.95)';
@@ -4026,7 +3830,6 @@
         });
 
         // === XỬ LÝ SỰ KIỆN CHO CÁC DROPDOWN TRÊN DI ĐỘNG ===
-        // Mô tả: Tối ưu hóa trải nghiệm sử dụng dropdown trên thiết bị di động
         document.querySelectorAll('select').forEach(select => {
             select.addEventListener('touchstart', function(e) {
                 // Trên di động, mở rộng kích thước touch target
@@ -4041,7 +3844,6 @@
         });
 
         // === XỬ LÝ SỰ KIỆN CHO CÁC MODAL TRÊN DI ĐỘNG ===
-        // Mô tả: Tối ưu hóa hiển thị modal trên thiết bị di động
         document.querySelectorAll('.modal-content').forEach(modalContent => {
             // Đảm bảo modal content có chiều cao phù hợp trên di động
             if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -4051,7 +3853,6 @@
         });
 
         // === XỬ LÝ SỰ KIỆN LOAD VÀ RESIZE ===
-        // Mô tả: Xử lý sự kiện khi trang được load và khi thay đổi kích thước cửa sổ
         window.addEventListener('load', function() {
             // Đảm bảo canvas có kích thước chính xác khi trang load
             onWindowResize();
@@ -4067,7 +3868,6 @@
         });
 
         // === XỬ LÝ SỰ KIỆN CHO CÁC HÌNH ĐÃ LƯU ===
-        // Mô tả: Thêm tính năng xóa hình đã lưu (giữ để xóa)
         document.addEventListener('DOMContentLoaded', function() {
             // Thêm sự kiện cho hình đã lưu (giữ lâu để xóa)
             document.addEventListener('contextmenu', function(e) {
@@ -4095,7 +3895,6 @@
         });
 
         // === HÀM KIỂM TRA VÀ CẢNH BÁO CHO THIẾT BỊ DI ĐỘNG ===
-        // Mô tả: Hiển thị cảnh báo nếu ứng dụng chạy trên thiết bị di động
         function checkMobileDevice() {
             if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
                 showInfo('Ứng dụng hoạt động tốt nhất trên máy tính. Trên di động, sử dụng 2 ngón tay để xoay và phóng to.');
@@ -4110,4 +3909,3 @@
     </script>
 </body>
 </html>
-                                
