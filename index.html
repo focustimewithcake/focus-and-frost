@@ -802,6 +802,116 @@
                 transform: scale(0.95);
             }
         }
+        /* THÊM VÀO PHẦN CSS - SỬA LỖI HIỂN THỊ TRÊN MOBILE */
+
+/* Mobile warning - hiển thị cảnh báo trên mobile */
+#mobileWarning {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    text-align: center;
+    max-width: 80%;
+}
+
+/* Cải thiện grid cho mobile */
+@media (max-width: 768px) {
+    .shape-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .shape-option {
+        min-height: 50px;
+        padding: 10px 5px;
+        font-size: 0.8rem;
+    }
+    
+    .shape-option span {
+        font-size: 0.7rem;
+        line-height: 1.2;
+    }
+    
+    /* Đảm bảo modal đủ lớn để hiển thị 6 hình */
+    .modal-content {
+        max-height: 85vh;
+    }
+    
+    .shape-grid-container {
+        max-height: 60vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .shape-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .shape-option {
+        min-height: 45px;
+        padding: 8px 4px;
+    }
+    
+    .shape-option span {
+        font-size: 0.65rem;
+    }
+    
+    /* Toolbar mobile */
+    .toolbar {
+        bottom: 10px;
+        padding: 8px;
+        gap: 4px;
+    }
+    
+    .tool-button {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .tool-button span {
+        font-size: 0.6rem;
+    }
+}
+
+/* Đặc biệt cho màn hình rất nhỏ */
+@media (max-width: 360px) {
+    .shape-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-button {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+}
+
+/* Cải thiện scroll cho mobile */
+.shape-grid-container {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+}
+
+/* Đảm bảo tất cả hình hiển thị */
+.shape-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+.shape-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    word-break: break-word;
+}
     </style>
 </head>
 <body>
